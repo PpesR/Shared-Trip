@@ -1,2 +1,2 @@
-# Shared-Trip
-Application for sharing travel cost and finding fun activities to do with a group
+# Shared-Trip  
+This is a student project to create an Android application for shared travelling. The application will help the user to find companions and share cost for a trip. 
