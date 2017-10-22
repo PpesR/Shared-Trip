@@ -10,6 +10,7 @@
 
     <string name="signed_in_fmt">Signed in as: %s</string>
     <string name="loading">Loading…</string>
+    <string name="title_activity_browse_events">BrowseEvents</string>
 
 
 </resources>
