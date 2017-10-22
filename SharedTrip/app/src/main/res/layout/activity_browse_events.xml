@@ -10,8 +10,8 @@
         android:id="@+id/add_event_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
-        tools:layout_editor_absoluteX="216dp"
-        tools:layout_editor_absoluteY="377dp" />
+        android:text="Create"
+        tools:layout_editor_absoluteX="229dp"
+        tools:layout_editor_absoluteY="416dp" />
 
 </android.support.constraint.ConstraintLayout>

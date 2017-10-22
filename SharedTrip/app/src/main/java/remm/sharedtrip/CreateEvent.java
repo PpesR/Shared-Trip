@@ -2,6 +2,7 @@ package remm.sharedtrip;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Window;
 
 public class CreateEvent extends AppCompatActivity {
 
