@@ -1,4 +1,5 @@
 <resources>
     <dimen name="g_top_margin">100dp</dimen>
     <dimen name="add_event_fbutton_margin">24dp</dimen>
+    <dimen name="add_event_fbutton_marginbottom">76dp</dimen>
 </resources>
