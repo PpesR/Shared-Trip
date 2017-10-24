@@ -52,7 +52,7 @@
             android:layout_height="25dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/edittext"
+            android:layout_below="@+id/destination"
             android:layout_marginTop="7dp"
             android:text="@string/event_create_when_is_happening_question"
             android:textSize="16sp" />
@@ -63,7 +63,7 @@
             android:layout_height="25dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/editText5"
+            android:layout_below="@+id/title"
             android:text="@string/create_event_how"
             android:textSize="16sp" />
 
@@ -78,7 +78,7 @@
             android:textSize="16sp" />
 
         <EditText
-            android:id="@+id/edittext"
+            android:id="@+id/destination"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -111,7 +111,7 @@
             android:textSize="16sp" />
 
         <EditText
-            android:id="@+id/editText5"
+            android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -122,7 +122,7 @@
             android:textSize="16sp" />
 
         <EditText
-            android:id="@+id/editText6"
+            android:id="@+id/description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -141,7 +141,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             tools:layout_editor_absoluteY="447dp"
-            android:layout_below="@+id/editText6"
+            android:layout_below="@+id/description"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true">
 
