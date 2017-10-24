@@ -12,5 +12,26 @@
     <string name="loading">Loading…</string>
     <string name="title_activity_browse_events">BrowseEvents</string>
 
+    <!-- Buttons -->
+    <string name="button_cancel">CANCEL</string>
+    <string name="button_create">CREATE</string>
+
+    <!-- Create event tab strings -->
+    <string name="create_event_children">Children?</string>
+    <string name="create_event_adding_picture">ADD A PICTURE</string>
+    <string name="create_event_describe_your_trip">Describe your trip...</string>
+    <string name="create_event_from_date">From</string>
+    <string name="create_event_to_date">To</string>
+    <string name="create_event_generate_private_key">Generate key</string>
+    <string name="create_event_how">How?</string>
+    <string name="create_event_destination">Name the destination...</string>
+    <string name="create_event_private_event">Private event?</string>
+    <string name="create_event_title">SHARE A TRIP!</string>
+    <string name="create_event_checkbox_2">Smokers?</string>
+    <string name="create_event_destination_title">Title</string>
+    <string name="create_event_what_is_happening">What?</string>
+    <string name="create_event_where_is_happening_question">Where?</string>
+    <string name="event_create_when_is_happening_question">When?</string>
+
 
 </resources>
