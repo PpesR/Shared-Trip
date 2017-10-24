@@ -3,5 +3,7 @@
     <color name="blue_grey_900">#263238</color>
     <color name="blue_grey_700">#455A64</color>
     <color name="blue_grey_500">#607D8B</color>
+    <color name="orange">#FFA500</color>
+    <color name="orangered">#FF4500</color>
 
 </resources>

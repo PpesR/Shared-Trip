@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="remm.sharedtrip.BrowseEvents">
 
-    <Button
-        android:id="@+id/add_event_button"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/add_event_fbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create"
-        tools:layout_editor_absoluteX="229dp"
-        tools:layout_editor_absoluteY="416dp" />
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/add_event_fbutton_margin"
+        android:src="@drawable/ic_add_white_24px"
+        app:backgroundTint="@color/orangered"/>
+    <!--
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"/>-->
 
-</android.support.constraint.ConstraintLayout>
+</android.support.design.widget.CoordinatorLayout>
