@@ -38,7 +38,7 @@ public class SharedTripDbHelper extends SQLiteOpenHelper {
         contentValues.put("title", title);
         contentValues.put("destination", destination);
         contentValues.put("description", description);
-        db.insert("contacts", null, contentValues);
+        db.insert("event_info", null, contentValues);
         return true;
     }
     public int numberOfRows(){
@@ -52,7 +52,7 @@ public class SharedTripDbHelper extends SQLiteOpenHelper {
         Cursor res =  db.rawQuery( "select * from event_info where id="+id+"", null );
         return res;
     }
-    public Integer deleteContact (Integer id) {
+    public Integer deleteEvent (Integer id) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete("event_info",
                 "id = ? ",
@@ -65,7 +65,7 @@ public class SharedTripDbHelper extends SQLiteOpenHelper {
         contentValues.put("title", title);
         contentValues.put("destination", destination);
         contentValues.put("description", description);
-        db.update("contacts", contentValues, "id = ? ", new String[] { Integer.toString(id) } );
+        db.update("event_info", contentValues, "id = ? ", new String[] { Integer.toString(id) } );
         return true;
     }
     public ArrayList<String> getAllEvents() {
@@ -80,6 +80,7 @@ public class SharedTripDbHelper extends SQLiteOpenHelper {
             array_list.add(res.getString(res.getColumnIndex(SharedTripContract.EventInfo.COLUMN_NAME_TITLE)));
             res.moveToNext();
         }
+        res.close();
         return array_list;
     }
 

@@ -49,7 +49,6 @@ public class CreateEvent extends AppCompatActivity {
                 description_text = destination.getText().toString();
 
                 db.insertEvent(title_text, destination_text, description_text);
-                db.close();
                 finish();
 
             }
