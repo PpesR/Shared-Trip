@@ -93,7 +93,7 @@
             android:textSize="16sp" />
 
         <EditText
-            android:id="@+id/editText3"
+            android:id="@+id/start_date"
             android:layout_width="175dp"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -104,7 +104,7 @@
             android:textSize="16sp" />
 
         <EditText
-            android:id="@+id/edittext2"
+            android:id="@+id/end_date"
             android:layout_width="175dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/textView31"

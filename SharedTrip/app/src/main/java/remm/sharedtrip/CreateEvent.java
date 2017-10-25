@@ -21,8 +21,7 @@ public class CreateEvent extends AppCompatActivity {
 
     SharedTripDbHelper db;
 
-    EditText title;
-    EditText description, destination;
+    EditText title, description, destination, start_date, end_date;
     Button create;
 
 
@@ -37,6 +36,8 @@ public class CreateEvent extends AppCompatActivity {
         title = (EditText) findViewById(R.id.title);
         destination = (EditText) findViewById(R.id.destination);
         description = (EditText) findViewById(R.id.description);
+        start_date = (EditText) findViewById(R.id.start_date);
+        end_date = (EditText) findViewById(R.id.end_date);
 
         create = (Button) findViewById(R.id.button4);
         create.setOnClickListener(new View.OnClickListener(){
