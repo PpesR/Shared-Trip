@@ -33,5 +33,8 @@
     <string name="create_event_where_is_happening_question">Where?</string>
     <string name="event_create_when_is_happening_question">When?</string>
 
+    <!-- Browse events tab strings -->
+    <string name="browse_events_happening_near_you">HAPPENING NEAR YOU</string>
+
 
 </resources>
