@@ -1,6 +1,7 @@
 package remm.sharedtrip;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.XmlRes;
 import android.support.v7.app.AppCompatActivity;
@@ -10,21 +11,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 import Database.SharedTripDbHelper;
 
 
 public class CreateEvent extends AppCompatActivity {
 
-    SharedTripDbHelper db;
-
     EditText title;
     EditText description, destination;
     Button create;
 
+    SharedTripDbHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,5 +60,7 @@ public class CreateEvent extends AppCompatActivity {
         });
 
     }
+
+
 
 }

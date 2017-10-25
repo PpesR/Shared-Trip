@@ -84,4 +84,11 @@ public class SharedTripDbHelper extends SQLiteOpenHelper {
         return array_list;
     }
 
+    public Cursor getDatanoid(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "Select * From " + SharedTripContract.EventInfo.TABLE_NAME;
+        Cursor data = db.rawQuery(query, null);
+        return data;
+    }
+
 }

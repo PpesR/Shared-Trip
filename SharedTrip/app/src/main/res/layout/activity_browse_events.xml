@@ -12,8 +12,12 @@
         android:layout_height="wrap_content"
         android:background="#fafafa"
         tools:context="remm.sharedtrip.BrowseEvents">
-
-
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:orientation="horizontal"
+        android:id="@+id/listview"/>
         <include
             android:id="@+id/include"
             layout="@layout/layout" />
@@ -84,8 +88,9 @@
                 android:layout_marginTop="23dp"
                 android:background="@android:color/transparent"
                 android:ems="10"
-                android:text="@string/browse_events_happening_near_you"
                 android:textSize="13sp" />
+                <!--android:text="@string/browse_events_happening_near_you"-->
+
         </RelativeLayout>
 
         <!--

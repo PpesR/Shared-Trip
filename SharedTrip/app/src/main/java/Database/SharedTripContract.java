@@ -1,5 +1,7 @@
 package Database;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 
 public class SharedTripContract {
