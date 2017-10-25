@@ -18,26 +18,20 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-<<<<<<< HEAD
 import java.util.ArrayList;
-=======
 import java.text.SimpleDateFormat;
 import java.util.Date;
->>>>>>> fdcc60ffea75a086431030f18988825077e534f1
 
 import Database.SharedTripDbHelper;
 
 
 public class CreateEvent extends AppCompatActivity {
 
-<<<<<<< HEAD
-    EditText title;
-    EditText description, destination;
-=======
-    SharedTripDbHelper db;
+//    EditText title;
+//    EditText description, destination;
+//    SharedTripDbHelper db;
 
     EditText title, description, destination, start_date, end_date;
->>>>>>> fdcc60ffea75a086431030f18988825077e534f1
     Button create;
     SimpleDateFormat df;
 
