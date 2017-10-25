@@ -19,17 +19,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import Database.SharedTripDbHelper;
 
 
 public class CreateEvent extends AppCompatActivity {
-
-//    EditText title;
-//    EditText description, destination;
-//    SharedTripDbHelper db;
 
     EditText title, description, destination, start_date, end_date;
     Button create;
