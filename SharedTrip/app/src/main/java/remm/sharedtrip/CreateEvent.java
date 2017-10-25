@@ -34,6 +34,7 @@ public class CreateEvent extends AppCompatActivity {
     EditText title, description, destination, start_date, end_date;
     Button create;
     SimpleDateFormat df;
+    Button cancel;
 
     SharedTripDbHelper db;
 
@@ -51,6 +52,15 @@ public class CreateEvent extends AppCompatActivity {
         start_date = (EditText) findViewById(R.id.start_date);
         end_date = (EditText) findViewById(R.id.end_date);
 
+
+        cancel = (Button) findViewById(R.id.button3);
+        cancel.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                finish();
+
+            }
+        });
         create = (Button) findViewById(R.id.button4);
         create.setOnClickListener(new View.OnClickListener(){
             @Override
