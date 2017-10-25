@@ -42,6 +42,7 @@ public class BrowseEvents extends AppCompatActivity {
         screen = (LinearLayout) findViewById(R.id.screen);
         db = new SharedTripDbHelper(this);
 
+     //   db.deleteAllEvents();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.add_event_fbutton);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
