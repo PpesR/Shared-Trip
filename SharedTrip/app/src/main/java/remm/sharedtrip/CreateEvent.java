@@ -18,16 +18,28 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+<<<<<<< HEAD
 import java.util.ArrayList;
+=======
+import java.text.SimpleDateFormat;
+import java.util.Date;
+>>>>>>> fdcc60ffea75a086431030f18988825077e534f1
 
 import Database.SharedTripDbHelper;
 
 
 public class CreateEvent extends AppCompatActivity {
 
+<<<<<<< HEAD
     EditText title;
     EditText description, destination;
+=======
+    SharedTripDbHelper db;
+
+    EditText title, description, destination, start_date, end_date;
+>>>>>>> fdcc60ffea75a086431030f18988825077e534f1
     Button create;
+    SimpleDateFormat df;
 
     SharedTripDbHelper db;
 
@@ -36,24 +48,30 @@ public class CreateEvent extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
 
-
+        df = new SimpleDateFormat("dd-MM-yyyy");
         db = new SharedTripDbHelper(this);
 
         title = (EditText) findViewById(R.id.title);
         destination = (EditText) findViewById(R.id.destination);
         description = (EditText) findViewById(R.id.description);
+        start_date = (EditText) findViewById(R.id.start_date);
+        end_date = (EditText) findViewById(R.id.end_date);
 
         create = (Button) findViewById(R.id.button4);
         create.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 String title_text, destination_text, description_text;
+                String start_date_input, end_date_input;
+
+                start_date_input = start_date.getText().toString();
+                end_date_input = end_date.getText().toString();
 
                 title_text = title.getText().toString();
                 destination_text = description.getText().toString();
                 description_text = destination.getText().toString();
 
-                db.insertEvent(title_text, destination_text, description_text);
+                db.insertEvent(title_text, destination_text, description_text, start_date_input, end_date_input);
                 finish();
 
             }

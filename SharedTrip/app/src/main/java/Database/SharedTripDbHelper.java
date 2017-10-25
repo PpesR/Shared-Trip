@@ -32,12 +32,14 @@ public class SharedTripDbHelper extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
-    public boolean insertEvent (String title, String destination, String description) {
+    public boolean insertEvent (String title, String destination, String description, String start_date, String end_date) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("title", title);
         contentValues.put("destination", destination);
         contentValues.put("description", description);
+        contentValues.put("start_date", start_date);
+        contentValues.put("end_date", end_date);
         db.insert("event_info", null, contentValues);
         return true;
     }

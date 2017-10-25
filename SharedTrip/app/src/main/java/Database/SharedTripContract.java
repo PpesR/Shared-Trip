@@ -22,6 +22,8 @@ public class SharedTripContract {
                     EventInfo._ID + " INTEGER PRIMARY KEY," +
                     EventInfo.COLUMN_NAME_TITLE+ " TEXT," +
                     EventInfo.COLUMN_NAME_DESTINATION + " TEXT," +
+                    EventInfo.COLUMN_NAME_STARTDATE+ " TEXT," +
+                    EventInfo.COLUMN_NAME_ENDDATE + " TEXT," +
                     EventInfo.COLUMN_NAME_DESCRIPTION + " TEXT)";
 
     public static final String SQL_DELETE_ENTRIES =
