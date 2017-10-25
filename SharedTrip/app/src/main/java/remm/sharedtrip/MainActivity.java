@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.support.design.widget.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,3 +19,5 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 }
+
+

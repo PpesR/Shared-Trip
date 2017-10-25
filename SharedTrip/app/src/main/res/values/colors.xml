@@ -4,6 +4,12 @@
     <color name="blue_grey_700">#455A64</color>
     <color name="blue_grey_500">#607D8B</color>
     <color name="orange">#FFA500</color>
-    <color name="orangered">#FF4500</color>
+    <color name="orangered">#ff5722</color>
+    <color name="background_grey">#fafafa</color>
+    <color name="button_grey">#7a7a7a</color>
+    <color name="white_text">#ffffff</color>
+
+    <!-- Create event text colors -->
+    <color name="grey_question">#303030</color>
 
 </resources>

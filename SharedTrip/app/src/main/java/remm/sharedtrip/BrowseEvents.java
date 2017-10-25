@@ -40,8 +40,6 @@ public class BrowseEvents extends AppCompatActivity {
             public void onClick(View view) {
                 Intent myIntent = new Intent(BrowseEvents.this, CreateEvent.class);
                 BrowseEvents.this.startActivity(myIntent);
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
             }
         });
 
