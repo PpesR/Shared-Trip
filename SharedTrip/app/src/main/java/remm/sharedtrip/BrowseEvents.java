@@ -57,7 +57,8 @@ public class BrowseEvents extends AppCompatActivity {
         Cursor data = db.getDatanoid();
         ArrayList<String> listdata = new ArrayList<>();
         while (data.moveToNext()){
-            listdata.add(data.getString(1));
+            String temp = "Title: "+data.getString(1)+ " Desc: "+data.getString(2)+" Location: " +data.getString(3);
+            listdata.add(temp);
         }
         ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listdata);
        mListView.setAdapter(adapter);
