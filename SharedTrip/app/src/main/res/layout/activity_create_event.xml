@@ -75,7 +75,7 @@
             android:layout_height="25dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/edittext2"
+            android:layout_below="@+id/start_date"
             android:textColor="@color/grey_question"
             android:text="@string/create_event_what_is_happening"
             android:textSize="16sp" />
@@ -107,8 +107,8 @@
             android:layout_width="175dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/textView31"
-            android:layout_toEndOf="@+id/editText3"
-            android:layout_toRightOf="@+id/editText3"
+            android:layout_toEndOf="@+id/start_date"
+            android:layout_toRightOf="@+id/start_date"
             android:hint="@string/create_event_to_date"
             android:inputType="date"
             android:textSize="16sp" />
