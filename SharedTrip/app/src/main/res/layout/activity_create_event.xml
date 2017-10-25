@@ -7,7 +7,6 @@
     tools:context="remm.sharedtrip.CreateEvent"
     android:background="#fafafa">
 
-    <include layout="@layout/layout"/>
     <TextView
         android:id="@+id/textView"
         android:layout_width="0dp"

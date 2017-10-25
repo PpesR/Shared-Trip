@@ -1,32 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="remm.sharedtrip.BrowseEvents">
+    android:fillViewport="true">
 
-
-    <include layout="@layout/layout"/>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/add_event_fbutton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginRight="@dimen/add_event_fbutton_margin"
-        android:layout_marginBottom="@dimen/add_event_fbutton_marginbottom"
-        android:src="@drawable/ic_add_white_24px"
-        app:backgroundTint="@color/orangered"/>
-
-    <LinearLayout
-        android:id="@+id/screen"
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="490dp"
-        android:orientation="horizontal"></LinearLayout>
-    <!--
-        app:elevation="6dp"
-        app:pressedTranslationZ="12dp"/>-->
+        android:layout_height="wrap_content"
+        android:background="#fafafa"
+        tools:context="remm.sharedtrip.BrowseEvents">
 
-</android.support.design.widget.CoordinatorLayout>
+
+        <include
+            android:id="@+id/include"
+            layout="@layout/layout" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/add_event_fbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="@dimen/add_event_fbutton_marginbottom"
+            android:layout_marginRight="@dimen/add_event_fbutton_margin"
+            android:src="@drawable/ic_add_white_24px"
+            app:backgroundTint="@color/orangered" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <SearchView
+                android:id="@+id/searchView"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true">
+
+            </SearchView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/searchView"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="62dp"
+                android:orientation="vertical">
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="286dp">
+
+                    <LinearLayout
+                        android:id="@+id/screen"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/searchView"
+                android:layout_marginLeft="42dp"
+                android:layout_marginStart="42dp"
+                android:layout_marginTop="23dp"
+                android:background="@android:color/transparent"
+                android:ems="10"
+                android:text="@string/browse_events_happening_near_you"
+                android:textSize="13sp" />
+        </RelativeLayout>
+
+        <!--
+            app:elevation="6dp"
+            app:pressedTranslationZ="12dp"/>-->
+
+    </android.support.design.widget.CoordinatorLayout>
+</ScrollView>
