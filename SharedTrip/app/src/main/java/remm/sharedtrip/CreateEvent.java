@@ -43,14 +43,14 @@ public class CreateEvent extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
 
-        df = new SimpleDateFormat("dd-MM-yyyy");
+    //    df = new SimpleDateFormat("dd-MM-yyyy");
         db = new SharedTripDbHelper(this);
 
         title = (EditText) findViewById(R.id.title);
         destination = (EditText) findViewById(R.id.destination);
         description = (EditText) findViewById(R.id.description);
-        start_date = (EditText) findViewById(R.id.start_date);
-        end_date = (EditText) findViewById(R.id.end_date);
+     //   start_date = (EditText) findViewById(R.id.start_date);
+      //  end_date = (EditText) findViewById(R.id.end_date);
 
 
         cancel = (Button) findViewById(R.id.button3);
@@ -68,14 +68,14 @@ public class CreateEvent extends AppCompatActivity {
                 String title_text, destination_text, description_text;
                 String start_date_input, end_date_input;
 
-                start_date_input = start_date.getText().toString();
-                end_date_input = end_date.getText().toString();
+                //start_date_input = start_date.getText().toString();
+                //end_date_input = end_date.getText().toString();
 
                 title_text = title.getText().toString();
                 destination_text = description.getText().toString();
                 description_text = destination.getText().toString();
 
-                db.insertEvent(title_text, destination_text, description_text, start_date_input, end_date_input);
+                db.insertEvent(title_text, destination_text, description_text);
                 finish();
 
             }

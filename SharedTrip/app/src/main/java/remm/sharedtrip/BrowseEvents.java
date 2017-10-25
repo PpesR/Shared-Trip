@@ -71,11 +71,11 @@ public class BrowseEvents extends AppCompatActivity {
          super.onResume();
          ArrayList<String> events = db.getAllEvents();
          populateListView();
-//         for (String event_string: events) {
-//             TextView tx = new TextView(this);
-//             screen.addView(tx);
-//             tx.setText(event_string);
-//         }
+//        for (String event_string: events) {
+//            TextView tx = new TextView(this);
+//            screen.addView(tx);
+//            tx.setText(event_string);
+//        }
      }
 
 }
