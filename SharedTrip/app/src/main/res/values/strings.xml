@@ -34,7 +34,7 @@
     <string name="event_create_when_is_happening_question">When?</string>
 
     <!-- Browse events tab strings -->
-    <string name="browse_events_happening_near_you">NEAR YOU</string>
+    <string name="browse_events_happening_near_you">HAPPENING NEAR YOU</string>
     <string name="todo">TODO</string>
 
 

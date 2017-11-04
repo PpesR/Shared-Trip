@@ -89,7 +89,7 @@ public class BrowseEvents extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.eventResults);
         events = getEventsfromDB();
 
-        gridLayout = new GridLayoutManager(this, events.size());
+        gridLayout = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(gridLayout);
 
         adapter = new EventAdapter(this, events);
