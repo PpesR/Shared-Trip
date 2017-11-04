@@ -13,6 +13,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
+
+import com.facebook.Profile;
+import com.facebook.ProfileTracker;
+import com.facebook.login.widget.LoginButton;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,6 +39,7 @@ public class BrowseEvents extends AppCompatActivity {
     private RecyclerView recyclerView;
     private GridLayoutManager gridLayout;
     private EventAdapter adapter;
+    private ProfileTracker profileTracker;
 
     private BottomNavigationView bottomNavigationView;
 
@@ -95,6 +101,10 @@ public class BrowseEvents extends AppCompatActivity {
         adapter = new EventAdapter(this, events);
         recyclerView.setAdapter(adapter);
 
+        TextView t = findViewById(R.id.user_header_name);
+        t.append("  "+getIntent().getStringExtra("name"));
+        t.setCompoundDrawablesWithIntrinsicBounds(R.drawable.com_facebook_button_icon_blue, 0, 0, 0);
+
         /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
@@ -104,6 +114,9 @@ public class BrowseEvents extends AppCompatActivity {
             }
         });*/
 
+        LoginButton loginButton = findViewById(R.id.header_logoff_button);
+        loginButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.add_event_fbutton);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,9 +125,19 @@ public class BrowseEvents extends AppCompatActivity {
                 BrowseEvents.this.startActivity(myIntent);
             }
         });
+
+        profileTracker = new ProfileTracker() {
+            @Override
+            protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
+                if (currentProfile==null) redirect();
+            }
+        };
     }
 
-
+    private void redirect() {
+        Intent browseEvents = new Intent(this, MainActivity.class);
+        startActivity(browseEvents);
+    }
 
      private static class EventRetrievalTask<Void> extends AsyncTask<Void, Void, List<EventModel>> {
 
