@@ -1,40 +1,25 @@
 package remm.sharedtrip;
-
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.XmlRes;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.ImageView;
 
-import java.util.ArrayList;
+import java.io.IOException;
 
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import Database.SharedTripDbHelper;
-
 
 public class CreateEvent extends AppCompatActivity {
 
     EditText title, description, destination, start_date, end_date;
     Button create;
-    SimpleDateFormat df;
     Button cancel;
+    Button addPicture;
+    ImageView imageView;
 
     SharedTripDbHelper db;
 
@@ -45,7 +30,7 @@ public class CreateEvent extends AppCompatActivity {
 
     //    df = new SimpleDateFormat("dd-MM-yyyy");
         db = new SharedTripDbHelper(this);
-
+        imageView = (ImageView) findViewById(R.id.add_picture_preview);
         title = (EditText) findViewById(R.id.title);
         destination = (EditText) findViewById(R.id.destination);
         description = (EditText) findViewById(R.id.description);
@@ -61,6 +46,20 @@ public class CreateEvent extends AppCompatActivity {
 
             }
         });
+
+        addPicture = (Button) findViewById(R.id.add_picture_button);
+        addPicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(
+                        Intent.createChooser(intent, "Choose Picture"),
+                        1);
+            }
+        });
+
         create = (Button) findViewById(R.id.button4);
         create.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -81,6 +80,27 @@ public class CreateEvent extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if(resultCode==RESULT_CANCELED)
+        {
+            // action cancelled
+        }
+        if(resultCode==RESULT_OK)
+        {
+            Uri selectedimg = data.getData();
+            try {
+                imageView.setImageBitmap(
+                        MediaStore.Images.Media.getBitmap(
+                                this.getContentResolver(),
+                                selectedimg));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 
