@@ -6,24 +6,24 @@
         android:id="@+id/bottombaritem_events"
         android:icon="@drawable/ic_lens_black_24px"
         android:title="Events"
-        app:showAsAction="withText"/>
+        app:showAsAction="withText|ifRoom"/>
 
     <item
         android:id="@+id/bottombaritem_friends"
         android:icon="@drawable/ic_lens_black_24px"
         android:title="Friends"
-        app:showAsAction="withText"/>
+        app:showAsAction="withText|ifRoom"/>
 
-    <!--<item-->
-        <!--android:id="@+id/bottombaritem_stats"-->
-        <!--android:icon="@drawable/ic_lens_black_24px"-->
-        <!--android:title="Stats"-->
-        <!--app:showAsAction="withText"/>-->
+    <item
+        android:id="@+id/bottombaritem_stats"
+        android:icon="@drawable/ic_lens_black_24px"
+        android:title="Stats"
+        app:showAsAction="withText|ifRoom"/>
 
     <item
         android:id="@+id/bottombaritem_profile"
         android:icon="@drawable/ic_lens_black_24px"
-        android:title="You"
-        app:showAsAction="withText"/>
+        app:showAsAction="withText|ifRoom"
+        android:title="" />
 
 </menu>

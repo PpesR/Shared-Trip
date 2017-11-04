@@ -86,6 +86,7 @@ public class MainActivity extends FragmentActivity {
         Profile currentProfile = Profile.getCurrentProfile();   // The FB profile data of logged in user
 
         browseEvents.putExtra("name",currentProfile .getName()); // The data that we want to send to the next view
+        browseEvents.putExtra("first_name",currentProfile .getFirstName());
         // Add more data if needed, e.g:
         // browseEvents.putExtra("imageUrl", currentProfile.getProfilePictureUri(50,50).toString); // 50,50 are image dimensions
 

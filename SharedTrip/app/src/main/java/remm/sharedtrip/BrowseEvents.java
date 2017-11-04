@@ -1,5 +1,6 @@
 package remm.sharedtrip;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -56,6 +57,7 @@ public class BrowseEvents extends AppCompatActivity {
         return null;
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,8 +71,12 @@ public class BrowseEvents extends AppCompatActivity {
 
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
 
-//        BottomNavigationViewHelper
-//                .disableShiftMode(bottomNavigationView);
+        BottomNavigationViewHelper
+                .disableShiftMode(bottomNavigationView);
+
+        MenuItem profileItem = bottomNavigationView.getMenu()
+                        .findItem(R.id.bottombaritem_profile);
+        profileItem.setTitle(getIntent().getStringExtra("first_name"));
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -83,11 +89,14 @@ public class BrowseEvents extends AppCompatActivity {
                             case R.id.bottombaritem_friends:
                                 // TODO
                                 return true;
+                            case R.id.bottombaritem_stats:
+                                // TODO
+                                return true;
                             case R.id.bottombaritem_profile:
                                 // TODO
                                 return true;
                         }
-                        return false;
+                        return true;
                     }
                 });
 
