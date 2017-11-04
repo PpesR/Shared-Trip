@@ -35,6 +35,7 @@
 
     <!-- Browse events tab strings -->
     <string name="browse_events_happening_near_you">HAPPENING NEAR YOU</string>
+    <string name="todo">TODO</string>
 
 
 </resources>

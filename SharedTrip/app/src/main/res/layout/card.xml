@@ -9,7 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:elevation="4dp"
         card_view:cardUseCompatPadding="true"
         card_view:cardElevation="5dp"
         card_view:cardCornerRadius="1dp"
@@ -25,7 +24,9 @@
                 android:layout_height="200dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
-                android:scaleType="centerCrop"/>
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/todo"
+                android:focusable="true" />
 
             <TextView
                 android:id="@+id/name"
