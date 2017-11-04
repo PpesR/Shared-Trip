@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/white_text"
+    android:elevation="3dp"
     android:orientation="horizontal"
     android:padding="10dp"
-    android:weightSum="2"
-    android:elevation="3dp">
+    android:weightSum="2">
+
     <TextView
         android:id="@+id/user_header_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"/>
+        android:layout_weight="1" />
+
     <com.facebook.login.widget.LoginButton
         android:id="@+id/header_logoff_button"
+        style="@style/FacebookLoginButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"
-        android:layout_weight="1"
-        style="@style/FacebookLoginButton"/>
+        android:layout_weight="1" />
 </LinearLayout>
