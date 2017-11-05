@@ -26,20 +26,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<<<<<<< HEAD
+
         <!--<activity-->
             <!--android:name=".SignInActivity"-->
             <!--android:label="@string/title_activity_login" />-->
         <activity android:name=".BrowseEvents"/>
         <activity android:name=".CreateEvent"/>
         <activity android:name=".ProfileView"/>
-=======
+
         <!-- <activity -->
         <!-- android:name=".SignInActivity" -->
         <!-- android:label="@string/title_activity_login" /> -->
-        <activity android:name=".BrowseEvents" />
-        <activity android:name=".CreateEvent" />
->>>>>>> 6c640c9caec5bba1d43d7729e7f113f34f4b99bb
 
         <!-- FB activities -->
         <activity
