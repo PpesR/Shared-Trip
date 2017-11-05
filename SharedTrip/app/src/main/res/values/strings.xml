@@ -36,8 +36,13 @@
     <string name="create_event_what_is_happening">What?</string>
     <string name="create_event_where_is_happening_question">Where?</string>
     <string name="event_create_when_is_happening_question">When?</string>
+    <string name="event_create_total_cost">Total cost</string>
+    <string name="event_create_cost_hint">Trip cost (euro)</string>
+    <string name="event_create_spots">Free spots</string>
+    <string name="event_create_spots_hint">Spots left</string>
     <string name="pick_date1">From</string>
     <string name="pick_date2">To</string>
+    <string name="profile_view_title"> Profile </string>
 
     <!-- Browse events tab strings -->
     <string name="browse_events_happening_near_you">NEAR YOU</string>
