@@ -125,6 +125,7 @@ public class CreateEvent extends AppCompatActivity {
                         MediaStore.Images.Media.getBitmap(
                                 this.getContentResolver(),
                                 selectedimg));
+                model.setImageLink(selectedimg.toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -167,7 +168,8 @@ public class CreateEvent extends AppCompatActivity {
                     .add("spots", spots.getText().toString())
                     .add("start_date", model.getStartDate())
                     .add("end_date", model.getEndDate())
-                    .add("private", private_event ? "1" : "0");
+                    .add("private", private_event ? "1" : "0")
+                    .add("picture", model.getImageLink());
 
             final Request request = new Request.Builder()
                     .url("http://146.185.135.219/requestrouter.php?hdl=event")
@@ -186,7 +188,6 @@ public class CreateEvent extends AppCompatActivity {
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
                         JSONArray array = new JSONArray(response.body().string());
-                        self.tempDisplay(array.get(0).toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
