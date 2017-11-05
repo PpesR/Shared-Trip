@@ -6,8 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.IOException;
 
@@ -20,12 +22,16 @@ public class CreateEvent extends AppCompatActivity {
     Button cancel;
     Button addPicture;
     ImageView imageView;
+    DatePicker datePickerbegin;
+    DatePicker datePickerend;
+    EventModel model;
 
     SharedTripDbHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        model = new EventModel();
         setContentView(R.layout.activity_create_event);
 
     //    df = new SimpleDateFormat("dd-MM-yyyy");
@@ -100,6 +106,27 @@ public class CreateEvent extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void showStartDatePickerDialog(View v) {
+        DatePickerFragment newFragment = new DatePickerFragment();
+        newFragment.setModel(model,'s', this);
+        newFragment.show(getFragmentManager(), "datePicker");
+    }
+
+    public void showEndDatePickerDialog(View v) {
+        DatePickerFragment newFragment = new DatePickerFragment();
+        newFragment.setModel(model,'e', this);
+        newFragment.show(getFragmentManager(), "datePicker");
+    }
+
+    public void onModelChanged () {
+        if (model.getStartDate()!=null) {
+            ((Button) findViewById(R.id.start_date)).setHint(model.getStartDate());
+        }
+        if (model.getEndDate()!=null) {
+            ((Button) findViewById(R.id.end_date)).setHint(model.getEndDate());
         }
     }
 

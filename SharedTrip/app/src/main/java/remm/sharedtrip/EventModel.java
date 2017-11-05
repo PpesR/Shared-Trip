@@ -8,6 +8,31 @@ public class EventModel {
     private String imageLink;
     private String loc;
 
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    private String startDate;
+    private String endDate;
+
+    public EventModel() {
+        super();
+    }
+
     public EventModel(String name, String imageLink, String loc) {
         this.name = name;
         this.imageLink = imageLink;
