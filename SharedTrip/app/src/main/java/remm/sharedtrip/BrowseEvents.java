@@ -87,10 +87,12 @@ public class BrowseEvents extends AppCompatActivity {
                                 // TODO
                                 return true;
                             case R.id.bottombaritem_friends:
-                                // TODO
+                                Intent friendsViewActivity = new Intent(BrowseEvents.this, FriendsViewActivity.class);
+                                startActivity(friendsViewActivity);
                                 return true;
                             case R.id.bottombaritem_stats:
-                                // TODO
+                                Intent statsViewActivity = new Intent(BrowseEvents.this, StatsViewActivity.class);
+                                startActivity(statsViewActivity);
                                 return true;
                             case R.id.bottombaritem_profile:
                                 // TODO
