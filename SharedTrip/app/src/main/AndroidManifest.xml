@@ -32,6 +32,7 @@
             <!--android:label="@string/title_activity_login" />-->
         <activity android:name=".BrowseEvents"/>
         <activity android:name=".CreateEvent"/>
+        <activity android:name=".ProfileView"/>
 
         <!-- FB activities -->
         <activity android:name="com.facebook.FacebookActivity"

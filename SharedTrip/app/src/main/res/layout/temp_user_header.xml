@@ -12,7 +12,8 @@
         android:id="@+id/user_header_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:clickable="true"/>
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/header_logoff_button"

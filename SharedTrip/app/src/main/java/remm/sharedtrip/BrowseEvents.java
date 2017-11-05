@@ -41,6 +41,8 @@ public class BrowseEvents extends AppCompatActivity {
     private GridLayoutManager gridLayout;
     private EventAdapter adapter;
     private ProfileTracker profileTracker;
+    private TextView t;
+    private Intent ownIntent;
 
     private BottomNavigationView bottomNavigationView;
 
@@ -61,6 +63,7 @@ public class BrowseEvents extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ownIntent = getIntent();
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(
@@ -76,7 +79,7 @@ public class BrowseEvents extends AppCompatActivity {
 
         MenuItem profileItem = bottomNavigationView.getMenu()
                         .findItem(R.id.bottombaritem_profile);
-        profileItem.setTitle(getIntent().getStringExtra("first_name"));
+        profileItem.setTitle(ownIntent.getStringExtra("first_name"));
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -110,9 +113,18 @@ public class BrowseEvents extends AppCompatActivity {
         adapter = new EventAdapter(this, events);
         recyclerView.setAdapter(adapter);
 
-        TextView t = findViewById(R.id.user_header_name);
-        t.append("  "+getIntent().getStringExtra("name"));
+        t = (TextView) findViewById(R.id.user_header_name);
+        t.append("  "+ownIntent.getStringExtra("name"));
         t.setCompoundDrawablesWithIntrinsicBounds(R.drawable.com_facebook_button_icon_blue, 0, 0, 0);
+        t.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent profileIntent = new Intent(BrowseEvents.this, ProfileView.class);
+                profileIntent.putExtra("gender",ownIntent.getStringExtra("gender"));
+                BrowseEvents.this.startActivity(profileIntent);
+            }
+        });
+
 
         /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 

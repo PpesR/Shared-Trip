@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,16 +18,26 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
 
 public class MainActivity extends FragmentActivity {
 
     CallbackManager callbackManager;
     ProfileTracker profileTracker;
     private MainActivity self;
+    private String email;
+    private String birthday;
+    private String gender;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +55,42 @@ public class MainActivity extends FragmentActivity {
 
         callbackManager = CallbackManager.Factory.create();
         LoginButton loginButton = findViewById(R.id.fb_login_button);
+        loginButton.setReadPermissions(Arrays.asList(
+                "public_profile", "email", "user_birthday", "user_friends"));
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             /*
              * Mark: some default shit. DO NOT REMOVE
              */
             @Override
-            public void onSuccess(LoginResult loginResult) {}
+            public void onSuccess(LoginResult loginResult) {
+                GraphRequest request = GraphRequest.newMeRequest(
+                        loginResult.getAccessToken(),
+                        new GraphRequest.GraphJSONObjectCallback() {
+                            @Override
+                            public void onCompleted(JSONObject object, GraphResponse response) {
+                                Log.v("LoginActivity", response.toString());
+
+                                // Application code
+                                try {
+                                    email = object.getString("email");
+                                    birthday = object.getString("birthday");
+                                    gender = object.getString("gender");
+
+                                    /*
+                                     * Mark: Redirect user who's been already logged in to the event browser.
+                                     * Otherwise they'd just see a logout button on the current page.
+                                     */
+                                    if (AccessToken.getCurrentAccessToken() != null) redirect();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "id,name,email,gender,birthday");
+                request.setParameters(parameters);
+                request.executeAsync();
+            }
             @Override
             public void onCancel() {}
             @Override
@@ -68,11 +109,8 @@ public class MainActivity extends FragmentActivity {
             }
         };
 
-        /*
-         * Mark: Redirect user who's been already logged in to the event browser.
-         * Otherwise they'd just see a logout button on the current page.
-         */
-        if (AccessToken.getCurrentAccessToken() != null) redirect();
+
+
 
     }
 
@@ -87,6 +125,7 @@ public class MainActivity extends FragmentActivity {
 
         browseEvents.putExtra("name",currentProfile .getName()); // The data that we want to send to the next view
         browseEvents.putExtra("first_name",currentProfile .getFirstName());
+        browseEvents.putExtra("gender", gender);
         // Add more data if needed, e.g:
         // browseEvents.putExtra("imageUrl", currentProfile.getProfilePictureUri(50,50).toString); // 50,50 are image dimensions
 
