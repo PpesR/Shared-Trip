@@ -1,8 +1,6 @@
 package remm.sharedtrip;
 
 import android.annotation.SuppressLint;
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -23,6 +21,7 @@ import android.widget.TextView;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.widget.LoginButton;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,6 +46,8 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     private ProfileTracker profileTracker;
     private TextView t;
     private Intent ownIntent;
+    private MainActivity.FbUserModel fbUserModel;
+    private Gson gson = new Gson();
     SearchView searchView;
 
     private BottomNavigationView bottomNavigationView;
@@ -71,6 +72,9 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
 
 
         ownIntent = getIntent();
+        fbUserModel = gson.fromJson(
+                ownIntent.getStringExtra("user")
+                , MainActivity.FbUserModel.class);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(
@@ -86,7 +90,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
 
         MenuItem profileItem = bottomNavigationView.getMenu()
                         .findItem(R.id.bottombaritem_profile);
-        profileItem.setTitle(ownIntent.getStringExtra("first_name"));
+        profileItem.setTitle(fbUserModel.firstName);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -126,17 +130,16 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
 
 
         t = (TextView) findViewById(R.id.user_header_name);
-        t.append("  "+ownIntent.getStringExtra("name"));
+        t.append("  "+fbUserModel.name);
         t.setCompoundDrawablesWithIntrinsicBounds(R.drawable.com_facebook_button_icon_blue, 0, 0, 0);
         t.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent profileIntent = new Intent(BrowseEvents.this, ProfileView.class);
-                profileIntent.putExtra("gender",ownIntent.getStringExtra("gender"));
+                profileIntent.putExtra("user", ownIntent.getStringExtra("user"));
                 BrowseEvents.this.startActivity(profileIntent);
             }
         });
-
 
         /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
