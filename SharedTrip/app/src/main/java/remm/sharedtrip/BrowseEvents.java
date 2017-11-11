@@ -265,4 +265,10 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
              return events;
          }
      }
+
+    @Override
+    public void onBackPressed() {
+        this.moveTaskToBack(true);
+        //do not redirect
+    }
 }
