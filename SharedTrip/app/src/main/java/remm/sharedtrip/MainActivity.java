@@ -1,8 +1,10 @@
 package remm.sharedtrip;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.StrictMode;
@@ -11,7 +13,9 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
@@ -30,6 +34,8 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
+import static android.view.View.VISIBLE;
+
 public class MainActivity extends FragmentActivity {
 
     CallbackManager callbackManager;
@@ -39,6 +45,7 @@ public class MainActivity extends FragmentActivity {
     private String birthday;
     private String gender;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,10 +61,23 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
 
         callbackManager = CallbackManager.Factory.create();
-        LoginButton loginButton = findViewById(R.id.fb_login_button);
+        final LoginButton loginButton = findViewById(R.id.fb_login_button);
         loginButton.setReadPermissions(Arrays.asList(
                 "public_profile", "email", "user_birthday", "user_friends"));
+
+        /* Progress bar */
+        final ProgressBar progressBar = findViewById(R.id.indeterminateBar);
+        progressBar.setVisibility(View.GONE);
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loginButton.setVisibility(View.GONE);
+                progressBar.setVisibility(VISIBLE);
+            }
+        });
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+
             /*
              * Mark: some default shit. DO NOT REMOVE
              */
@@ -79,8 +99,8 @@ public class MainActivity extends FragmentActivity {
                                     /*
                                      * Mark: Redirect user who's been already logged in to the event browser.
                                      * Otherwise they'd just see a logout button on the current page.
-                                     */
-                                    if (AccessToken.getCurrentAccessToken() != null) redirect();
+
+                                    if (AccessToken.getCurrentAccessToken() != null) redirect();*/
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -92,9 +112,16 @@ public class MainActivity extends FragmentActivity {
                 request.executeAsync();
             }
             @Override
-            public void onCancel() {}
+            public void onCancel() {
+                loginButton.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+            }
+
             @Override
-            public void onError(FacebookException e) {}
+            public void onError(FacebookException e) {
+                loginButton.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+            }
         });
 
         profileTracker = new ProfileTracker() {
@@ -109,9 +136,8 @@ public class MainActivity extends FragmentActivity {
             }
         };
 
-
-
-
+        if (AccessToken.getCurrentAccessToken() != null)
+            redirect();
     }
 
     /*
