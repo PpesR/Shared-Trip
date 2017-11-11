@@ -1,6 +1,8 @@
 package remm.sharedtrip;
 
 
+import java.io.Serializable;
+
 public class EventModel {
 
     private int id;

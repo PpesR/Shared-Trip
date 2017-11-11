@@ -1,8 +1,7 @@
 package remm.sharedtrip;
 
 import android.annotation.SuppressLint;
-import android.app.SearchManager;
-import android.content.Context;
+
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -12,11 +11,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.SearchView;
 import android.widget.TextView;
 
@@ -31,6 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -42,12 +42,14 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
 
     private List<EventModel> events;
     private RecyclerView recyclerView;
+    private RecyclerView searchRecyclerView;
+    private GridLayoutManager searchGridLayout;
     private GridLayoutManager gridLayout;
     private EventAdapter adapter;
     private ProfileTracker profileTracker;
     private TextView t;
     private Intent ownIntent;
-    SearchView searchView;
+    private SearchView searchView;
 
     private BottomNavigationView bottomNavigationView;
 
@@ -64,6 +66,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
         return null;
     }
 
+
     @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +79,21 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
         getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        setWindow();
 
+
+
+
+
+        profileTracker = new ProfileTracker() {
+            @Override
+            protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
+                if (currentProfile==null) redirect();
+            }
+        };
+    }
+
+    private void setWindow(){
         setContentView(R.layout.activity_browse_events);
 
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
@@ -85,7 +102,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
                 .disableShiftMode(bottomNavigationView);
 
         MenuItem profileItem = bottomNavigationView.getMenu()
-                        .findItem(R.id.bottombaritem_profile);
+                .findItem(R.id.bottombaritem_profile);
         profileItem.setTitle(ownIntent.getStringExtra("first_name"));
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
@@ -164,15 +181,6 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
         searchView = (SearchView) findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(this);
 
-
-
-
-        profileTracker = new ProfileTracker() {
-            @Override
-            protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
-                if (currentProfile==null) redirect();
-            }
-        };
     }
 
 
@@ -182,23 +190,44 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
         startActivity(browseEvents);
     }
 
+
+    //method not used (searchview), but required by default
     @Override
     public boolean onQueryTextSubmit(String s) {
-
-        return true;
+        search(s);
+        return false;
     }
     //when called upon filters events by name
     @Override
     public boolean onQueryTextChange(String s) {
-        List<EventModel> filteredEvents = new ArrayList<>();
-        for(EventModel event : events){
-            if(event.getname().toLowerCase().contains(s.toLowerCase())){
-                filteredEvents.add(event);
-            }
-        }
-        adapter = new EventAdapter(this, filteredEvents);
-        recyclerView.setAdapter(adapter);
+
         return false;
+    }
+
+    private void search(String filter){
+        setContentView(R.layout.search_menu);
+        searchRecyclerView = (RecyclerView) findViewById(R.id.searchResults);
+        searchView = (SearchView) findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(this);
+
+        Button exit = (Button) findViewById(R.id.exitbutton);
+        exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setWindow();
+            }
+        });
+
+            List<EventModel> filteredEvents = new ArrayList<>();
+            for (EventModel event : events) {
+                if (event.getname().toLowerCase().contains(filter.toLowerCase())) {
+                    filteredEvents.add(event);
+                }
+            }
+        adapter = new EventAdapter(this, filteredEvents);
+        searchGridLayout = new GridLayoutManager(this, filteredEvents.size());
+        searchRecyclerView.setLayoutManager(searchGridLayout);
+        searchRecyclerView.setAdapter(adapter);
     }
 
 

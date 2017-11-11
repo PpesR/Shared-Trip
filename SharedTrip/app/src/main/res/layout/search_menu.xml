@@ -60,7 +60,7 @@
                     android:orientation="horizontal">
 
                     <android.support.v7.widget.RecyclerView
-                        android:id="@+id/eventResults"
+                        android:id="@+id/searchResults"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
@@ -72,56 +72,22 @@
                         card_view:cardUseCompatPadding="true" />
 
                 </LinearLayout>
+
+
+
             </HorizontalScrollView>
 
-            <TextView
-                android:id="@+id/notNearYou"
+            <Button
+                android:id="@+id/exitbutton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/horizontalScrollViewNearYou"
-                android:layout_marginEnd="182dp"
-                android:layout_marginRight="182dp"
-                android:layout_marginTop="6dp"
-                android:ems="10"
-                android:paddingLeft="6dp"
-                android:paddingRight="6dp"
-                android:paddingStart="6dp"
-                android:text="@string/todo" />
-
-            <HorizontalScrollView
-                android:id="@+id/horizontalScrollViewOther"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_below="@+id/notNearYou"
-                android:layout_marginEnd="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="6dp">
-
-            </HorizontalScrollView>
+                android:layout_alignEnd="@+id/horizontalScrollViewNearYou"
+                android:layout_alignRight="@+id/horizontalScrollViewNearYou"
+                android:layout_below="@+id/searchView"
+                android:text="exit" />
         </RelativeLayout>
     </ScrollView>
 
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/result_content"
-        android:layout_gravity="bottom"
-        app:itemIconTint="@drawable/selector_bottombar_item"
-        app:itemTextColor="@drawable/selector_bottombar_item"
-        app:menu="@menu/bottombar_menu" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/add_event_fbutton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="@dimen/add_event_fbutton_marginbottom"
-        android:layout_marginEnd="@dimen/add_event_fbutton_margin"
-        android:layout_marginRight="@dimen/add_event_fbutton_margin"
-        android:src="@drawable/ic_add_white_24px"
-        app:backgroundTint="@color/orangered"
-        app:layout_anchor="@id/result_content"
-        app:layout_anchorGravity="bottom|end" />
 </android.support.design.widget.CoordinatorLayout>
 

@@ -30,7 +30,11 @@
         <!--<activity-->
             <!--android:name=".SignInActivity"-->
             <!--android:label="@string/title_activity_login" />-->
-        <activity android:name=".BrowseEvents"/>
+        <activity
+            android:name=".BrowseEvents">
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
         <activity android:name=".CreateEvent"/>
         <activity android:name=".ProfileView"/>
         <activity android:name=".FriendsViewActivity" />
