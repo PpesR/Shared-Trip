@@ -43,6 +43,15 @@
     <string name="pick_date1">From</string>
     <string name="pick_date2">To</string>
     <string name="profile_view_title"> Profile </string>
+    <string name="profile_hi"> Hi,  </string>
+    <string name="prof_desc"> Profile information: </string>
+    <string name="prof_name"> Full name: </string>
+    <string name="prof_gender"> Gender: </string>
+    <string name="prof_bd"> Birthday: </string>
+    <string name="prof_description"> Description: </string>
+    <string name="enter_info"> Enter a description about yourself! </string>
+    <string name="prof_edit"> Edit </string>
+    <string name="prof_save"> Save </string>
 
     <!-- Browse events tab strings -->
     <string name="browse_events_happening_near_you">NEAR YOU</string>

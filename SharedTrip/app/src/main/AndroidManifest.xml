@@ -14,12 +14,14 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen">
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
+        >
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
         <activity android:name=".MainActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,7 +38,8 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity android:name=".CreateEvent"/>
-        <activity android:name=".ProfileView"/>
+        <activity android:name=".ProfileView"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
         <activity android:name=".FriendsViewActivity" />
         <activity android:name=".StatsViewActivity" />
 

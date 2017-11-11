@@ -15,7 +15,7 @@
         android:gravity="top|center"
         android:text="@string/create_event_title"
         android:textColor="@color/white_text"
-        android:textSize="20sp" />
+        android:textSize="25sp" />
 
     <ScrollView
         android:paddingTop="40dp"

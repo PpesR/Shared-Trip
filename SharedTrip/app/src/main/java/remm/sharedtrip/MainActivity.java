@@ -131,6 +131,8 @@ public class MainActivity extends FragmentActivity {
         };
 
         if (AccessToken.getCurrentAccessToken() != null) {
+            loginButton.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
             getUserInfoFromDb();
         }
     }

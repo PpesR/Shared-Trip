@@ -49,7 +49,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     private ProfileTracker profileTracker;
     private TextView t;
     private Intent ownIntent;
-    private MainActivity.FbUserModel fbUserModel;
+    static MainActivity.FbUserModel fbUserModel;
     private Gson gson = new Gson();
     private SearchView searchView;
     private BottomNavigationView bottomNavigationView;
@@ -263,6 +263,12 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
              return events;
          }
      }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
 
     @Override
     public void onBackPressed() {
