@@ -27,7 +27,11 @@
                 android:id="@+id/searchView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="61dp" />
+                android:layout_marginTop="61dp"
+                android:queryHint="joujou"
+
+                />
+
 
             <TextView
                 android:id="@+id/nearYouText"

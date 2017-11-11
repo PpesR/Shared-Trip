@@ -1,6 +1,8 @@
 package remm.sharedtrip;
 
 import android.annotation.SuppressLint;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -10,10 +12,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.facebook.Profile;
@@ -34,7 +38,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class BrowseEvents extends AppCompatActivity {
+public class BrowseEvents extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private List<EventModel> events;
     private RecyclerView recyclerView;
@@ -43,6 +47,7 @@ public class BrowseEvents extends AppCompatActivity {
     private ProfileTracker profileTracker;
     private TextView t;
     private Intent ownIntent;
+    SearchView searchView;
 
     private BottomNavigationView bottomNavigationView;
 
@@ -63,6 +68,8 @@ public class BrowseEvents extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         ownIntent = getIntent();
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -115,6 +122,9 @@ public class BrowseEvents extends AppCompatActivity {
         adapter = new EventAdapter(this, events);
         recyclerView.setAdapter(adapter);
 
+
+
+
         t = (TextView) findViewById(R.id.user_header_name);
         t.append("  "+ownIntent.getStringExtra("name"));
         t.setCompoundDrawablesWithIntrinsicBounds(R.drawable.com_facebook_button_icon_blue, 0, 0, 0);
@@ -149,6 +159,14 @@ public class BrowseEvents extends AppCompatActivity {
             }
         });
 
+
+        //registers when text is typed on search bar and calls onQuery... methods
+        searchView = (SearchView) findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(this);
+
+
+
+
         profileTracker = new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
@@ -157,12 +175,34 @@ public class BrowseEvents extends AppCompatActivity {
         };
     }
 
+
+
     private void redirect() {
         Intent browseEvents = new Intent(this, MainActivity.class);
         startActivity(browseEvents);
     }
 
-     private static class EventRetrievalTask<Void> extends AsyncTask<Void, Void, List<EventModel>> {
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+
+        return true;
+    }
+    //when called upon filters events by name
+    @Override
+    public boolean onQueryTextChange(String s) {
+        List<EventModel> filteredEvents = new ArrayList<>();
+        for(EventModel event : events){
+            if(event.getname().toLowerCase().contains(s.toLowerCase())){
+                filteredEvents.add(event);
+            }
+        }
+        adapter = new EventAdapter(this, filteredEvents);
+        recyclerView.setAdapter(adapter);
+        return false;
+    }
+
+
+    private static class EventRetrievalTask<Void> extends AsyncTask<Void, Void, List<EventModel>> {
 
          @SafeVarargs
          @Override

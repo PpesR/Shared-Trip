@@ -47,6 +47,7 @@
     <!-- Browse events tab strings -->
     <string name="browse_events_happening_near_you">NEAR YOU</string>
     <string name="todo">TODO</string>
+    <string name="search_title">search_title</string>
 
 
 </resources>
