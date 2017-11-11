@@ -22,7 +22,7 @@
 
     <!-- Create event tab strings -->
     <string name="create_event_children">Children?</string>
-    <string name="create_event_adding_picture">ADD A PICTURE</string>
+    <string name="create_event_adding_picture">ADD A PICTURE (BETA)</string>
     <string name="create_event_describe_your_trip">Describe your trip...</string>
     <string name="create_event_from_date">From</string>
     <string name="create_event_to_date">To</string>
