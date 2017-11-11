@@ -33,10 +33,8 @@
         <activity android:name=".BrowseEvents"/>
         <activity android:name=".CreateEvent"/>
         <activity android:name=".ProfileView"/>
-
-        <!-- <activity -->
-        <!-- android:name=".SignInActivity" -->
-        <!-- android:label="@string/title_activity_login" /> -->
+        <activity android:name=".FriendsViewActivity" />
+        <activity android:name=".StatsViewActivity" />
 
         <!-- FB activities -->
         <activity
@@ -55,8 +53,7 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".FriendsViewActivity" />
-        <activity android:name=".StatsViewActivity"></activity>
+
     </application>
 
 </manifest>
