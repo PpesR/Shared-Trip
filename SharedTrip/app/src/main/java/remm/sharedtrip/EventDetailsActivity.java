@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.FragmentActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -24,7 +25,7 @@ import utils.EventDetailsUtils;
  * Created by Mark on 12.11.2017.
  */
 
-public class EventDetailsActivity extends Activity {
+public class EventDetailsActivity extends FragmentActivity {
 
     private ImageView eventPic;
     private TextView eventName;

@@ -35,4 +35,7 @@ public class AdminEventModel extends EventModel {
         this.startDate = startDate;
     }
 
+    public void decreaseUsersPending() {
+        usersPending--;
+    }
 }
