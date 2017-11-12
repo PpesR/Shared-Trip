@@ -1,4 +1,4 @@
-package remm.sharedtrip;
+package utils;
 import android.annotation.SuppressLint;
 import android.support.design.internal.BottomNavigationItemView;
 import android.support.design.internal.BottomNavigationMenuView;

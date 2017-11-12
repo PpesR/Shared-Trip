@@ -61,6 +61,10 @@
 
     <!-- Stats view string -->
     <string name="coming_soon">COMING SOON</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="approve">APPROVE</string>
+    <string name="deny">DENY</string>
 
 
 </resources>

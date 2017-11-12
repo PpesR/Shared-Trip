@@ -1,4 +1,4 @@
-package remm.sharedtrip;
+package utils;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -12,6 +12,7 @@ import java.util.Calendar;
 
 import models.EventModel;
 import models.UserEventModel;
+import remm.sharedtrip.CreateEvent;
 
 public class DatePickerFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {

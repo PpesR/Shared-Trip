@@ -1,4 +1,4 @@
-package remm.sharedtrip;
+package utils;
 
 import android.os.AsyncTask;
 
@@ -17,6 +17,7 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import remm.sharedtrip.AdminEventActivity;
 
 /**
  * Created by Mark on 12.11.2017.
@@ -24,7 +25,7 @@ import okhttp3.Response;
 
 public class AdminEventUtils {
 
-    static class AdminEventRetrievalTask<Void> extends AsyncTask<Void, Void, Void>{
+    public static class AdminEventRetrievalTask<Void> extends AsyncTask<Void, Void, Void>{
 
         private int adminId;
 
@@ -47,7 +48,7 @@ public class AdminEventUtils {
         }
     }
 
-    static class AndminEventRetrievalCallback implements Callback {
+    public static class AndminEventRetrievalCallback implements Callback {
 
         private AdminEventActivity aea;
 
