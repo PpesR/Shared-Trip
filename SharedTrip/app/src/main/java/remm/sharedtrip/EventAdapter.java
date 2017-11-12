@@ -45,7 +45,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.eventModel = events.get(position);
-        holder.name.setText(events.get(position).getname());
+        holder.name.setText(events.get(position).getName());
         holder.loc.setText(events.get(position).getLoc());
         Glide
             .with(context)

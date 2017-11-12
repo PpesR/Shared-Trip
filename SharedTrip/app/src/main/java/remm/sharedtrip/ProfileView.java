@@ -92,7 +92,7 @@ public class ProfileView extends AppCompatActivity {
         TextView bd = (TextView) findViewById(R.id.prof_bd);
 
         SimpleDateFormat initial;
-        if (userModel.birthDate!=null) {
+        if (userModel.birthDate!=null && !userModel.birthDate.equals("null")) {
             if (userModel.birthDate.contains("/"))
                 initial = new SimpleDateFormat("MM/dd/yyyy");
             else
@@ -119,8 +119,10 @@ public class ProfileView extends AppCompatActivity {
             bd.setText(bd.getText() + "   " + "hidden");
         desc_field = (EditText) findViewById(R.id.description_info);
 
-        if (userModel.description!=null)
+        if (userModel.description!=null && !userModel.description.equals("null"))
             desc_field.setText(userModel.description);
+        else
+            desc_field.setText("Another amazing traveller");
 
         save = (Button) findViewById(R.id.prof_save);
         edit = (Button) findViewById(R.id.prof_edit);

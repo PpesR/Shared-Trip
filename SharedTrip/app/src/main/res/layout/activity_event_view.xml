@@ -160,7 +160,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/result_content"
         android:layout_gravity="bottom"
-        app:itemIconTint="@drawable/selector_bottombar_item"
-        app:itemTextColor="@drawable/selector_bottombar_item"
+        app:itemIconTint="@drawable/selector_bottombar_item_profile"
+        app:itemTextColor="@drawable/selector_bottombar_item_profile"
         app:menu="@menu/bottombar_menu" />
 </android.support.design.widget.CoordinatorLayout>

@@ -215,7 +215,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
 
             List<EventModel> filteredEvents = new ArrayList<>();
             for (EventModel event : events) {
-                if (event.getname().toLowerCase().contains(filter.toLowerCase())) {
+                if (event.getName().toLowerCase().contains(filter.toLowerCase())) {
                     filteredEvents.add(event);
                 }
             }
@@ -233,7 +233,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
          protected final List<EventModel> doInBackground(Void... voids) {
              OkHttpClient client = new OkHttpClient();
              Request request = new Request.Builder()
-                     .url("http://146.185.135.219/requestrouter.php?hdl=event")
+                     .url("http://146.185.135.219/requestrouter.php?hdl=event&act=wappr&user="+fbUserModel.id)
                      .build();
              List<EventModel> events = new ArrayList<>();
              try {
@@ -255,6 +255,9 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
                      event.setEndDate(object.getString("date_end"));
                      event.setSpots(object.getInt("spots"));
                      event.setCost(object.getInt("total_cost"));
+                     event.setUserApproved(object.getInt("approved")==1);
+                     event.setApprovalPending(object.getInt("pending")==1);
+                     event.setUserBanned(object.getInt("banned")==1);
 
                      events.add(event);
                  }
@@ -272,7 +275,9 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     @Override
     protected void onResume() {
         super.onResume();
-
+        MenuItem myButton = bottomNavigationView.getMenu()
+                .findItem(R.id.bottombaritem_events);
+        myButton.setChecked(true);
     }
 
     @Override
