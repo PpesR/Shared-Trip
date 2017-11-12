@@ -38,7 +38,9 @@ public class FriendsViewActivity extends AppCompatActivity {
                                 startActivity(statsViewActivity);
                                 return true;
                             case R.id.bottombaritem_profile:
-                                // TODO
+                                finish();
+                                Intent adminViewActivity = new Intent(FriendsViewActivity.this, AdminEventActivity.class);
+                                startActivity(adminViewActivity);
                                 return true;
                         }
                         return true;

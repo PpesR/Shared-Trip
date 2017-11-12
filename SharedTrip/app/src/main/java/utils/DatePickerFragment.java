@@ -49,7 +49,7 @@ public class DatePickerFragment extends DialogFragment
         myday = (day < 10 ? "0" : "")+day;
         mymonth = (month < 10 ? "0" :"")+month;
         myyear = year+"";
-        date = String.join("-",myyear,mymonth,myday);
+        date = myyear+"-"+mymonth+"-"+myday;
         if (whichDate=='s') {
             model.setStartDate(date);
             creationView.onModelChanged();

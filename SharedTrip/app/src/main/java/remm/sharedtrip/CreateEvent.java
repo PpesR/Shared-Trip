@@ -103,7 +103,7 @@ public class CreateEvent extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 postEventsToDb();
-                //finish();
+                finish();
             }
         });
 
