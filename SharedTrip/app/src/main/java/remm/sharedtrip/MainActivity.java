@@ -168,7 +168,11 @@ public class MainActivity extends FragmentActivity {
             OkHttpClient client = new OkHttpClient();
 
             java.lang.String formattedBirthDate = "";
-            SimpleDateFormat fromUser = new SimpleDateFormat("MM/dd/yyyy");
+
+            SimpleDateFormat fromUser;
+            if (model.birthDate.contains("/")) fromUser = new SimpleDateFormat("MM/dd/yyyy");
+            else fromUser = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
             SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd");
             try {
                 formattedBirthDate = myFormat.format(fromUser.parse(model.birthDate));
