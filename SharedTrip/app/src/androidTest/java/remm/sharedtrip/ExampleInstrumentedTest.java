@@ -83,8 +83,11 @@ public class ExampleInstrumentedTest {
 
         postEventsToDb();
         events = getEventsfromDB();
-        assertEquals(events.size() - 1, testiarv);
-        assertEquals(events.get(events.size() - 1).getName(), "autoTest");
+        UserEventModel event = events.get(events.size() - 1);
+        assertEquals(event.getName(), "autoTest");
+        assertEquals(event.getDescription(), "automated test");
+        assertEquals(event.getSpots(), 0);
+        assertEquals(event.getCost(), 0);
     }
 
     private List<UserEventModel> getEventsfromDB() {
