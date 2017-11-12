@@ -91,24 +91,32 @@ public class ProfileView extends AppCompatActivity {
         gender.setText(gender.getText()+" "+userModel.gender);
         TextView bd = (TextView) findViewById(R.id.prof_bd);
 
-        SimpleDateFormat initial = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        SimpleDateFormat correctFormat = new SimpleDateFormat("dd/MM/yyyy");
-        Date date = null;
-        Calendar calendarBirthday = Calendar.getInstance();
+        SimpleDateFormat initial;
+        if (userModel.birthDate!=null) {
+            if (userModel.birthDate.contains("/"))
+                initial = new SimpleDateFormat("MM/dd/yyyy");
+            else
+                initial = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            SimpleDateFormat correctFormat = new SimpleDateFormat("dd/MM/yyyy");
+            Date date = null;
+            Calendar calendarBirthday = Calendar.getInstance();
 
-        try {
-            date = initial.parse(userModel.birthDate);
-            calendarBirthday.setTime(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
+            try {
+                date = initial.parse(userModel.birthDate);
+                calendarBirthday.setTime(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            Calendar calendarNow = Calendar.getInstance();
+            int yearNow = calendarNow.get(Calendar.YEAR);
+            int yearBirthday = calendarBirthday.get(Calendar.YEAR);
+            int years = yearNow - yearBirthday;
+
+            bd.setText(bd.getText() + "   " + correctFormat.format(date) + "  (" + years + ")");
         }
-
-        Calendar calendarNow = Calendar.getInstance();
-        int yearNow = calendarNow.get(Calendar.YEAR);
-        int yearBirthday = calendarBirthday.get(Calendar.YEAR);
-        int years = yearNow - yearBirthday;
-
-        bd.setText(bd.getText()+"   "+correctFormat.format(date)+"  ("+years+")");
+        else
+            bd.setText(bd.getText() + "   " + "hidden");
         desc_field = (EditText) findViewById(R.id.description_info);
 
         if (userModel.description!=null)

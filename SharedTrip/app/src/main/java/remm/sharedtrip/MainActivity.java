@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 import okhttp3.Call;
@@ -48,7 +49,7 @@ public class MainActivity extends FragmentActivity {
     ProfileTracker profileTracker;
     private static MainActivity self;
     private static FbUserModel model;
-    private boolean userSent;
+    private Intent browseEvents;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -77,7 +78,7 @@ public class MainActivity extends FragmentActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                loginButton.setVisibility(View.GONE);
+//                loginButton.setVisibility(View.GONE);
                 progressBar.setVisibility(VISIBLE);
             }
         });
@@ -95,7 +96,8 @@ public class MainActivity extends FragmentActivity {
                                             object.optString("id"),
                                             object.getString("name"),
                                             object.getString("gender"),
-                                            object.getString("birthday"));
+                                            object.has("birthday") ? object.getString("birthday") : null );
+                                    postUserToDb();
 
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -120,18 +122,18 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
-        profileTracker = new ProfileTracker() {
+        /*profileTracker = new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
                 if (oldProfile==null && currentProfile != null && !userSent) {
                     userSent = true;
-                    postUserToDb();
+
                 }
             }
-        };
+        };*/
 
         if (AccessToken.getCurrentAccessToken() != null) {
-            loginButton.setVisibility(View.GONE);
+            //loginButton.setVisibility(View.GONE);
             progressBar.setVisibility(View.VISIBLE);
             getUserInfoFromDb();
         }
@@ -143,7 +145,8 @@ public class MainActivity extends FragmentActivity {
      */
     private void redirect() {
 
-        Intent browseEvents = new Intent(self, BrowseEvents.class); // The thing that performs redirection
+        if (browseEvents==null)
+            browseEvents = new Intent(self, BrowseEvents.class); // The thing that performs redirection
         browseEvents.putExtra("user", new Gson().toJson(model));
         startActivity(browseEvents);
     }
@@ -157,7 +160,7 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        profileTracker.stopTracking();
+        /*profileTracker.stopTracking();*/
     }
 
     private static class UserRegistrationTask<Void> extends AsyncTask<Void, Void, Void> {
@@ -168,12 +171,14 @@ public class MainActivity extends FragmentActivity {
             OkHttpClient client = new OkHttpClient();
 
             java.lang.String formattedBirthDate = "";
-            SimpleDateFormat fromUser = new SimpleDateFormat("MM/dd/yyyy");
-            SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd");
-            try {
-                formattedBirthDate = myFormat.format(fromUser.parse(model.birthDate));
-            } catch (ParseException e) {
-                e.printStackTrace();
+            if (model.birthDate != null) {
+                SimpleDateFormat fromUser = new SimpleDateFormat("MM/dd/yyyy");
+                SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    formattedBirthDate = myFormat.format(fromUser.parse(model.birthDate));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
 
             FormBody.Builder formBuilder = null;
@@ -182,7 +187,7 @@ public class MainActivity extends FragmentActivity {
                     .add("fb_id", model.fbId+"")
                     .add("name", model.name)
                     .add("gender", model.gender)
-                    .add("birth_date", formattedBirthDate)
+                    .add("birth_date", model.birthDate==null ? "null" : formattedBirthDate)
                     .add("picture", Profile.getCurrentProfile().getProfilePictureUri(300,300).toString());
 
             final Request request = new Request.Builder()
@@ -195,7 +200,7 @@ public class MainActivity extends FragmentActivity {
 
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    self.userSent = false;
+
                 }
 
                 @Override
@@ -257,10 +262,10 @@ public class MainActivity extends FragmentActivity {
                             model.imageUri = userData.getString(5);
                         }
                         Profile current = Profile.getCurrentProfile();
-                        if (current != null) {
+                        /*if (current != null) {
                             model.firstName = current.getFirstName();
                             self.redirect();
-                        }
+                        }*/
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -309,6 +314,16 @@ public class MainActivity extends FragmentActivity {
             this.gender = gender;
             this.birthDate = birthDate;
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }
 
