@@ -43,6 +43,7 @@
             android:windowSoftInputMode="stateHidden|adjustResize"/>
         <activity android:name=".FriendsViewActivity" />
         <activity android:name=".StatsViewActivity" />
+        <activity android:name=".EventDetailsActivity" />
 
         <!-- FB activities -->
         <activity

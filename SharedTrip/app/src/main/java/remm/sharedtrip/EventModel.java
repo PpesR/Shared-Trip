@@ -9,27 +9,11 @@ public class EventModel {
     private String name;
     private String imageLink;
     private String loc;
-
-
-    public String getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
-    }
-
-
-    public String getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
-    }
-
     private String startDate;
     private String endDate;
+    private String description;
+    private int spots;
+    private int cost;
 
     public EventModel() {
         super();
@@ -39,6 +23,22 @@ public class EventModel {
         this.name = name;
         this.imageLink = imageLink;
         this.loc = loc;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
     }
 
     public int getId() {
@@ -72,5 +72,17 @@ public class EventModel {
     public void setLoc(String loc) {
         this.loc = loc;
     }
+
+    public String getDescription() { return description; }
+
+    public void setDescription(String description) { this.description = description; }
+
+    public int getSpots() { return spots; }
+
+    public void setSpots(int spots) { this.spots = spots; }
+
+    public int getCost() { return cost; }
+
+    public void setCost(int cost) { this.cost = cost; }
 
 }

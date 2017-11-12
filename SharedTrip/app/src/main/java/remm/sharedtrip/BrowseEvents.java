@@ -136,10 +136,8 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
         recyclerView.setLayoutManager(gridLayout);
 
         adapter = new EventAdapter(this, events);
+        adapter.be = this;
         recyclerView.setAdapter(adapter);
-
-
-
 
         t = (TextView) findViewById(R.id.user_header_name);
         t.append("  "+fbUserModel.name);
@@ -173,7 +171,6 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
                 BrowseEvents.this.startActivity(myIntent);
             }
         });
-
 
         //registers when text is typed on search bar and calls onQuery... methods
         searchView = (SearchView) findViewById(R.id.searchView);
@@ -236,20 +233,28 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
          protected final List<EventModel> doInBackground(Void... voids) {
              OkHttpClient client = new OkHttpClient();
              Request request = new Request.Builder()
-                     .url("http://146.185.135.219/sharedtrip.php")
+                     .url("http://146.185.135.219/requestrouter.php?hdl=event")
                      .build();
              List<EventModel> events = new ArrayList<>();
              try {
                  Response response = client.newCall(request).execute();
 
                  JSONArray array = new JSONArray(response.body().string());
+                 JSONArray resultArray = array.getJSONArray(2);
 
-                 for (int i = 0; i < array.length(); i++) {
+                 for (int i = 0; i < resultArray.length(); i++) {
 
-                     JSONObject object = array.getJSONObject(i);
+                     JSONObject object = resultArray.getJSONObject(i);
 
                      EventModel event = new EventModel(object.getString("trip_name"),
                              object.getString("event_picture"), object.getString("location"));
+
+                     event.setDescription(object.getString("description"));
+                     event.setId(object.getInt("id"));
+                     event.setStartDate(object.getString("date_begin"));
+                     event.setEndDate(object.getString("date_end"));
+                     event.setSpots(object.getInt("spots"));
+                     event.setCost(object.getInt("total_cost"));
 
                      events.add(event);
                  }
