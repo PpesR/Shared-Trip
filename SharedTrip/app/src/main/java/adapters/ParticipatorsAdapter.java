@@ -91,16 +91,7 @@ public class ParticipatorsAdapter extends RecyclerView.Adapter<ParticipatorsAdap
             @Override
             public void onClick(View view) {
                 eventModel.decreaseUsersPending();
-                aea.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        badge.setText(eventModel.getUsersPending()+"");
-                        if (eventModel.getUsersPending()==0) {
-                            badge.setVisibility(View.GONE);
-                        }
-                    }
-                });
-                aea.onUserBanned(position);
+                aea.onUserBanned(position, eventModel, badge);
             }
         });
         Glide

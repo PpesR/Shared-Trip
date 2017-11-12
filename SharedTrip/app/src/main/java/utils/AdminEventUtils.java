@@ -225,4 +225,77 @@ public class AdminEventUtils {
         }
     }
 
+    public static class DenialTask<Void> extends AsyncTask<Void, Void, Void>{
+
+        private int eventId;
+        private int userId;
+        private DenialCallback callback;
+
+        public DenialTask(int eventId, int userId, DenialCallback callback) {
+            this.eventId = eventId;
+            this.userId = userId;
+            this.callback = callback;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            OkHttpClient client = new OkHttpClient();
+
+            FormBody.Builder formBuilder = null;
+            formBuilder = new FormBody.Builder()
+                    .add("hdl", "admin")
+                    .add("act","rej")
+                    .add("event", eventId+"")
+                    .add("participator", userId+"");
+
+            final Request request = new Request.Builder()
+                    .url("http://146.185.135.219/requestrouter.php")
+                    .post(formBuilder.build())
+                    .build();
+            Call call = client.newCall(request);
+            call.enqueue(callback);
+            return null;
+        }
+    }
+
+    public static class DenialCallback implements Callback {
+
+        private AdminEventActivity aea;
+        private int orderNr;
+        private TextView badge;
+        AdminEventModel eventModel;
+
+        public DenialCallback(AdminEventActivity aea, int orderNr, TextView badge, AdminEventModel eventModel) {
+            this.aea = aea;
+            this.orderNr = orderNr;
+            this.badge = badge;
+            this.eventModel = eventModel;
+        }
+
+        @Override
+        public void onFailure(Call call, IOException e) { }
+
+        @Override
+        public void onResponse(Call call, Response response)  {
+            try {
+                JSONArray array = new JSONArray(response.body().string());
+                if(array.getString(0).equals("SUCCESS")) {
+                    aea.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            aea.subAdapter.participators.remove(orderNr);
+                            aea.subAdapter.notifyDataSetChanged();
+                            badge.setText(eventModel.getUsersPending()+"");
+                            if (eventModel.getUsersPending()==0) {
+                                badge.setVisibility(View.GONE);
+                            }
+                        }
+                    });
+                }
+
+            } catch (JSONException e) { e.printStackTrace();
+            } catch (IOException e) { e.printStackTrace(); }
+        }
+    }
+
 }

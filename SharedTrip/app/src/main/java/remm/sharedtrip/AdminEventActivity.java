@@ -113,8 +113,12 @@ public class AdminEventActivity extends FragmentActivity {
         task.execute();
     }
 
-    public void onUserBanned(int i) {
-        subAdapter.participators.remove(i);
-        subAdapter.notifyDataSetChanged();
+    public void onUserBanned(int participatorPosition, AdminEventModel eventModel, TextView badge) {
+        AdminEventUtils.DenialTask<Void> task =
+                new AdminEventUtils.DenialTask<>(
+                        eventModel.getId(),
+                        participators.get(participatorPosition).getId(),
+                        new AdminEventUtils.DenialCallback(self, participatorPosition, badge, eventModel));
+        task.execute();
     }
 }
