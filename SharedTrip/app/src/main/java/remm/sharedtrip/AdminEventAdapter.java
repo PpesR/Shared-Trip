@@ -72,7 +72,7 @@ public class AdminEventAdapter extends RecyclerView.Adapter<AdminEventAdapter.Ad
             holder.badge.setVisibility(View.GONE);
         }
         else {
-            holder.badge.setText(event.getUsersPending());
+            holder.badge.setText(event.getUsersPending()+"");
         }
         Glide
             .with(context)

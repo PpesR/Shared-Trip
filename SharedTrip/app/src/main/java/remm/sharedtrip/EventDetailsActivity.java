@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.transcode.UnitTranscoder;
 import com.google.gson.Gson;
 
 import models.EventModel;
@@ -49,24 +50,9 @@ public class EventDetailsActivity extends Activity {
         setUpNavbar();
 
         joinButton = findViewById(R.id.eventViewRequestButton);
+        joinButton.setVisibility(View.GONE);
 
-        if (model.isUserApproved()) {
-            onApproved();
-        }
-        else if (model.isApprovalPending()) {
-            onPendingApproval();
-        }
-        else if (model.isUserBanned()) {
-            onBanned();
-        }
-        else {
-            joinButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    joinEvent();
-                }
-            });
-        }
+        checkApprovalStatus();
 
         eventPic = findViewById(R.id.eventViewPicture);
         eventName = findViewById(R.id.eventViewLocation);
@@ -96,26 +82,71 @@ public class EventDetailsActivity extends Activity {
         requestTask.execute();
     }
 
+    private void checkApprovalStatus() {
+        EventDetailsUtils.ApprovalStatusTask task =
+                new EventDetailsUtils.ApprovalStatusTask(
+                        model.getId(),
+                        BrowseEvents.fbUserModel.id,
+                        new EventDetailsUtils.ApprovalCallback(this, model));
+        task.execute();
+    }
+
     void onJoinSuccess() {
         onPendingApproval();
+    }
+
+    void onApprovalStatusReady() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (model.isAdmin()) {
+                    onAdmin();
+                } else if (model.isUserApproved()) {
+                    onApproved();
+                } else if (model.isApprovalPending()) {
+                    onPendingApproval();
+                } else if (model.isUserBanned()) {
+                    onBanned();
+                } else {
+                    joinButton.setVisibility(View.VISIBLE);
+                    joinButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            joinEvent();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void onAdmin() {
+        joinButton.setBackgroundColor(Color.TRANSPARENT);
+        joinButton.setTextColor(Color.parseColor("#8ad073"));
+        joinButton.setTextSize(24);
+        joinButton.setText("YOU ARE THE ADMIN!");
+        joinButton.setVisibility(View.VISIBLE);
     }
 
     void onPendingApproval() {
         joinButton.setBackgroundColor(Color.parseColor("#ffdf75"));
         joinButton.setTextColor(Color.parseColor("#d99d2e"));
         joinButton.setText("JOIN REQUEST PENDING");
+        joinButton.setVisibility(View.VISIBLE);
     }
 
     void onApproved() {
         joinButton.setBackgroundColor(Color.parseColor("#9ae083"));
         joinButton.setText("YOU ARE PARTICIPATING!");
         joinButton.setTextColor(Color.WHITE);
+        joinButton.setVisibility(View.VISIBLE);
     }
 
     void onBanned() {
         joinButton.setBackgroundColor(Color.parseColor("#c75652"));
         joinButton.setText("YOU ARE BANNED FROM THIS EVENT!");
         joinButton.setTextColor(Color.WHITE);
+        joinButton.setVisibility(View.VISIBLE);
     }
 
     private void setUpNavbar() {

@@ -261,6 +261,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
                      event.setUserApproved(object.getInt("approved")==1);
                      event.setApprovalPending(object.getInt("pending")==1);
                      event.setUserBanned(object.getInt("banned")==1);
+                     event.setAdmin(object.getInt("is_admin")==1);
 
                      events.add(event);
                  }

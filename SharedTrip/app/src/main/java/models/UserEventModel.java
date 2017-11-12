@@ -9,6 +9,7 @@ public class UserEventModel extends EventModel {
     protected boolean userApproved;
     protected boolean approvalPending;
     protected boolean userBanned;
+    protected boolean isAdmin;
 
     public UserEventModel() {
         super();
@@ -26,4 +27,7 @@ public class UserEventModel extends EventModel {
 
     public boolean isUserBanned() { return userBanned; }
     public void setUserBanned(boolean userBanned) { this.userBanned = userBanned; }
+
+    public boolean isAdmin() { return isAdmin; }
+    public void setAdmin(boolean admin) { isAdmin = admin; }
 }
