@@ -155,15 +155,19 @@ public class ProfileView extends AppCompatActivity {
                                 finish();
                                 return true;
                             case R.id.bottombaritem_friends:
+                                finish();
                                 Intent friendsViewActivity = new Intent(ProfileView.this, FriendsViewActivity.class);
                                 startActivity(friendsViewActivity);
                                 return true;
                             case R.id.bottombaritem_stats:
+                                finish();
                                 Intent statsViewActivity = new Intent(ProfileView.this, StatsViewActivity.class);
                                 startActivity(statsViewActivity);
                                 return true;
                             case R.id.bottombaritem_profile:
-                                // TODO
+                                finish();
+                                Intent adminViewActivity = new Intent(ProfileView.this, AdminEventActivity.class);
+                                startActivity(adminViewActivity);
                                 return true;
                         }
                         return true;
