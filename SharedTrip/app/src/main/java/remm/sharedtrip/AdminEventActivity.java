@@ -8,8 +8,9 @@ import android.support.v7.widget.RecyclerView;
 
 import java.util.List;
 
+import adapters.AdminEventAdapter;
 import models.AdminEventModel;
-import models.EventModel;
+import utils.AdminEventUtils;
 
 /**
  * Created by Mark on 12.11.2017.
@@ -40,7 +41,7 @@ public class AdminEventActivity extends Activity {
         task.execute();
     }
 
-    void provideEvents(List<AdminEventModel> events) {
+    public void provideEvents(List<AdminEventModel> events) {
         adminEvents = events;
         runOnUiThread(new Runnable() {
             @Override

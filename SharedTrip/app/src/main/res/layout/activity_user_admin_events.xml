@@ -31,12 +31,13 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/admin_event_results"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:elevation="3dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
             android:layout_marginTop="6dp"
-            android:scrollbars="horizontal"
+            android:scrollbars="vertical"
             tools:targetApi="o" />
     </LinearLayout>
 

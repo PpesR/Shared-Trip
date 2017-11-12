@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import utils.BottomNavigationViewHelper;
+
 public class FriendsViewActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;

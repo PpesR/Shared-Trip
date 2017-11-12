@@ -1,4 +1,4 @@
-package remm.sharedtrip;
+package adapters;
 
 /**
  * Created by Mark on 02-Nov-17.
@@ -18,8 +18,10 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
-import models.EventModel;
 import models.UserEventModel;
+import remm.sharedtrip.BrowseEvents;
+import remm.sharedtrip.EventDetailsActivity;
+import remm.sharedtrip.R;
 
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> {

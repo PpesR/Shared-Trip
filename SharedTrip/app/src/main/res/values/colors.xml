@@ -18,5 +18,10 @@
     <color name="divider">#B6B6B6</color>
     <!-- Create event text colors -->
     <color name="grey_question">#303030</color>
+    <color name="light_green">#9ae083</color>
+    <color name="calm_green">#8ad073</color>
+    <color name="peel_yellow">#ffdf75</color>
+    <color name="mustard">#d99d2e</color>
+    <color name="calm_red">#c75652</color>
 
 </resources>

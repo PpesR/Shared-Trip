@@ -1,4 +1,4 @@
-package remm.sharedtrip;
+package utils;
 
 import android.os.AsyncTask;
 
@@ -15,6 +15,7 @@ import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import remm.sharedtrip.EventDetailsActivity;
 
 /**
  * Created by Mark on 12.11.2017.
@@ -22,12 +23,12 @@ import okhttp3.Response;
 
 public class EventDetailsUtils {
 
-    static class JoinRequestTask<Void> extends AsyncTask<Void, Void, Void> {
+    public static class JoinRequestTask<Void> extends AsyncTask<Void, Void, Void> {
         private int eventId;
         private int participatorId;
         private JoinCallback callback;
 
-        JoinRequestTask(int eventId, int participatorId, JoinCallback callback) {
+        public JoinRequestTask(int eventId, int participatorId, JoinCallback callback) {
             this.eventId = eventId;
             this.participatorId = participatorId;
             this.callback = callback;
@@ -55,10 +56,10 @@ public class EventDetailsUtils {
         }
     }
 
-    static class JoinCallback implements Callback {
+    public static class JoinCallback implements Callback {
 
         private EventDetailsActivity eda;
-        JoinCallback(EventDetailsActivity eda) { this.eda = eda; }
+        public JoinCallback(EventDetailsActivity eda) { this.eda = eda; }
         @Override
         public void onFailure(Call call, IOException e) { }
         @Override
@@ -74,12 +75,12 @@ public class EventDetailsUtils {
         }
     }
 
-    static class ApprovalStatusTask<Void> extends AsyncTask<Void, Void, Void> {
+    public static class ApprovalStatusTask<Void> extends AsyncTask<Void, Void, Void> {
         private int eventId;
         private int participatorId;
         private ApprovalCallback callback;
 
-        ApprovalStatusTask(int eventId, int participatorId, ApprovalCallback callback) {
+        public ApprovalStatusTask(int eventId, int participatorId, ApprovalCallback callback) {
             this.eventId = eventId;
             this.participatorId = participatorId;
             this.callback = callback;
@@ -99,11 +100,11 @@ public class EventDetailsUtils {
         }
     }
 
-    static class ApprovalCallback implements Callback {
+    public static class ApprovalCallback implements Callback {
 
         private EventDetailsActivity eda;
         private UserEventModel model;
-        ApprovalCallback(EventDetailsActivity eda, UserEventModel model) { this.eda = eda; this.model=model; }
+        public ApprovalCallback(EventDetailsActivity eda, UserEventModel model) { this.eda = eda; this.model=model; }
         @Override
         public void onFailure(Call call, IOException e) { }
         @Override

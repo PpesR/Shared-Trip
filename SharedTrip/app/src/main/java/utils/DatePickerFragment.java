@@ -1,4 +1,4 @@
-package remm.sharedtrip;
+package utils;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="120dp"
-    android:background="@drawable/event_item_background">
+    android:layout_height="120dp">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:padding="20dp">
+        android:padding="20dp"
+        android:background="@drawable/event_item_background">
 
         <ImageView
             android:id="@+id/admin_event_pic"
@@ -93,5 +93,8 @@
     </LinearLayout>
 
     </RelativeLayout>
-
+    <fragment android:name="fragments.ParticipatorsFragment"
+        android:id="@+id/headlines_fragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
 </LinearLayout>

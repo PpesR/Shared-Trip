@@ -1,4 +1,4 @@
-package remm.sharedtrip;
+package adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import models.AdminEventModel;
+import remm.sharedtrip.R;
 
 /**
  * Created by Mark on 12.11.2017.

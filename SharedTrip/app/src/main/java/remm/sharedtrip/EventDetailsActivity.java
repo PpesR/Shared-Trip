@@ -14,11 +14,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.transcode.UnitTranscoder;
 import com.google.gson.Gson;
 
-import models.EventModel;
 import models.UserEventModel;
+import utils.BottomNavigationViewHelper;
+import utils.EventDetailsUtils;
 
 /**
  * Created by Mark on 12.11.2017.
@@ -91,11 +91,11 @@ public class EventDetailsActivity extends Activity {
         task.execute();
     }
 
-    void onJoinSuccess() {
+    public void onJoinSuccess() {
         onPendingApproval();
     }
 
-    void onApprovalStatusReady() {
+    public void onApprovalStatusReady() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
