@@ -1,10 +1,12 @@
 package adapters;
 
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,7 +14,10 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
+import fragments.ParticipatorsFragment;
 import models.AdminEventModel;
+import remm.sharedtrip.AdminEventActivity;
+import remm.sharedtrip.EventDetailsActivity;
 import remm.sharedtrip.R;
 
 /**
@@ -21,12 +26,14 @@ import remm.sharedtrip.R;
 
 public class AdminEventAdapter extends RecyclerView.Adapter<AdminEventAdapter.AdminEventViewHolder>  {
 
+    private AdminEventActivity aea;
     private List<AdminEventModel> myAdminEvents;
     private Context context;
 
-    public AdminEventAdapter(Context context, List<AdminEventModel> events) {
+    public AdminEventAdapter(Context context, List<AdminEventModel> events, AdminEventActivity aea) {
         this.myAdminEvents = events;
         this.context = context;
+        this.aea = aea;
     }
 
     public class AdminEventViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -51,6 +58,7 @@ public class AdminEventAdapter extends RecyclerView.Adapter<AdminEventAdapter.Ad
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
+            aea.eventClicked(position, badge);
         }
     }
 
