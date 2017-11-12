@@ -12,6 +12,7 @@ import java.util.Calendar;
 
 import models.EventModel;
 import models.UserEventModel;
+import remm.sharedtrip.CreateEvent;
 
 public class DatePickerFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
