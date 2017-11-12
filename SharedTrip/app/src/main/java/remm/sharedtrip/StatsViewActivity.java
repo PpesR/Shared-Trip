@@ -29,6 +29,7 @@ public class StatsViewActivity extends AppCompatActivity {
                                 finish();
                                 return true;
                             case R.id.bottombaritem_friends:
+                                finish();
                                 Intent friendsViewActivity = new Intent(StatsViewActivity.this, FriendsViewActivity.class);
                                 startActivity(friendsViewActivity);
                                 return true;
