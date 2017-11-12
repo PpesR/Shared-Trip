@@ -2,4 +2,6 @@
     <dimen name="g_top_margin">100dp</dimen>
     <dimen name="add_event_fbutton_margin">24dp</dimen>
     <dimen name="add_event_fbutton_marginbottom">76dp</dimen>
+    <dimen name="design_bottom_navigation_text_size" xmlns:tools="http://schemas.android.com/tools" tools:override="true">12sp</dimen>
+    <dimen name="design_bottom_navigation_active_text_size" xmlns:tools="http://schemas.android.com/tools" tools:override="true">12sp</dimen>
 </resources>

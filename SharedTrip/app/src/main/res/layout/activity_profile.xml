@@ -201,10 +201,12 @@
             android:id="@+id/bottom_navigation"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
+            android:layout_marginTop="60dp"
             android:layout_gravity="bottom"
             android:layout_weight="0.8"
-            app:itemIconTint="@drawable/selector_bottombar_item"
-            app:itemTextColor="@drawable/selector_bottombar_item"
+            android:textSize="@dimen/design_bottom_navigation_active_text_size"
+            app:itemIconTint="@drawable/selector_bottombar_item_profile"
+            app:itemTextColor="@drawable/selector_bottombar_item_profile"
             app:menu="@menu/bottombar_menu" />
     </LinearLayout>
 
