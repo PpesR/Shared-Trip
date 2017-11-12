@@ -58,5 +58,8 @@
     <string name="todo">TODO</string>
     <string name="search_title">search_title</string>
 
+    <!-- Stats view string -->
+    <string name="coming_soon">COMING SOON</string>
+
 
 </resources>

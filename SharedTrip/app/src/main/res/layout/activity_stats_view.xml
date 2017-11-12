@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="remm.sharedtrip.StatsViewActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="10">
+
+        <!-- Height is 0 because of weightSum -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="9.2"
+            android:background="@color/white_text">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="@string/coming_soon"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <!-- Height is 0 because of weightSum -->
+        <android.support.design.widget.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="bottom"
+            android:layout_weight="0.8"
+            app:itemIconTint="@drawable/selector_bottombar_item"
+            app:itemTextColor="@drawable/selector_bottombar_item"
+            app:menu="@menu/bottombar_menu" />
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
