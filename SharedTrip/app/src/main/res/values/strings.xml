@@ -43,7 +43,7 @@
     <string name="pick_date1">From</string>
     <string name="pick_date2">To</string>
     <string name="profile_view_title"> Profile </string>
-    <string name="profile_hi"> Hi,  </string>
+    <string name="profile_hi"> Hi, </string>
     <string name="prof_desc"> Profile information: </string>
     <string name="prof_name"> Full name: </string>
     <string name="prof_gender"> Gender: </string>

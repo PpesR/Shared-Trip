@@ -29,7 +29,7 @@
             android:id="@+id/scroller"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="8.4"
+            android:layout_weight="8.6"
             android:gravity="top|center">
 
             <LinearLayout
@@ -202,7 +202,7 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_gravity="bottom|end"
-            android:layout_weight="1"
+            android:layout_weight="0.8"
             android:background="@color/white_text"
             android:textSize="@drawable/selector_bottombar_textsize"
             app:itemIconTint="@drawable/selector_bottombar_item_profile"
