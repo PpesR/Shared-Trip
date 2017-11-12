@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import java.util.List;
@@ -41,12 +42,12 @@ public class AdminEventActivity extends Activity {
         task.execute();
     }
 
-    public void provideEvents(List<AdminEventModel> events) {
+    public void provideEvents(final List<AdminEventModel> events) {
         adminEvents = events;
         runOnUiThread(new Runnable() {
             @Override
             public void run () {
-                GridLayoutManager manager = new GridLayoutManager(self, adminEvents.size());
+                RecyclerView.LayoutManager manager = new LinearLayoutManager(self, 1, false);
                 recyclerView.setLayoutManager(manager);
 
                 adapter = new AdminEventAdapter(self, adminEvents);

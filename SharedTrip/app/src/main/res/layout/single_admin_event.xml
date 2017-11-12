@@ -93,8 +93,4 @@
     </LinearLayout>
 
     </RelativeLayout>
-    <fragment android:name="fragments.ParticipatorsFragment"
-        android:id="@+id/participators_fragment"
-        android:layout_width="0dp"
-        android:layout_height="0dp" />
 </LinearLayout>
