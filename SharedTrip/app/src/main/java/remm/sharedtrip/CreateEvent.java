@@ -32,6 +32,7 @@ import utils.DatePickerFragment;
 public class CreateEvent extends AppCompatActivity {
 
     static EditText title, description, destination, cost, spots;
+    String test;
     Button create;
     Button cancel;
     Button addPicture;
@@ -151,7 +152,7 @@ public class CreateEvent extends AppCompatActivity {
         }
     }
 
-    private static class EventCreationTask<String> extends AsyncTask<EventModel, Void, String> {
+    public static class EventCreationTask<String> extends AsyncTask<EventModel, Void, String> {
 
         @SafeVarargs
         @Override
