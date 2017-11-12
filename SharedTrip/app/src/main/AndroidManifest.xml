@@ -44,6 +44,7 @@
         <activity android:name=".FriendsViewActivity" />
         <activity android:name=".StatsViewActivity" />
         <activity android:name=".EventDetailsActivity" />
+        <activity android:name=".AdminEventActivity" />
 
         <!-- FB activities -->
         <activity

@@ -1,20 +1,17 @@
-package remm.sharedtrip;
+package models;
 
 
 public class EventModel {
 
-    private int id;
-    private String name;
-    private String imageLink;
-    private String loc;
-    private String startDate;
-    private String endDate;
-    private String description;
-    private int spots;
-    private int cost;
-    private boolean userApproved;
-    private boolean approvalPending;
-    private boolean userBanned;
+    protected int id;
+    protected String name;
+    protected String imageLink;
+    protected String loc;
+    protected String startDate;
+    protected String endDate;
+    protected String description;
+    protected int spots;
+    protected int cost;
 
     public EventModel() { super(); }
 
@@ -50,14 +47,4 @@ public class EventModel {
 
     public int getCost() { return cost; }
     public void setCost(int cost) { this.cost = cost; }
-
-    public boolean isUserApproved() { return userApproved; }
-    public void setUserApproved(boolean userApproved) { this.userApproved = userApproved; }
-
-    public boolean isApprovalPending() { return approvalPending; }
-    public void setApprovalPending(boolean approvalPending) { this.approvalPending = approvalPending; }
-
-    public boolean isUserBanned() { return userBanned; }
-    public void setUserBanned(boolean userBanned) { this.userBanned = userBanned; }
-
 }

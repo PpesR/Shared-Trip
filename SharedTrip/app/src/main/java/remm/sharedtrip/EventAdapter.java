@@ -6,7 +6,6 @@ package remm.sharedtrip;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,14 +18,17 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
+import models.EventModel;
+import models.UserEventModel;
+
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> {
 
     private Context context;
-    private List<EventModel> events;
+    private List<UserEventModel> events;
     public BrowseEvents be;
 
-    public EventAdapter(Context context, List<EventModel> events) {
+    public EventAdapter(Context context, List<UserEventModel> events) {
         this.context = context;
         this.events = events;
     }
@@ -63,7 +65,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         public TextView name;
         public TextView loc;
         public ImageView imageView;
-        public EventModel eventModel;
+        public UserEventModel eventModel;
 
         public ViewHolder(View itemView) {
             super(itemView);

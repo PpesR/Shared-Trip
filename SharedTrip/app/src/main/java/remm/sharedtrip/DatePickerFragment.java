@@ -3,15 +3,15 @@ package remm.sharedtrip;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.util.Log;
-import android.view.View;
 import android.widget.DatePicker;
 
 import java.util.Calendar;
+
+import models.EventModel;
+import models.UserEventModel;
 
 public class DatePickerFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
@@ -19,11 +19,11 @@ public class DatePickerFragment extends DialogFragment
     String mymonth;
     String myyear;
     String date;
-    EventModel model;
+    UserEventModel model;
     char whichDate;
     CreateEvent creationView;
 
-    public void setModel(EventModel model, char whichDate, CreateEvent handle) {
+    public void setModel(UserEventModel model, char whichDate, CreateEvent handle) {
         this.model = model;
         this.whichDate = whichDate;
         this.creationView = handle;

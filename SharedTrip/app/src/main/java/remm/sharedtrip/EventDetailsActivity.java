@@ -16,6 +16,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 
+import models.EventModel;
+import models.UserEventModel;
+
 /**
  * Created by Mark on 12.11.2017.
  */
@@ -33,14 +36,14 @@ public class EventDetailsActivity extends Activity {
     private BottomNavigationView bottomNavigationView;
     private EventDetailsActivity self;
 
-    private EventModel model;
+    private UserEventModel model;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         self = this;
-        model = new Gson().fromJson(getIntent().getStringExtra("event"), EventModel.class);
+        model = new Gson().fromJson(getIntent().getStringExtra("event"), UserEventModel.class);
 
         setContentView(R.layout.activity_event_view);
         setUpNavbar();

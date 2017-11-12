@@ -34,13 +34,15 @@ import org.json.JSONObject;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import models.EventModel;
+import models.UserEventModel;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 public class BrowseEvents extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
-    private List<EventModel> events;
+    private List<UserEventModel> events;
     private RecyclerView recyclerView;
     private RecyclerView searchRecyclerView;
     private GridLayoutManager searchGridLayout;
@@ -54,7 +56,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     private SearchView searchView;
     private BottomNavigationView bottomNavigationView;
 
-    private List<EventModel> getEventsfromDB() {
+    private List<UserEventModel> getEventsfromDB() {
 
         EventRetrievalTask<Void> asyncTask = new EventRetrievalTask<>();
         try {
@@ -121,7 +123,8 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
                                 startActivity(statsViewActivity);
                                 return true;
                             case R.id.bottombaritem_profile:
-                                // TODO
+                                Intent adminViewActivity = new Intent(BrowseEvents.this, AdminEventActivity.class);
+                                startActivity(adminViewActivity);
                                 return true;
                         }
                         return true;
@@ -213,8 +216,8 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
             }
         });
 
-            List<EventModel> filteredEvents = new ArrayList<>();
-            for (EventModel event : events) {
+            List<UserEventModel> filteredEvents = new ArrayList<>();
+            for (UserEventModel event : events) {
                 if (event.getName().toLowerCase().contains(filter.toLowerCase())) {
                     filteredEvents.add(event);
                 }
@@ -226,16 +229,16 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     }
 
 
-    private static class EventRetrievalTask<Void> extends AsyncTask<Void, Void, List<EventModel>> {
+    private static class EventRetrievalTask<Void> extends AsyncTask<Void, Void, List<UserEventModel>> {
 
          @SafeVarargs
          @Override
-         protected final List<EventModel> doInBackground(Void... voids) {
+         protected final List<UserEventModel> doInBackground(Void... voids) {
              OkHttpClient client = new OkHttpClient();
              Request request = new Request.Builder()
                      .url("http://146.185.135.219/requestrouter.php?hdl=event&act=wappr&user="+fbUserModel.id)
                      .build();
-             List<EventModel> events = new ArrayList<>();
+             List<UserEventModel> events = new ArrayList<>();
              try {
                  Response response = client.newCall(request).execute();
 
@@ -246,7 +249,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
 
                      JSONObject object = resultArray.getJSONObject(i);
 
-                     EventModel event = new EventModel(object.getString("trip_name"),
+                     UserEventModel event = new UserEventModel(object.getString("trip_name"),
                              object.getString("event_picture"), object.getString("location"));
 
                      event.setDescription(object.getString("description"));

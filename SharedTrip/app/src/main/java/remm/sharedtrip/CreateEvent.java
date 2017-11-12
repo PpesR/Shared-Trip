@@ -1,6 +1,4 @@
 package remm.sharedtrip;
-import android.app.DatePickerDialog;
-import android.app.DialogFragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -10,10 +8,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.facebook.Profile;
 
@@ -23,7 +19,8 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-import Database.SharedTripDbHelper;
+import models.EventModel;
+import models.UserEventModel;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -41,7 +38,7 @@ public class CreateEvent extends AppCompatActivity {
     static String creator_id;
     CheckBox private_event_state;
     static Boolean private_event;
-    static EventModel model;
+    static UserEventModel model;
     static CreateEvent self;
 
 
@@ -60,24 +57,24 @@ public class CreateEvent extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         self = this;
-        model = new EventModel();
+        model = new UserEventModel();
         setContentView(R.layout.activity_create_event);
 
         Profile currentProfile = Profile.getCurrentProfile();
 
-        creator_id = (String) currentProfile.getId();
-        imageView = (ImageView) findViewById(R.id.add_picture_preview);
-        title = (EditText) findViewById(R.id.title);
-        destination = (EditText) findViewById(R.id.destination);
-        description = (EditText) findViewById(R.id.description);
-        cost = (EditText) findViewById(R.id.cost);
-        spots = (EditText) findViewById(R.id.spots);
-        private_event_state = (CheckBox) findViewById(R.id.checkBox3);
-        private_event = (Boolean) private_event_state.isEnabled();
+        creator_id = currentProfile.getId();
+        imageView = findViewById(R.id.add_picture_preview);
+        title = findViewById(R.id.title);
+        destination = findViewById(R.id.destination);
+        description = findViewById(R.id.description);
+        cost = findViewById(R.id.cost);
+        spots = findViewById(R.id.spots);
+        private_event_state =  findViewById(R.id.checkBox3);
+        private_event =  private_event_state.isEnabled();
 
 
 
-        cancel = (Button) findViewById(R.id.button3);
+        cancel = findViewById(R.id.button3);
         cancel.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -86,7 +83,7 @@ public class CreateEvent extends AppCompatActivity {
             }
         });
 
-        addPicture = (Button) findViewById(R.id.add_picture_button);
+        addPicture = findViewById(R.id.add_picture_button);
         addPicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -99,7 +96,7 @@ public class CreateEvent extends AppCompatActivity {
             }
         });
 
-        create = (Button) findViewById(R.id.button4);
+        create = findViewById(R.id.button4);
         create.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
