@@ -36,7 +36,7 @@ public class CreateEvent extends AppCompatActivity {
     Button cancel;
     Button addPicture;
     static ImageView imageView;
-    static String creator_id;
+    static int creator_id;
     CheckBox private_event_state;
     static Boolean private_event;
     static UserEventModel model;
@@ -63,7 +63,7 @@ public class CreateEvent extends AppCompatActivity {
 
         Profile currentProfile = Profile.getCurrentProfile();
 
-        creator_id = currentProfile.getId();
+        creator_id = BrowseEvents.fbUserModel.id;
         imageView = findViewById(R.id.add_picture_preview);
         title = findViewById(R.id.title);
         destination = findViewById(R.id.destination);
@@ -71,7 +71,7 @@ public class CreateEvent extends AppCompatActivity {
         cost = findViewById(R.id.cost);
         spots = findViewById(R.id.spots);
         private_event_state =  findViewById(R.id.checkBox3);
-        private_event =  private_event_state.isEnabled();
+        private_event =  private_event_state.isChecked();
 
 
 
@@ -158,16 +158,16 @@ public class CreateEvent extends AppCompatActivity {
         protected final String doInBackground(EventModel... events) {
             OkHttpClient client = new OkHttpClient();
             FormBody.Builder formBuilder = new FormBody.Builder()
-                    .add("user", creator_id)
+                    .add("user", creator_id+"")
                     .add("location", destination.getText().toString())
                     .add("name", title.getText().toString())
                     .add("description", description.getText().toString())
                     .add("total_cost", cost.getText().toString())
                     .add("spots", spots.getText().toString())
-                    .add("start_date", model.getStartDate())
-                    .add("end_date", model.getEndDate())
+                    .add("start_date", model.getStartDate()+"")
+                    .add("end_date", model.getEndDate()+"")
                     .add("private", private_event ? "1" : "0")
-                    .add("picture", model.getImageLink());
+                    .add("picture", model.getImageLink()+"");
 
             final Request request = new Request.Builder()
                     .url("http://146.185.135.219/requestrouter.php?hdl=event")
@@ -186,6 +186,7 @@ public class CreateEvent extends AppCompatActivity {
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
                         JSONArray array = new JSONArray(response.body().string());
+                        JSONArray actual = array.getJSONArray(2);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
