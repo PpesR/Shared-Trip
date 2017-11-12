@@ -223,7 +223,11 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
                 }
             }
         adapter = new EventAdapter(this, filteredEvents);
-        searchGridLayout = new GridLayoutManager(this, filteredEvents.size());
+        if(filteredEvents.size() < 1){  //quickfix, to be changed later
+            searchGridLayout = new GridLayoutManager(this, 1);
+        }else{
+            searchGridLayout = new GridLayoutManager(this, filteredEvents.size());
+        }
         searchRecyclerView.setLayoutManager(searchGridLayout);
         searchRecyclerView.setAdapter(adapter);
     }
