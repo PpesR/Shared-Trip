@@ -78,7 +78,7 @@ public class MainActivity extends FragmentActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                loginButton.setVisibility(View.GONE);
+                loginButton.setVisibility(View.GONE);
                 progressBar.setVisibility(VISIBLE);
             }
         });
@@ -105,7 +105,7 @@ public class MainActivity extends FragmentActivity {
                             }
                         });
                 Bundle parameters = new Bundle();
-                parameters.putString("fields", "id,name,email,gender,birthday");
+                parameters.putString("fields", "id,name,email,gender,birthday,age_range");
                 request.setParameters(parameters);
                 request.executeAsync();
             }
@@ -122,18 +122,8 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
-        /*profileTracker = new ProfileTracker() {
-            @Override
-            protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
-                if (oldProfile==null && currentProfile != null && !userSent) {
-                    userSent = true;
-
-                }
-            }
-        };*/
-
         if (AccessToken.getCurrentAccessToken() != null) {
-            //loginButton.setVisibility(View.GONE);
+            loginButton.setVisibility(View.GONE);
             progressBar.setVisibility(View.VISIBLE);
             getUserInfoFromDb();
         }
@@ -160,7 +150,6 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        /*profileTracker.stopTracking();*/
     }
 
     private static class UserRegistrationTask<Void> extends AsyncTask<Void, Void, Void> {
@@ -262,10 +251,10 @@ public class MainActivity extends FragmentActivity {
                             model.imageUri = userData.getString(5);
                         }
                         Profile current = Profile.getCurrentProfile();
-                        /*if (current != null) {
+                        if (current != null) {
                             model.firstName = current.getFirstName();
                             self.redirect();
-                        }*/
+                        }
 
                     } catch (JSONException e) {
                         e.printStackTrace();
