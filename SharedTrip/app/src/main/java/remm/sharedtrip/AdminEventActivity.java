@@ -3,6 +3,7 @@ package remm.sharedtrip;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
@@ -27,9 +28,11 @@ public class AdminEventActivity extends FragmentActivity {
     public ParticipatorsAdapter subAdapter;
     private RecyclerView recyclerView;
     private RecyclerView subRecyclerView;
+    private ParticipatorsFragment frag;
 
     private List<AdminEventModel> adminEvents;
     private List<ParticipatorModel> participators;
+    private AdminEventModel lastClicked;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,14 +72,27 @@ public class AdminEventActivity extends FragmentActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ParticipatorsFragment frag = new ParticipatorsFragment();
-                frag.setAea(self);
-                frag.aem = aeModel;
-                frag.badge = badge;
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .add(R.id.fragment_container, frag)
-                        .commit();
+                FragmentManager fm = getSupportFragmentManager();
+                if (frag!=null) {
+                    fm.beginTransaction()
+                            .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                            .hide(frag)
+                            .commit();
+                }
+                if (lastClicked != null && lastClicked.equals(aeModel)) {
+                    lastClicked = null;
+                }
+                else {
+                    lastClicked = aeModel;
+                    frag = new ParticipatorsFragment();
+                    frag.setAea(self);
+                    frag.aem = aeModel;
+                    frag.badge = badge;
+                    recyclerView.getLayoutManager().scrollToPosition(0);
+                    fm.beginTransaction()
+                            .add(R.id.fragment_container, frag)
+                            .commit();
+                }
 
             }
         });
