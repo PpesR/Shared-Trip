@@ -234,7 +234,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     }
 
 
-    private static class EventRetrievalTask<Void> extends AsyncTask<Void, Void, List<UserEventModel>> {
+    public static class EventRetrievalTask<Void> extends AsyncTask<Void, Void, List<UserEventModel>> {
 
          @SafeVarargs
          @Override
