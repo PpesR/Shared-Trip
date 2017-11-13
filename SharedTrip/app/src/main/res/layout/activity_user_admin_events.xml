@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:backgroundTint="@color/background_grey"
+    android:background="@color/background_grey"
     tools:context="remm.sharedtrip.AdminEventActivity">
 
     <LinearLayout
@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginBottom="10dp"
-            android:background="@color/orange"
+            android:background="@color/orangered"
             android:gravity="center_vertical|center_horizontal">
 
             <TextView
@@ -31,12 +31,12 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/admin_event_results"
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:elevation="3dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
             android:layout_marginTop="6dp"
+            android:elevation="3dp"
+            android:orientation="vertical"
             android:scrollbars="vertical"
             tools:targetApi="o" />
     </LinearLayout>
