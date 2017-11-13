@@ -62,9 +62,7 @@ public class CreateEvent extends AppCompatActivity {
         model = new UserEventModel();
         setContentView(R.layout.activity_create_event);
 
-        Profile currentProfile = Profile.getCurrentProfile();
-
-        creator_id = BrowseActivity.fbUserModel.id;
+        creator_id = BrowseEvents.fbUserModel.id;
         imageView = findViewById(R.id.add_picture_preview);
         title = findViewById(R.id.title);
         destination = findViewById(R.id.destination);
