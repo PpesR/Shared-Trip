@@ -85,8 +85,7 @@
                 android:ems="10"
                 android:paddingLeft="6dp"
                 android:paddingRight="6dp"
-                android:paddingStart="6dp"
-                android:text="@string/todo" />
+                android:paddingStart="6dp"/>
 
             <HorizontalScrollView
                 android:id="@+id/horizontalScrollViewOther"
