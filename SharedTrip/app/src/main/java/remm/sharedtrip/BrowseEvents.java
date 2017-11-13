@@ -287,6 +287,14 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
         MenuItem myButton = bottomNavigationView.getMenu()
                 .findItem(R.id.bottombaritem_events);
         myButton.setChecked(true);
+        events = getEventsfromDB();
+
+        gridLayout = new GridLayoutManager(this, events.size());
+        recyclerView.setLayoutManager(gridLayout);
+
+        adapter = new EventAdapter(this, events);
+        adapter.be = this;
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
