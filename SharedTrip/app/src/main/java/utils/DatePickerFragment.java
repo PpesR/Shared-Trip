@@ -10,7 +10,6 @@ import android.widget.DatePicker;
 
 import java.util.Calendar;
 
-import models.EventModel;
 import models.UserEventModel;
 import remm.sharedtrip.CreateEvent;
 
@@ -38,29 +37,27 @@ public class DatePickerFragment extends DialogFragment
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
-
-
+        
         // Create a new instance of DatePickerDialog and return it
-        return new DatePickerDialog(getActivity(), this, year, month, day);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), this, year, month, day);
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+        return datePickerDialog;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onDateSet(DatePicker view, int year, int month, int day) {
-        myday = (day < 10 ? "0" : "")+day;
-        mymonth = (month < 10 ? "0" :"")+month;
-        myyear = year+"";
-        date = myyear+"-"+mymonth+"-"+myday;
-        if (whichDate=='s') {
+        myday = (day < 10 ? "0" : "") + day;
+        mymonth = (month < 10 ? "0" : "") + month;
+        myyear = year + "";
+        date = myyear + "-" + mymonth + "-" + myday;
+        if (whichDate == 's') {
             model.setStartDate(date);
             creationView.onModelChanged();
-        }
-        else {
+        } else {
             model.setEndDate(date);
             creationView.onModelChanged();
         }
     }
-
-
 
 
 }
