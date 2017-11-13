@@ -203,7 +203,6 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     //when called upon filters events by name
     @Override
     public boolean onQueryTextChange(String s) {
-
         return false;
     }
 
