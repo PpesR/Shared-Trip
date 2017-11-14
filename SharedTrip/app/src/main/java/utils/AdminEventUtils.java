@@ -87,7 +87,8 @@ public class AdminEventUtils {
         @Override
         public void onResponse(Call call, Response response)  {
             try {
-                JSONArray array = new JSONArray(response.body().string());
+                String rstring = response.body().string();
+                JSONArray array = new JSONArray(rstring);
                 List<AdminEventModel> models = new ArrayList<>();
                 if(array.getString(0).equals("SUCCESS")) {
                     JSONArray actualResults = array.getJSONArray(2);
@@ -95,7 +96,7 @@ public class AdminEventUtils {
                         JSONObject obj = actualResults.getJSONObject(i);
                         AdminEventModel adminEventModel = new AdminEventModel(
                                 obj.getString("trip_name"),
-                                obj.getString("event_picture"),
+                                obj.getString("event_picture").contains("http") ? obj.getString("event_picture") : null,
                                 obj.getString("location"));
 
                         adminEventModel.setId(obj.getInt("id"));
