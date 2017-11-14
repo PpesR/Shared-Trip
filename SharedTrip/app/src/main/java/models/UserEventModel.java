@@ -1,5 +1,7 @@
 package models;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by Mark on 12.11.2017.
  */
@@ -10,6 +12,7 @@ public class UserEventModel extends EventModel {
     protected boolean approvalPending;
     protected boolean userBanned;
     protected boolean isAdmin;
+    private Bitmap bitmap;
 
     public UserEventModel() {
         super();
@@ -30,4 +33,12 @@ public class UserEventModel extends EventModel {
 
     public boolean isAdmin() { return isAdmin; }
     public void setAdmin(boolean admin) { isAdmin = admin; }
+
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
+
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
+    }
 }
