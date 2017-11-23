@@ -10,6 +10,7 @@ import android.widget.DatePicker;
 
 import java.util.Calendar;
 
+import models.CreatorEventModel;
 import models.UserEventModel;
 import remm.sharedtrip.CreateEvent;
 
@@ -19,11 +20,11 @@ public class DatePickerFragment extends DialogFragment
     String mymonth;
     String myyear;
     String date;
-    UserEventModel model;
+    CreatorEventModel model;
     char whichDate;
     CreateEvent creationView;
 
-    public void setModel(UserEventModel model, char whichDate, CreateEvent handle) {
+    public void setModel(CreatorEventModel model, char whichDate, CreateEvent handle) {
         this.model = model;
         this.whichDate = whichDate;
         this.creationView = handle;

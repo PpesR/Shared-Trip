@@ -51,10 +51,14 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         holder.eventModel = events.get(position);
         holder.name.setText(events.get(position).getName());
         holder.loc.setText(events.get(position).getLoc());
-        Glide
-            .with(context)
-            .load(events.get(position).getImageLink())
-            .into(holder.imageView);
+        if (events.get(position).getBitmap()!=null)
+            holder.imageView.setImageBitmap(events.get(position).getBitmap());
+        else {
+            Glide
+                .with(context)
+                .load(events.get(position).getImageLink())
+                .into(holder.imageView);
+        }
     }
 
     @Override

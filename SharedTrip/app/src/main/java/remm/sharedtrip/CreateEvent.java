@@ -1,8 +1,12 @@
 package remm.sharedtrip;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -11,14 +15,13 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.facebook.Profile;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
+import models.CreatorEventModel;
 import models.EventModel;
 import models.UserEventModel;
 import okhttp3.Call;
@@ -27,9 +30,12 @@ import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import utils.CreateEventUtils;
 import utils.DatePickerFragment;
 
 public class CreateEvent extends AppCompatActivity {
+
+    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 120;
 
     static EditText title, description, destination, cost, spots;
     String test;
@@ -40,12 +46,14 @@ public class CreateEvent extends AppCompatActivity {
     static int creator_id;
     CheckBox private_event_state;
     static Boolean private_event;
-    static UserEventModel model;
+    static CreatorEventModel model;
     static CreateEvent self;
+
+    private Uri imageUri;
 
 
     private void postEventsToDb() {
-        EventCreationTask<String> asyncTask = new EventCreationTask<>();
+        CreateEventUtils.EventCreationTask<String> asyncTask = new CreateEventUtils.EventCreationTask<>(model);
         try {
             String s = asyncTask.execute().get();
         } catch (InterruptedException e) {
@@ -59,8 +67,10 @@ public class CreateEvent extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         self = this;
-        model = new UserEventModel();
+        model = new CreatorEventModel("","","", BrowseEvents.fbUserModel.id);
         setContentView(R.layout.activity_create_event);
+
+        getIntent().setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         creator_id = BrowseEvents.fbUserModel.id;
         imageView = findViewById(R.id.add_picture_preview);
@@ -100,6 +110,12 @@ public class CreateEvent extends AppCompatActivity {
         create.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                model.setName(title.getText().toString());
+                model.setDescription(description.getText().toString());
+                model.setLoc(destination.getText().toString());
+                model.setCost(Integer.parseInt(cost.getText().toString()));
+                model.setSpots(Integer.parseInt(spots.getText().toString()));
+                model.setPrivate(private_event_state.isChecked());
                 postEventsToDb();
                 finish();
             }
@@ -116,13 +132,16 @@ public class CreateEvent extends AppCompatActivity {
         }
         if(resultCode==RESULT_OK)
         {
-            Uri selectedimg = data.getData();
+            Uri selectedImgUri = data.getData();
             try {
                 imageView.setImageBitmap(
                         MediaStore.Images.Media.getBitmap(
                                 this.getContentResolver(),
-                                selectedimg));
-                model.setImageLink(selectedimg.toString());
+                                selectedImgUri));
+            model.setImageLink(selectedImgUri.toString());
+            model.setImageFile(selectedImgUri, this);
+            this.imageUri = selectedImgUri;
+//            trySendImage();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -150,57 +169,72 @@ public class CreateEvent extends AppCompatActivity {
         }
     }
 
-    public static class EventCreationTask<String> extends AsyncTask<EventModel, Void, String> {
+    private void trySendImage() {
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
 
-        @SafeVarargs
-        @Override
-        protected final String doInBackground(EventModel... events) {
-            OkHttpClient client = new OkHttpClient();
-            FormBody.Builder formBuilder = new FormBody.Builder()
-                    .add("user", creator_id+"")
-                    .add("location", destination.getText().toString())
-                    .add("name", title.getText().toString())
-                    .add("description", description.getText().toString())
-                    .add("total_cost", cost.getText().toString())
-                    .add("spots", spots.getText().toString())
-                    .add("start_date", model.getStartDate()+"")
-                    .add("end_date", model.getEndDate()+"")
-                    .add("private", private_event ? "1" : "0")
-                    .add("picture", model.getImageLink()+"");
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
-            final Request request = new Request.Builder()
-                    .url("http://146.185.135.219/requestrouter.php?hdl=event")
-                    .post(formBuilder.build())
-                    .build();
-            Call call = client.newCall(request);
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
 
-            call.enqueue(new Callback() {
+            } else {
 
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    self.tempDisplay(e.getMessage());
-                }
+                // No explanation needed, we can request the permission.
 
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    try {
-                        JSONArray array = new JSONArray(response.body().string());
-                        JSONArray actual = array.getJSONArray(2);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            });
-
-            return null;
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+            }
+        }
+        else {
+            CreateEventUtils.ImageUploadTask<Void> task =
+                    new CreateEventUtils.ImageUploadTask<>(
+                            new CreateEventUtils.ImageUploadCallback(this),
+                            imageUri,
+                            this);
+            task.execute();
         }
     }
 
-    private void tempDisplay(String s) {
-        String s2;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay!
+                    CreateEventUtils.ImageUploadTask<Void> task =
+                            new CreateEventUtils.ImageUploadTask<>(
+                                    new CreateEventUtils.ImageUploadCallback(this),
+                                    imageUri,
+                                    this);
+                    task.execute();
+
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other permissions this app might request
+        }
     }
 
-
+    public void onImageUploaded(final Bitmap newImage) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                imageView.setImageBitmap(newImage);
+            }
+        });
+    }
 
 }

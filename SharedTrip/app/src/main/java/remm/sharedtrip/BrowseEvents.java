@@ -3,6 +3,8 @@ package remm.sharedtrip;
 import android.annotation.SuppressLint;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -12,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -249,17 +252,23 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
              List<UserEventModel> events = new ArrayList<>();
              try {
                  Response response = client.newCall(request).execute();
+                 String bodystring = response.body().string();
+                 if (bodystring=="") {
+                     events.add(new UserEventModel("temp", "http://clipart-library.com/images/dT4oqE78c.png", "temp"));
+                     return events;
+                 }
 
-                 JSONArray array = new JSONArray(response.body().string());
+                 JSONArray array = new JSONArray(bodystring);
                  JSONArray resultArray = array.getJSONArray(2);
 
                  for (int i = 0; i < resultArray.length(); i++) {
 
                      JSONObject object = resultArray.getJSONObject(i);
 
-                     UserEventModel event = new UserEventModel(object.getString("trip_name"),
-                             object.getString("event_picture"), object.getString("location"));
+                     UserEventModel event = new UserEventModel();
 
+                     event.setName(object.getString("trip_name"));
+                     event.setLoc(object.getString("location"));
                      event.setDescription(object.getString("description"));
                      event.setId(object.getInt("id"));
                      event.setStartDate(object.getString("date_begin"));
@@ -271,6 +280,13 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
                      event.setUserBanned(object.getInt("banned")==1);
                      event.setAdmin(object.getInt("is_admin")==1);
 
+                     if (!object.getString("event_picture").contains("http")) {
+                         byte[] bytes = Base64.decode(object.getString("event_picture"), Base64.DEFAULT);
+                         event.setBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                     }
+                     else {
+                         event.setImageLink(object.getString("event_picture"));
+                     }
                      events.add(event);
                  }
 
