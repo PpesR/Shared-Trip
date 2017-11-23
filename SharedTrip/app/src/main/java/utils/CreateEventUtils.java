@@ -109,80 +109,14 @@ public class CreateEventUtils {
         }
     }
 
-    public static class ImageUploadTask<Void> extends AsyncTask<Void, Void, Void> {
-
-        public ImageUploadTask(ImageUploadCallback callback, Uri imageUri, CreateEvent caller) {
-            this.callback = callback;
-            this.imageUri = imageUri;
-            this.caller = caller;
-        }
-
-        private ImageUploadCallback callback;
-        private Uri imageUri;
-        private CreateEvent caller;
-
-        @SafeVarargs
-        @Override
-        protected final Void doInBackground(Void... voids) {
-
-            final MediaType MY_MEDIA_TYPE = MediaType.parse("image/bmp");
-
-            OkHttpClient client = new OkHttpClient();
-            MultipartBody multipartBody = null;
-            try {
-                multipartBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
-                        .addFormDataPart("userid", "8457851245")
-                        .addFormDataPart(
-                                "file",
-                                "testFile.png",
-                                RequestBody.create(MY_MEDIA_TYPE, new File(getFilePath(caller, imageUri))))
-                        .build();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
-
-            final Request request = new Request.Builder()
-                    .url("http://146.185.135.219/api/v1/upload")
-                    .post(multipartBody)
-                    .build();
-
-            Call call = client.newCall(request);
-            call.enqueue(callback);
-            return null;
-        }
-    }
-
-    public static class ImageUploadCallback implements Callback {
-
-        private CreateEvent activity;
-
-        public ImageUploadCallback(CreateEvent activity) {
-            this.activity = activity;
-        }
-
-        @Override
-        public void onFailure(Call call, IOException e) {
-            String exe = e.getMessage();
-            String s = "";
-        }
-
-        @Override
-        public void onResponse(Call call, Response response) throws IOException {
-            String responseString = response.body().string();
-            byte[] bytes = Base64.decode(responseString, Base64.DEFAULT);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            activity.onImageUploaded(decodedByte);
-        }
-    }
-
-
 
     @SuppressLint("NewApi")
     public static String getFilePath(Activity activity, Uri uri) throws URISyntaxException {
         String selection = null;
         String[] selectionArgs = null;
+
         // Uri is different in versions after KITKAT (Android 4.4), we need to
-        if (Build.VERSION.SDK_INT >= 19 && DocumentsContract.isDocumentUri(activity, uri)) {//DocumentsContract.isDocumentUri(context.getApplicationContext(), uri))
+        if (Build.VERSION.SDK_INT >= 19 && DocumentsContract.isDocumentUri(activity, uri)) { //DocumentsContract.isDocumentUri(context.getApplicationContext(), uri))
             if (uri.toString().contains("mnt")) {
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");

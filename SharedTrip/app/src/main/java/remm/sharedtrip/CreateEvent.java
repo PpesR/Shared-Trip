@@ -1,10 +1,12 @@
 package remm.sharedtrip;
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
+import android.os.Build;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -15,30 +17,18 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import models.CreatorEventModel;
-import models.EventModel;
-import models.UserEventModel;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import utils.CreateEventUtils;
 import utils.DatePickerFragment;
 
 public class CreateEvent extends AppCompatActivity {
 
-    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 120;
+    private static final int READ_EXTERNAL_STORAGE_PERMISSION_REQUEST = 120;
 
     static EditText title, description, destination, cost, spots;
-    String test;
     Button create;
     Button cancel;
     Button addPicture;
@@ -48,8 +38,6 @@ public class CreateEvent extends AppCompatActivity {
     static Boolean private_event;
     static CreatorEventModel model;
     static CreateEvent self;
-
-    private Uri imageUri;
 
 
     private void postEventsToDb() {
@@ -97,12 +85,7 @@ public class CreateEvent extends AppCompatActivity {
         addPicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(
-                        Intent.createChooser(intent, "Choose Picture"),
-                        1);
+                tryShowImagePreview();
             }
         });
 
@@ -120,9 +103,9 @@ public class CreateEvent extends AppCompatActivity {
                 finish();
             }
         });
-
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -138,10 +121,8 @@ public class CreateEvent extends AppCompatActivity {
                         MediaStore.Images.Media.getBitmap(
                                 this.getContentResolver(),
                                 selectedImgUri));
-            model.setImageLink(selectedImgUri.toString());
+            model.setImageLink(selectedImgUri != null ? selectedImgUri.toString() : null);
             model.setImageFile(selectedImgUri, this);
-            this.imageUri = selectedImgUri;
-//            trySendImage();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -169,54 +150,39 @@ public class CreateEvent extends AppCompatActivity {
         }
     }
 
-    private void trySendImage() {
-        // Here, thisActivity is the current activity
+    private void tryShowImagePreview() {
+
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-
-                // No explanation needed, we can request the permission.
-
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-            }
+            ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    READ_EXTERNAL_STORAGE_PERMISSION_REQUEST);
         }
         else {
-            CreateEventUtils.ImageUploadTask<Void> task =
-                    new CreateEventUtils.ImageUploadTask<>(
-                            new CreateEventUtils.ImageUploadCallback(this),
-                            imageUri,
-                            this);
-            task.execute();
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(
+                    Intent.createChooser(intent, "Choose Picture"),
+                    1);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
+            case READ_EXTERNAL_STORAGE_PERMISSION_REQUEST: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    // permission was granted, yay!
-                    CreateEventUtils.ImageUploadTask<Void> task =
-                            new CreateEventUtils.ImageUploadTask<>(
-                                    new CreateEventUtils.ImageUploadCallback(this),
-                                    imageUri,
-                                    this);
-                    task.execute();
-
+                    Intent intent = new Intent();
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    startActivityForResult(
+                            Intent.createChooser(intent, "Choose Picture"),
+                            1);
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
