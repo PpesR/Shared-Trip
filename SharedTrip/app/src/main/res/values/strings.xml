@@ -65,6 +65,7 @@
     <string name="no">NO</string>
     <string name="approve">APPROVE</string>
     <string name="deny">DENY</string>
+    <string name="api_address_with_prefix">http://146.185.135.219/api/v1</string>
 
 
 </resources>

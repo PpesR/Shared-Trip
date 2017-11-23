@@ -1,6 +1,7 @@
 package remm.sharedtrip;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -183,6 +184,7 @@ public class ProfileView extends AppCompatActivity {
 
     private static class DescChangeTask<Void> extends AsyncTask<Void, Void, Void> {
 
+        private String apiPrefix = self.getString(R.string.api_address_with_prefix);
         private MainActivity.FbUserModel model;
         private String descriptionText;
 
@@ -194,20 +196,18 @@ public class ProfileView extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         protected final Void doInBackground(final Void... nothings) {
+
             OkHttpClient client = new OkHttpClient();
-            FormBody.Builder formBuilder = null;
-            formBuilder = new FormBody.Builder()
-                    .add("hdl", "user")
-                    .add("act", "desc")
-                    .add("user", model.id+"")
-                    .add("text", descriptionText);
+
+            FormBody.Builder formBuilder = new FormBody.Builder()
+                    .add("description", descriptionText);
 
             final Request request = new Request.Builder()
-                    .url("http://146.185.135.219/requestrouter.php")
-                    .post(formBuilder.build())
+                    .url(apiPrefix+"/user/"+model.id)
+                    .put(formBuilder.build())
                     .build();
-            Call call = client.newCall(request);
 
+            Call call = client.newCall(request);
             call.enqueue(new Callback() {
 
                 @Override
@@ -218,16 +218,10 @@ public class ProfileView extends AppCompatActivity {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
-                        JSONArray array = new JSONArray(response.body().string());
-                        if (array.getString(0).equals("ERROR")) {
-                            throw new Exception(array.getString(1));
-                        }
-                        else {
-                            model.description = descriptionText;
-                        }
+                        String bodyString = response.body().string();
+                        int len = bodyString.length();
+                        BrowseEvents.fbUserModel.description = descriptionText;
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

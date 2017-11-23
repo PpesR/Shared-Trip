@@ -3,6 +3,7 @@ package utils;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentUris;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -35,6 +36,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import remm.sharedtrip.CreateEvent;
+import remm.sharedtrip.R;
 
 /**
  * Created by Mark on 14.11.2017.
@@ -47,6 +49,8 @@ public class CreateEventUtils {
     }
 
     public static class EventCreationTask<Void> extends AsyncTask<Void, Void, Void> {
+
+        private String apiPrefix = Resources.getSystem().getString(R.string.api_address_with_prefix);
 
         private CreatorEventModel model;
 
@@ -70,19 +74,18 @@ public class CreateEventUtils {
                     .addFormDataPart("spots", model.getSpots()+"")
                     .addFormDataPart("start_date", model.getStartDate()+"")
                     .addFormDataPart("end_date", model.getEndDate()+"")
-                    .addFormDataPart("private", model.isPrivate() ? "1" : "0")
-                    .addFormDataPart("hdl", "event");
+                    .addFormDataPart("private", model.isPrivate() ? "1" : "0");
 
             if (model.getImageFile()!=null) {
                 builder.addFormDataPart(
-                        "picture",
+                        "file",
                         "testFile.png",
                         RequestBody.create(MY_MEDIA_TYPE, model.getImageFile()))
                         .build();
             }
 
             final Request request = new Request.Builder()
-                    .url("http://146.185.135.219/requestrouter.php")
+                    .url(apiPrefix+"/event")
                     .post(builder.build())
                     .build();
             Call call = client.newCall(request);
@@ -96,12 +99,7 @@ public class CreateEventUtils {
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-                    try {
-                        JSONArray array = new JSONArray(response.body().string());
-                        JSONArray actual = array.getJSONArray(2);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+
                 }
             });
 
