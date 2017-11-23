@@ -41,7 +41,6 @@ public class CreatorEventModel extends EventModel {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        //this.imageFile = imageFile;
     }
 
     public boolean isPrivate() {

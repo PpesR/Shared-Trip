@@ -93,7 +93,6 @@ public class AdminEventActivity extends FragmentActivity {
                             .add(R.id.fragment_container, frag)
                             .commit();
                 }
-
             }
         });
     }
