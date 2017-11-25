@@ -3,15 +3,21 @@ package remm.sharedtrip;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import fragments.*;
+import fragments.BrowseEvents;
 import utils.BottomNavigationViewHelper;
 
 public class FriendsViewActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
+    private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,14 +34,22 @@ public class FriendsViewActivity extends AppCompatActivity {
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.bottombaritem_events:
-                                finish();
+                                fragmentManager = getSupportFragmentManager();
+                                fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction.add(R.id.friends_view_fragment, new BrowseEvents());
+                                fragmentTransaction.commit();
                                 return true;
                             case R.id.bottombaritem_friends:
+                                fragmentManager = getSupportFragmentManager();
+                                fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction.add(R.id.friends_view_fragment, new FriendsView());
+                                fragmentTransaction.commit();
                                 return true;
                             case R.id.bottombaritem_stats:
-                                finish();
-                                Intent statsViewActivity = new Intent(FriendsViewActivity.this, StatsViewActivity.class);
-                                startActivity(statsViewActivity);
+                                fragmentManager = getSupportFragmentManager();
+                                fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction.add(R.id.friends_view_fragment, new StatsFragment());
+                                fragmentTransaction.commit();
                                 return true;
                             case R.id.bottombaritem_profile:
                                 finish();

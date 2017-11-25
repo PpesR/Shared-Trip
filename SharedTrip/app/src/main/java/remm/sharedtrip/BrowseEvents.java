@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -116,9 +117,11 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
                                 // TODO
                                 return true;
                             case R.id.bottombaritem_friends:
-                                Intent friendsViewActivity = new Intent(BrowseEvents.this, FriendsViewActivity.class);
-                                startActivity(friendsViewActivity);
-                                return true;
+
+                                switchToFragmentFriendsView();
+//                                Intent friendsViewActivity = new Intent(BrowseEvents.this, FriendsViewActivity.class);
+//                                startActivity(friendsViewActivity);
+                                break;
                             case R.id.bottombaritem_stats:
                                 Intent statsViewActivity = new Intent(BrowseEvents.this, StatsViewActivity.class);
                                 startActivity(statsViewActivity);
@@ -293,5 +296,10 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     public void onBackPressed() {
         this.moveTaskToBack(true);
         //do not redirect
+    }
+
+    public void switchToFragmentFriendsView(){
+        FragmentManager manager = getSupportFragmentManager();
+       // manager.beginTransaction().replace( new FriendsView()).commit();
     }
 }

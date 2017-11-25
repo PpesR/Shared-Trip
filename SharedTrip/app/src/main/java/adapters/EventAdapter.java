@@ -6,6 +6,7 @@ package adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +20,6 @@ import com.google.gson.Gson;
 import java.util.List;
 
 import models.UserEventModel;
-import remm.sharedtrip.BrowseEvents;
 import remm.sharedtrip.EventDetailsActivity;
 import remm.sharedtrip.R;
 
@@ -28,7 +28,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
 
     private Context context;
     private List<UserEventModel> events;
-    public BrowseEvents be;
+    public FragmentActivity be;
 
     public EventAdapter(Context context, List<UserEventModel> events) {
         this.context = context;

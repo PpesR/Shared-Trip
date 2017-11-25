@@ -49,7 +49,7 @@ public class MainActivity extends FragmentActivity {
     ProfileTracker profileTracker;
     private static MainActivity self;
     private static FbUserModel model;
-    private Intent browseEvents;
+    private Intent browse;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -135,10 +135,10 @@ public class MainActivity extends FragmentActivity {
      */
     private void redirect() {
 
-        if (browseEvents==null)
-            browseEvents = new Intent(self, BrowseEvents.class); // The thing that performs redirection
-        browseEvents.putExtra("user", new Gson().toJson(model));
-        startActivity(browseEvents);
+        if (browse==null)
+            browse = new Intent(self, BrowseActivity.class); // The thing that performs redirection
+        browse.putExtra("user", new Gson().toJson(model));
+        startActivity(browse);
     }
 
     @Override

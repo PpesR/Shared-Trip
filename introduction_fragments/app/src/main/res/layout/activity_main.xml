@@ -4,7 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="remm.sharedtrip.FriendsViewActivity">
+    tools:context="com.example.android.introduction_fragments.MainActivity">
+
+
+    <fragment android:name="com.example.android.introduction_fragments.HeadlinesFragment"
+        android:id="@+id/headlines_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <fragment android:name="com.example.android.introduction_fragments.ArticleFragment"
+        android:id="@+id/article_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,12 +28,17 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="9.2"
-            android:background="@color/white_text">
+           >
 
-            <fragment android:name="fragments.FriendsView"
-                android:id="@+id/friends_view_fragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+
+                android:textSize="26sp"
+                android:textStyle="bold" />
         </RelativeLayout>
 
         <!-- Height is 0 because of weightSum -->
@@ -31,10 +47,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_gravity="bottom"
+            android:weightSum = "4"
             android:layout_weight="0.8"
-            app:itemIconTint="@drawable/selector_bottombar_item"
-            app:itemTextColor="@drawable/selector_bottombar_item"
-            app:menu="@menu/bottombar_menu" />
+            app:menu="@menu/bottomnav" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
