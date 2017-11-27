@@ -1,7 +1,6 @@
 package remm.sharedtrip;
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -20,9 +19,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.URL;
@@ -47,7 +43,7 @@ public class ProfileView extends AppCompatActivity {
     private Button save;
     private EditText desc_field;
     private BottomNavigationView bottomNavigationView;
-    private MainActivity.FbUserModel userModel;
+    private MainActivity.FbGoogleUserModel userModel;
     private Gson gson = new Gson();
     static  ProfileView self;
 
@@ -57,20 +53,26 @@ public class ProfileView extends AppCompatActivity {
         self = this;
         super.onCreate(savedInstanceState);
         ownIntent = getIntent();
-        userModel = BrowseEvents.fbUserModel;//gson.fromJson(ownIntent.getStringExtra("user"), MainActivity.FbUserModel.class);
+        userModel = BrowseEvents.userModel;//gson.fromJson(ownIntent.getStringExtra("user"), MainActivity.FbUserModel.class);
         setContentView(R.layout.activity_profile);
 
         hi_text = (TextView) findViewById(R.id.profile_hi);
         hi_text.append("  "+userModel.firstName);
         ImageView prof_pic = (ImageView) findViewById(R.id.profile_image);
-        Uri pic = Uri.parse(Uri.decode(userModel.imageUri));
 
-        try {
-            URL imageURL = new URL(pic.toString());
-            Bitmap bitmap = BitmapFactory.decodeStream(imageURL.openConnection().getInputStream());
-            prof_pic.setImageBitmap(bitmap);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (userModel.imageUri == null) {
+            prof_pic.setImageDrawable(getDrawable(R.mipmap.ic_default_user));
+        }
+        else {
+            Uri pic = Uri.parse(Uri.decode(userModel.imageUri));
+
+            try {
+                URL imageURL = new URL(pic.toString());
+                Bitmap bitmap = BitmapFactory.decodeStream(imageURL.openConnection().getInputStream());
+                prof_pic.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         TextView fullname = (TextView) findViewById(R.id.prof_name);
@@ -185,10 +187,10 @@ public class ProfileView extends AppCompatActivity {
     private static class DescChangeTask<Void> extends AsyncTask<Void, Void, Void> {
 
         private String apiPrefix = self.getString(R.string.api_address_with_prefix);
-        private MainActivity.FbUserModel model;
+        private MainActivity.FbGoogleUserModel model;
         private String descriptionText;
 
-        public DescChangeTask(MainActivity.FbUserModel model, String descriptionText) {
+        public DescChangeTask(MainActivity.FbGoogleUserModel model, String descriptionText) {
             this.model = model;
             this.descriptionText = descriptionText;
         }
@@ -220,7 +222,7 @@ public class ProfileView extends AppCompatActivity {
                     try {
                         String bodyString = response.body().string();
                         int len = bodyString.length();
-                        BrowseEvents.fbUserModel.description = descriptionText;
+                        BrowseEvents.userModel.description = descriptionText;
 
                     } catch (Exception e) {
                         e.printStackTrace();

@@ -46,7 +46,7 @@ public class AdminEventActivity extends FragmentActivity {
     private void getMyAdminEvents() {
         AdminEventUtils.AdminEventRetrievalTask<Void> task =
                 new AdminEventUtils.AdminEventRetrievalTask<>(
-                        BrowseEvents.fbUserModel.id,
+                        BrowseEvents.userModel.id,
                         new AdminEventUtils.AndminEventRetrievalCallback(this));
         task.execute();
     }

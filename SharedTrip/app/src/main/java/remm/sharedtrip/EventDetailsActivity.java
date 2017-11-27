@@ -1,6 +1,5 @@
 package remm.sharedtrip;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -78,7 +77,7 @@ public class EventDetailsActivity extends FragmentActivity {
         EventDetailsUtils.JoinRequestTask requestTask =
                 new EventDetailsUtils.JoinRequestTask<>(
                         model.getId(),
-                        BrowseEvents.fbUserModel.id,
+                        BrowseEvents.userModel.id,
                         new EventDetailsUtils.JoinCallback(this));
         requestTask.execute();
     }
@@ -87,7 +86,7 @@ public class EventDetailsActivity extends FragmentActivity {
         EventDetailsUtils.ApprovalStatusTask task =
                 new EventDetailsUtils.ApprovalStatusTask(
                         model.getId(),
-                        BrowseEvents.fbUserModel.id,
+                        BrowseEvents.userModel.id,
                         new EventDetailsUtils.ApprovalCallback(this, model));
         task.execute();
     }
@@ -157,7 +156,7 @@ public class EventDetailsActivity extends FragmentActivity {
 
         MenuItem profileItem = bottomNavigationView.getMenu()
                 .findItem(R.id.bottombaritem_profile);
-        profileItem.setTitle(BrowseEvents.fbUserModel.firstName);
+        profileItem.setTitle(BrowseEvents.userModel.firstName);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {

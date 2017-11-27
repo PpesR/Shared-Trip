@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "48358785627",
-    "project_id": "firebase-sharedtrip"
+    "project_number": "631771254653",
+    "project_id": "sharedtrip-182720"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:48358785627:android:0566a22c2d0a4c04",
+        "mobilesdk_app_id": "1:631771254653:android:0566a22c2d0a4c04",
         "android_client_info": {
           "package_name": "remm.sharedtrip"
         }
       },
       "oauth_client": [
         {
-          "client_id": "48358785627-3oqk1u1spsgqp5mgb50vc2gi1v3uchal.apps.googleusercontent.com",
+          "client_id": "631771254653-9c8difgfev9m08cd07hh3ib2t9ibqjcm.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "remm.sharedtrip",
-            "certificate_hash": "7df8285a94d0f558fb74e7947f3cb612a867c2e4"
+            "certificate_hash": "5f3b4dfe99d71561b1ccee5d6f0ca8e274181cf9"
           }
         },
         {
-          "client_id": "48358785627-1b82ikuqd0927g4mrd83gbape2obhdth.apps.googleusercontent.com",
+          "client_id": "631771254653-lnpnmectqi5rkj5p0oa16070ie2m2q6i.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBZHJH6V2Qhoy0JJbR_trwd9x5o1qku3Xo"
+          "current_key": "AIzaSyDecB8c729edORKxkzQRKOpA9MB1cvuASc"
         }
       ],
       "services": {
