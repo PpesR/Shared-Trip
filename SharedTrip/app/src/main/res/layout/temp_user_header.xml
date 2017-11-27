@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white_text"
     android:elevation="3dp"
     android:orientation="horizontal"
@@ -10,16 +11,37 @@
 
     <TextView
         android:id="@+id/user_header_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:clickable="true"/>
-
-    <com.facebook.login.widget.LoginButton
-        android:id="@+id/header_logoff_button"
-        style="@style/FacebookLoginButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|end"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_gravity="center_vertical"/>
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="end">
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/header_logoff_button"
+            style="@style/FacebookLoginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:textAlignment="textEnd"
+            app:layout_anchor="@id/google_logout_btn"
+            app:layout_anchorGravity="center_vertical|right|end"/>
+
+        <Button
+            android:id="@+id/google_logout_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Log out"
+            android:textSize="12sp"
+            android:layout_gravity="center_vertical|right|end"
+            android:visibility="gone"
+            android:background="@color/white_text"
+            android:textColor="@color/button_grey"/>
+    </android.support.design.widget.CoordinatorLayout>
 </LinearLayout>

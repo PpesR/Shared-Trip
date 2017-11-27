@@ -55,12 +55,12 @@ public class CreateEvent extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         self = this;
-        model = new CreatorEventModel("","","", BrowseEvents.fbUserModel.id);
+        model = new CreatorEventModel("","","", BrowseEvents.userModel.id);
         setContentView(R.layout.activity_create_event);
 
         getIntent().setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-        creator_id = BrowseEvents.fbUserModel.id;
+        creator_id = BrowseEvents.userModel.id;
         imageView = findViewById(R.id.add_picture_preview);
         title = findViewById(R.id.title);
         destination = findViewById(R.id.destination);

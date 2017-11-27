@@ -5,11 +5,12 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -43,7 +45,11 @@ import models.UserEventModel;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import utils.BottomNavigationViewHelper;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class BrowseEvents extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
@@ -53,10 +59,9 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     private GridLayoutManager searchGridLayout;
     private GridLayoutManager gridLayout;
     private EventAdapter adapter;
-    private ProfileTracker profileTracker;
-    private TextView t;
+    private TextView headerUsername;
     private Intent ownIntent;
-    static MainActivity.FbUserModel fbUserModel;
+    static FbGoogleUserModel userModel;
     private Gson gson = new Gson();
     private SearchView searchView;
     private BottomNavigationView bottomNavigationView;
@@ -81,35 +86,28 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
         super.onCreate(savedInstanceState);
 
         ownIntent = getIntent();
-        fbUserModel = gson.fromJson(
+        userModel = gson.fromJson(
                 ownIntent.getStringExtra("user")
-                , MainActivity.FbUserModel.class);
+                , FbGoogleUserModel.class);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setWindow();
 
-        profileTracker = new ProfileTracker() {
-            @Override
-            protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
-                if (currentProfile==null) redirect();
-            }
-        };
+        setWindow();
     }
 
     private void setWindow(){
         setContentView(R.layout.activity_browse_events);
 
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        setUpUserHeader();
 
-        BottomNavigationViewHelper
-                .disableShiftMode(bottomNavigationView);
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
 
-        MenuItem profileItem = bottomNavigationView.getMenu()
-                        .findItem(R.id.bottombaritem_profile);
-        profileItem.setTitle(fbUserModel.firstName);
+        MenuItem profileItem = bottomNavigationView.getMenu().findItem(R.id.bottombaritem_profile);
+        profileItem.setTitle(userModel.firstName);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -120,11 +118,9 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
                                 // TODO
                                 return true;
                             case R.id.bottombaritem_friends:
-
-                                switchToFragmentFriendsView();
-//                                Intent friendsViewActivity = new Intent(BrowseEvents.this, FriendsViewActivity.class);
-//                                startActivity(friendsViewActivity);
-                                break;
+                                Intent friendsViewActivity = new Intent(BrowseEvents.this, FriendsViewActivity.class);
+                                startActivity(friendsViewActivity);
+                                return true;
                             case R.id.bottombaritem_stats:
                                 Intent statsViewActivity = new Intent(BrowseEvents.this, StatsViewActivity.class);
                                 startActivity(statsViewActivity);
@@ -139,27 +135,17 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
                 });
 
 
-        recyclerView = (RecyclerView) findViewById(R.id.eventResults);
+        recyclerView = findViewById(R.id.eventResults);
         events = getEventsfromDB();
 
-        gridLayout = new GridLayoutManager(this, events.size());
-        recyclerView.setLayoutManager(gridLayout);
+        if (events != null && !events.isEmpty()) {
+            gridLayout = new GridLayoutManager(this, events.size());
+            recyclerView.setLayoutManager(gridLayout);
 
-        adapter = new EventAdapter(this, events);
-        adapter.be = this;
-        recyclerView.setAdapter(adapter);
-
-        t = (TextView) findViewById(R.id.user_header_name);
-        t.append("  "+fbUserModel.name);
-        t.setCompoundDrawablesWithIntrinsicBounds(R.drawable.com_facebook_button_icon_blue, 0, 0, 0);
-        t.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent profileIntent = new Intent(BrowseEvents.this, ProfileView.class);
-                profileIntent.putExtra("user", ownIntent.getStringExtra("user"));
-                BrowseEvents.this.startActivity(profileIntent);
-            }
-        });
+            adapter = new EventAdapter(this, events);
+            adapter.be = this;
+            recyclerView.setAdapter(adapter);
+        }
 
         /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
@@ -170,11 +156,8 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
             }
         });*/
 
-        LoginButton loginButton = findViewById(R.id.header_logoff_button);
-        loginButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.add_event_fbutton);
-        fab.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent myIntent = new Intent(BrowseEvents.this, CreateEvent.class);
@@ -183,19 +166,14 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
         });
 
         //registers when text is typed on search bar and calls onQuery... methods
-        searchView = (SearchView) findViewById(R.id.searchView);
-        //searchView.setOnQueryTextListener(this);
+        searchView = findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(this);
-
     }
-
-
 
     private void redirect() {
         Intent browseEvents = new Intent(this, MainActivity.class);
         startActivity(browseEvents);
     }
-
 
     //method not used (searchview), but required by default
     @Override
@@ -216,7 +194,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
         searchView.setOnQueryTextListener(this);
 
         Button exit = (Button) findViewById(R.id.exitbutton);
-        exit.setOnClickListener(new View.OnClickListener() {
+        exit.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 setWindow();
@@ -247,13 +225,13 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
          protected final List<UserEventModel> doInBackground(Void... voids) {
              OkHttpClient client = new OkHttpClient();
              Request request = new Request.Builder()
-                     .url("http://146.185.135.219/requestrouter.php?hdl=event&act=wappr&user="+fbUserModel.id)
+                     .url("http://146.185.135.219/requestrouter.php?hdl=event&act=wappr&user="+ userModel.id)
                      .build();
              List<UserEventModel> events = new ArrayList<>();
              try {
                  Response response = client.newCall(request).execute();
                  String bodystring = response.body().string();
-                 if (bodystring=="") {
+                 if (bodystring.equals("")) {
                      events.add(new UserEventModel("temp", "http://clipart-library.com/images/dT4oqE78c.png", "temp"));
                      return events;
                  }
@@ -303,17 +281,18 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     @Override
     protected void onResume() {
         super.onResume();
-        MenuItem myButton = bottomNavigationView.getMenu()
-                .findItem(R.id.bottombaritem_events);
+        MenuItem myButton = bottomNavigationView.getMenu().findItem(R.id.bottombaritem_events);
         myButton.setChecked(true);
         events = getEventsfromDB();
 
-        gridLayout = new GridLayoutManager(this, events.size());
-        recyclerView.setLayoutManager(gridLayout);
+        if (events!=null && !events.isEmpty()) {
+            gridLayout = new GridLayoutManager(this, events.size());
+            recyclerView.setLayoutManager(gridLayout);
 
-        adapter = new EventAdapter(this, events);
-        adapter.be = this;
-        recyclerView.setAdapter(adapter);
+            adapter = new EventAdapter(this, events);
+            adapter.be = this;
+            recyclerView.setAdapter(adapter);
+        }
     }
 
     @Override
@@ -322,8 +301,51 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
         //do not redirect
     }
 
-    public void switchToFragmentFriendsView(){
-        FragmentManager manager = getSupportFragmentManager();
-       // manager.beginTransaction().replace( new FriendsView()).commit();
+    private void setUpUserHeader() {
+
+        headerUsername = findViewById(R.id.user_header_name);
+        headerUsername.append("  "+ userModel.name);
+        headerUsername.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent profileIntent = new Intent(BrowseEvents.this, ProfileView.class);
+                profileIntent.putExtra("user", ownIntent.getStringExtra("user"));
+                BrowseEvents.this.startActivity(profileIntent);
+            }
+        });
+
+        if (userModel.hasFacebook() && !userModel.hasGoogle()) {
+            headerUsername.setCompoundDrawablesWithIntrinsicBounds(
+                    R.drawable.com_facebook_button_icon_blue, 0, 0, 0);
+        }
+        else {
+            Drawable googleG = getResources().getDrawable(R.drawable.googleg_color);
+            Bitmap b = ((BitmapDrawable)googleG).getBitmap();
+            Bitmap bitmapResized = Bitmap.createScaledBitmap(b, 50, 50, false);
+            googleG = new BitmapDrawable(getResources(), bitmapResized);
+            headerUsername.setCompoundDrawablesWithIntrinsicBounds(googleG, null, null, null);
+        }
+
+        LoginButton fbLoginButton = findViewById(R.id.header_logoff_button);
+        fbLoginButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+
+        Button googleLogoutButton = findViewById(R.id.google_logout_btn);
+        googleLogoutButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity.getGoogleSignInClient().signOut();
+                finish();
+            }
+        });
+
+        if (!userModel.hasGoogle()) {
+            googleLogoutButton.setVisibility(GONE);
+            fbLoginButton.setVisibility(VISIBLE);
+        }
+
+        else if (!userModel.hasFacebook()) {
+            fbLoginButton.setVisibility(GONE);
+            googleLogoutButton.setVisibility(VISIBLE);
+        }
     }
 }

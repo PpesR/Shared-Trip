@@ -1,11 +1,15 @@
 package remm.sharedtrip;
+import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -14,48 +18,64 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
-import com.facebook.GraphRequestAsyncTask;
 import com.facebook.GraphResponse;
 import com.facebook.Profile;
-import com.facebook.ProfileTracker;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.Scopes;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.concurrent.ExecutionException;
+import java.util.Set;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import utils.UserAccountUtil.UserActivityHandle;
+import utils.UserAccountUtil.UserCheckCallback;
+import utils.UserAccountUtil.UserCheckingTask;
+import utils.UserAccountUtil.UserRegistrationCallback;
+import utils.UserAccountUtil.UserRegistrationTask;
 
+import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements UserActivityHandle {
 
+    private static final int RC_SIGN_IN = 613;
     CallbackManager callbackManager;
-    ProfileTracker profileTracker;
     private static MainActivity self;
-    private static FbUserModel model;
-    private Intent browse;
+    private static FbGoogleUserModel model;
+    private Intent browseEvents;
+    private static GoogleSignInClient mGoogleSignInClient;
+    private GoogleApiClient mGoogleApiClient;
+    private SignInButton googleButton;
+    private LoginButton loginButton;
+    private ProgressBar progressBar;
+    private GoogleSignInAccount account;
+    private String apiPrefix;
+
+    public static GoogleSignInClient getGoogleSignInClient() { return mGoogleSignInClient; }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         self = this;
+
+        apiPrefix = getResources().getString(R.string.api_address_with_prefix);
 
         /*
          * Mark: Needed for getting pictures from FB/Google/elsewhere.
@@ -66,253 +86,261 @@ public class MainActivity extends FragmentActivity {
         StrictMode.setThreadPolicy(policy);
         setContentView(R.layout.activity_main);
 
-        callbackManager = CallbackManager.Factory.create();
-        final LoginButton loginButton = findViewById(R.id.fb_login_button);
-        loginButton.setReadPermissions(Arrays.asList(
-                "public_profile", "email", "user_birthday", "user_friends"));
+        progressBar = findViewById(R.id.indeterminateBar);
+        progressBar.setVisibility(GONE);
 
-        /* Progress bar */
-        final ProgressBar progressBar = findViewById(R.id.indeterminateBar);
-        progressBar.setVisibility(View.GONE);
+        /* Facebook log in */
+        callbackManager = CallbackManager.Factory.create();
+
+        loginButton = findViewById(R.id.fb_login_button);
+        loginButton.setReadPermissions(Arrays.asList("public_profile", "email", "user_birthday", "user_friends"));
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
+            public void onClick(View view) { hideLogInButtons(); }});
+
+        loginButton.registerCallback(callbackManager, facebookCallback);
+
+
+        /* Google log in */
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestScopes(new Scope(Scopes.PLUS_ME))
+                .requestEmail()
+                .requestProfile()
+                .build();
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        googleButton = findViewById(R.id.google_sign_in_button);
+        googleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View view) {
-                loginButton.setVisibility(View.GONE);
-                progressBar.setVisibility(VISIBLE);
+                Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+                startActivityForResult(signInIntent, RC_SIGN_IN);
             }
         });
 
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                GraphRequest request = GraphRequest.newMeRequest(
-                        loginResult.getAccessToken(),
-                        new GraphRequest.GraphJSONObjectCallback() {
-                            @Override
-                            public void onCompleted(JSONObject object, GraphResponse response) {
-                                try {
-                                    model = new FbUserModel(
-                                            object.optString("id"),
-                                            object.getString("name"),
-                                            object.getString("gender"),
-                                            object.has("birthday") ? object.getString("birthday") : null );
-                                    postUserToDb();
 
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-                Bundle parameters = new Bundle();
-                parameters.putString("fields", "id,name,email,gender,birthday,age_range");
-                request.setParameters(parameters);
-                request.executeAsync();
-            }
-            @Override
-            public void onCancel() {
-                loginButton.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.GONE);
-            }
+        /* Handling existing users*/
 
-            @Override
-            public void onError(FacebookException e) {
-                loginButton.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.GONE);
-            }
-        });
-
+        // Facebook user token exists (already logged in)
         if (AccessToken.getCurrentAccessToken() != null) {
-            loginButton.setVisibility(View.GONE);
-            progressBar.setVisibility(View.VISIBLE);
-            getUserInfoFromDb();
+            GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
+                new GraphRequest.GraphJSONObjectCallback() {
+
+                @Override
+                public void onCompleted(JSONObject user, GraphResponse graphResponse) {
+                    tryLogInExistingUser(null, user.optString("id"));
+                }
+
+            }).executeAsync();
+        }
+        else {
+            account = GoogleSignIn.getLastSignedInAccount(this);
+
+            // Google user has already logged in
+            if (account != null) {
+                tryLogInExistingUser(account.getId(), null);
+            }
         }
     }
 
-    /*
-     * The transition between Main view and Event Browsing view.
-     * Passes your login information like name and picture (only FB for now) to the event browser.
-     */
-    private void redirect() {
+    private void tryLogInExistingUser(String gId, String fbId) {
+        UserCheckingTask<Void> task = new UserCheckingTask<>(apiPrefix, new UserCheckCallback(this), gId, fbId);
+        task.execute();
+    }
 
-        if (browse==null)
-            browse = new Intent(self, BrowseActivity.class); // The thing that performs redirection
-        browse.putExtra("user", new Gson().toJson(model));
-        startActivity(browse);
+    private void postUserToDb() {
+        UserRegistrationTask<Void> asyncTask = new UserRegistrationTask<>(
+                apiPrefix,
+                model,
+                new UserRegistrationCallback(this));
+        asyncTask.execute();
+    }
+
+    @Override
+    public void fillModelFromJson(JSONObject obj) {
+
+        Profile current = Profile.getCurrentProfile();
+        try {
+            model.id = obj.getInt("id");
+            model.name = getNullSafe(obj.getString("name"));
+            model.description = getNullSafe(obj.getString("user_desc"));
+            model.imageUri = getNullSafe(obj.getString("user_pic"));
+            model.gender = getNullSafe(obj.getString("gender"));
+            redirect();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+
+            // The Task returned from this call is always completed, no need to attach a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+        else {
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            account = completedTask.getResult(ApiException.class);
+            Uri photoUri = account.getPhotoUrl();
+
+            if (model == null) model = new FbGoogleUserModel();
+
+            model.name = account.getDisplayName();
+            model.googleId = account.getId();
+            model.imageUri = photoUri == null ? "null" : photoUri.toString();
+
+            Set<Scope> scopes = account.getGrantedScopes();
+            postUserToDb();
+
+        } catch (ApiException e) {
+
+            // Google log in failed
+            AlertDialog.Builder builder;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
+            } else {
+                builder = new AlertDialog.Builder(this);
+            }
+            builder.setTitle("Log In Failed")
+                    .setMessage("Something went wrong... Make sure you are logged in to Google on your device!")
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    private static class UserRegistrationTask<Void> extends AsyncTask<Void, Void, Void> {
-
-        @RequiresApi(api = Build.VERSION_CODES.O)
-        @Override
-        protected final Void doInBackground(final Void... nothings) {
-            OkHttpClient client = new OkHttpClient();
-
-            java.lang.String formattedBirthDate = "";
-            if (model.birthDate != null) {
-                SimpleDateFormat fromUser = new SimpleDateFormat("MM/dd/yyyy");
-                SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd");
-                try {
-                    formattedBirthDate = myFormat.format(fromUser.parse(model.birthDate));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+    public void onUserCheckReady(FbGoogleUserModel checkedModel) {
+        if (checkedModel == null) {
+            if (model.fbId != null) {
+                LoginManager.getInstance().logOut();
+                showLogInButtons();
             }
 
-            FormBody.Builder formBuilder = null;
-            formBuilder = new FormBody.Builder()
-                    .add("hdl", "user")
-                    .add("fb_id", model.fbId+"")
-                    .add("name", model.name)
-                    .add("gender", model.gender)
-                    .add("birth_date", model.birthDate==null ? "null" : formattedBirthDate)
-                    .add("picture", Profile.getCurrentProfile().getProfilePictureUri(300,300).toString());
-
-            final Request request = new Request.Builder()
-                    .url("http://146.185.135.219/requestrouter.php")
-                    .post(formBuilder.build())
-                    .build();
-            Call call = client.newCall(request);
-
-            call.enqueue(new Callback() {
-
-                @Override
-                public void onFailure(Call call, IOException e) {
-
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    try {
-                        JSONArray array = new JSONArray(response.body().string());
-                        Profile current = Profile.getCurrentProfile();
-                        if (array.getString(0).equals("SUCCESS") && current != null) {
-                            int userId = array.getJSONArray(2).getInt(0);
-                            model.id = userId;
-                            model.description = array.getJSONArray(2).getString(1);
-                            model.imageUri = Profile.getCurrentProfile().getProfilePictureUri(300,300).toString();
-                            model.firstName = current.getFirstName();
-                            self.redirect();
+            if (model.googleId != null){
+                mGoogleSignInClient.signOut()
+                    .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            showLogInButtons();
                         }
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
-            return null;
-        }
-    }
-
-    private static class UserInfoTask<String> extends AsyncTask<FbUserModel, Void, String> {
-
-        private String input;
-
-        public UserInfoTask(String input) {
-            this.input = input;
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.O)
-        @SafeVarargs
-        @Override
-        protected final String doInBackground(FbUserModel... users) {
-
-            OkHttpClient client = new OkHttpClient();
-            final Request request = new Request.Builder()
-                    .url("http://146.185.135.219/requestrouter.php?hdl=user&act=fb&user="+input)
-                    .build();
-            Call call = client.newCall(request);
-            call.enqueue(new Callback() {
-
-                @Override
-                public void onFailure(Call call, IOException e) { }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    try {
-                        JSONArray array = new JSONArray(response.body().string());
-                        if (array.getString(0).equals("SUCCESS")) {
-                            JSONArray userData = array.getJSONArray(2);
-                            model = new FbUserModel(input+"", userData.getString(1), userData.getString(2), userData.getString(3));
-                            model.id = userData.getInt(0);
-                            model.description = userData.getString(4);
-                            model.imageUri = userData.getString(5);
-                        }
-                        Profile current = Profile.getCurrentProfile();
-                        if (current != null) {
-                            model.firstName = current.getFirstName();
-                            self.redirect();
-                        }
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
-            return null;
-        }
-    }
-
-    private void postUserToDb() {
-        UserRegistrationTask<Void> asyncTask = new UserRegistrationTask<>();
-        asyncTask.execute();
-    }
-
-    private void getUserInfoFromDb() {
-        GraphRequestAsyncTask request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-            @Override
-            public void onCompleted(JSONObject user, GraphResponse graphResponse) {
-                try {
-                    UserInfoTask<String> asyncTask = new UserInfoTask<>(user.optString("id"));
-                    String s = asyncTask.execute().get();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+                });
             }
-        }).executeAsync();
+
+        } else {
+            model = checkedModel;
+            hideLogInButtons();
+            redirect();
+        }
     }
 
-    public static class FbUserModel implements Serializable {
-        public String fbId;
+    private void redirect() {
+        if (browseEvents==null) browseEvents = new Intent(self, BrowseEvents.class);
+
+        model.firstName = model.hasFacebook() ? Profile.getCurrentProfile().getFirstName() : account.getGivenName();
+        browseEvents.putExtra("user", new Gson().toJson(model));
+        startActivity(browseEvents);
+    }
+
+    public static class FbGoogleUserModel implements Serializable {
+
+        public String fbId = null;
+        public String googleId = null;
         public int id;
-        public String firstName;
         public String name;
         public String gender;
-        public String birthDate;
         public String description;
         public String imageUri;
+        String firstName;
 
-        public FbUserModel(String fid, String name, String gender, String birthDate) {
-            this.fbId = fid;
-            this.name = name;
-            this.gender = gender;
-            this.birthDate = birthDate;
+        String birthDate;
+        public boolean hasGoogle() { return googleId != null; }
+
+        public boolean hasFacebook() { return fbId != null; }
+    }
+
+    private FacebookCallback<LoginResult> facebookCallback = new FacebookCallback<LoginResult>() {
+        @Override
+        public void onSuccess(LoginResult loginResult) {
+            GraphRequest request = GraphRequest.newMeRequest(
+                    loginResult.getAccessToken(),
+                    new GraphRequest.GraphJSONObjectCallback() {
+                        @Override
+                        public void onCompleted(JSONObject object, GraphResponse response) {
+                            try {
+                                model = new FbGoogleUserModel();
+                                model.fbId = object.optString("id");
+                                model.name = object.getString("name");
+                                model.gender = object.getString("gender");
+                                postUserToDb();
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+            Bundle parameters = new Bundle();
+            parameters.putString("fields", "id,name,email,gender,age_range");
+            request.setParameters(parameters);
+            request.executeAsync();
         }
+        @Override
+        public void onCancel() { showLogInButtons(); }
+
+        @Override
+        public void onError(FacebookException e) { showLogInButtons(); }
+    };
+
+    private void showLogInButtons() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                progressBar.setVisibility(GONE);
+                googleButton.setVisibility(VISIBLE);
+                loginButton.setVisibility(VISIBLE);
+            }
+        });
+    }
+
+    private void hideLogInButtons() {
+        runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                  progressBar.setVisibility(VISIBLE);
+                  googleButton.setVisibility(GONE);
+                  loginButton.setVisibility(GONE);
+              }
+        });
     }
 
     @Override
     protected void onResume() {
+
         super.onResume();
+        showLogInButtons();
     }
 
     @Override
     public void onBackPressed() {
         finish();
+    }
+
+    @Override
+    public void onDestroy() { super.onDestroy(); }
+
+    public static String getNullSafe(String in) {
+        return in.equals("null") || in.equals("") ? null : in;
     }
 }
 
