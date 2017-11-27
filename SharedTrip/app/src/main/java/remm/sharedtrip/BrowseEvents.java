@@ -25,9 +25,12 @@ import android.widget.Button;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -65,6 +68,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     private Gson gson = new Gson();
     private SearchView searchView;
     private BottomNavigationView bottomNavigationView;
+    private AccessTokenTracker accessTokenTracker;
 
     private List<UserEventModel> getEventsfromDB() {
 
@@ -89,6 +93,13 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
         userModel = gson.fromJson(
                 ownIntent.getStringExtra("user")
                 , FbGoogleUserModel.class);
+
+        accessTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken accessToken, AccessToken accessToken2) {
+                if (accessToken2 == null) { finish(); }
+            }
+        };
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(
@@ -284,6 +295,10 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
         MenuItem myButton = bottomNavigationView.getMenu().findItem(R.id.bottombaritem_events);
         myButton.setChecked(true);
         events = getEventsfromDB();
+
+        if (Profile.getCurrentProfile() == null && GoogleSignIn.getLastSignedInAccount(this) == null) {
+            finish();
+        }
 
         if (events!=null && !events.isEmpty()) {
             gridLayout = new GridLayoutManager(this, events.size());

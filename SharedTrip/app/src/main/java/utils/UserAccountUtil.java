@@ -1,7 +1,5 @@
 package utils;
 
-import android.content.ContentResolver;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -20,11 +18,9 @@ import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import remm.sharedtrip.MainActivity;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
-import remm.sharedtrip.R;
 
-import static remm.sharedtrip.MainActivity.getNullSafe;
+import static remm.sharedtrip.MainActivity.getValueOrNull;
 
 /**
  * Created by Mark on 27.11.2017.
@@ -93,12 +89,12 @@ public class UserAccountUtil {
                     if (!obj.has("error")) {
                         model = new FbGoogleUserModel();
                         model.id = obj.getInt("id");
-                        model.fbId = getNullSafe(obj.getString("fb_id"));
-                        model.googleId = getNullSafe(obj.getString("google_id"));
-                        model.name = getNullSafe(obj.getString("name"));
-                        model.description = getNullSafe(obj.getString("user_desc"));
-                        model.imageUri = getNullSafe(obj.getString("user_pic"));
-                        model.gender = getNullSafe(obj.getString("gender"));
+                        model.fbId = getValueOrNull(obj.getString("fb_id"));
+                        model.googleId = getValueOrNull(obj.getString("google_id"));
+                        model.name = getValueOrNull(obj.getString("name"));
+                        model.description = getValueOrNull(obj.getString("user_desc"));
+                        model.imageUri = getValueOrNull(obj.getString("user_pic"));
+                        model.gender = getValueOrNull(obj.getString("gender"));
                     }
 
                     handle.onUserCheckReady(model);
@@ -130,17 +126,18 @@ public class UserAccountUtil {
 
             FormBody.Builder formBuilder = new FormBody.Builder()
                     .add("name", model.name)
-                    .add("gender", model.gender == null? "null" : model.gender)
-                    .add("picture", model.imageUri);
+                    .add("gender", model.gender == null? "null" : model.gender);
 
             if (model.hasFacebook()) {
                 formBuilder.add("fb_id", model.fbId);
-                model.imageUri = Profile
-                            .getCurrentProfile()
-                            .getProfilePictureUri(300, 300)
-                            .toString();
-                }
+                Uri uri = Profile
+                        .getCurrentProfile()
+                        .getProfilePictureUri(300, 300);
+                model.imageUri = uri == null ? null : uri.toString();
+            }
             if (model.hasGoogle()) formBuilder.add("google_id", model.googleId);
+
+            formBuilder.add("picture", model.imageUri == null ? "null" : model.imageUri);
 
             final Request request = new Request.Builder()
                     .url(apiPrefix+"/user")
