@@ -1,8 +1,6 @@
 package remm.sharedtrip;
 import android.app.AlertDialog;
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -116,6 +114,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
             @Override
             public void onClick(View view) {
                 Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+                hideLogInButtons();
                 startActivityForResult(signInIntent, RC_SIGN_IN);
             }
         });
@@ -161,13 +160,12 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
     @Override
     public void fillModelFromJson(JSONObject obj) {
 
-        Profile current = Profile.getCurrentProfile();
         try {
             model.id = obj.getInt("id");
-            model.name = getNullSafe(obj.getString("name"));
-            model.description = getNullSafe(obj.getString("user_desc"));
-            model.imageUri = getNullSafe(obj.getString("user_pic"));
-            model.gender = getNullSafe(obj.getString("gender"));
+            model.name = getValueOrNull(obj.getString("name"));
+            model.description = getValueOrNull(obj.getString("user_desc"));
+            model.imageUri = getValueOrNull(obj.getString("user_pic"));
+            model.gender = getValueOrNull(obj.getString("gender"));
             redirect();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -207,6 +205,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
         } catch (ApiException e) {
 
             // Google log in failed
+            showLogInButtons();
             AlertDialog.Builder builder;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
@@ -339,7 +338,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
     @Override
     public void onDestroy() { super.onDestroy(); }
 
-    public static String getNullSafe(String in) {
+    public static String getValueOrNull(String in) {
         return in.equals("null") || in.equals("") ? null : in;
     }
 }
