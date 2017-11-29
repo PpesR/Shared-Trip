@@ -107,6 +107,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
             @Override
             protected void onCurrentAccessTokenChanged(AccessToken previousToken, AccessToken newToken) {
                 if (newToken == null) {
+                    fbLoginButton.setVisibility(GONE);
                     if (currentFirebaseUser != null) FirebaseAuth.getInstance().signOut();
                     finish();
                 }
@@ -367,10 +368,16 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
         googleLogoutButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.getGoogleSignInClient().signOut();
-                if (currentFirebaseUser != null)
-                    FirebaseAuth.getInstance().signOut();
-                finish();
+                MainActivity.getGoogleSignInClient().signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        googleLogoutButton.setVisibility(GONE);
+                        if (currentFirebaseUser != null)
+                            FirebaseAuth.getInstance().signOut();
+
+                        finish();
+                    }
+                });
             }
         });
 

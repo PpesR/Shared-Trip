@@ -105,6 +105,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
         /* Google log in */
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getResources().getString(R.string.default_client_id))
                 .requestScopes(new Scope(Scopes.PLUS_ME))
                 .requestEmail()
                 .requestProfile()
@@ -328,9 +329,25 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
     @Override
     protected void onResume() {
-
         super.onResume();
-        showLogInButtons();
+
+        if (notNull(model)) {
+            hideLogInButtons();
+            GoogleSignInAccount googleAccount = GoogleSignIn.getLastSignedInAccount(this);
+            AccessToken facebookToken = AccessToken.getCurrentAccessToken();
+
+            if (model.hasGoogle() && isNull(googleAccount)) {
+                    model.googleId = null;
+                    showLogInButtons();
+            }
+
+            if (model.hasFacebook() && isNull(facebookToken)) {
+                    model.facebookId = null;
+                    showLogInButtons();
+            }
+        }
+
+        else showLogInButtons();
     }
 
     @Override
@@ -342,7 +359,8 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
     public void onDestroy() { super.onDestroy(); }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        String accountToken = acct.getIdToken();
+        AuthCredential credential = GoogleAuthProvider.getCredential(accountToken, null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
