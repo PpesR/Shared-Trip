@@ -11,6 +11,7 @@
     <string name="signed_out">Signed out</string>
     <string name="sign_out">Sign Out</string>
     <string name="disconnect">Disconnect</string>
+    <string name="default_client_id">631771254653-i0e04ht7t7sf12h93nq6dpfgibof7m0i.apps.googleusercontent.com</string>
 
     <string name="signed_in_fmt">Signed in as: %s</string>
     <string name="loading">Loading…</string>
