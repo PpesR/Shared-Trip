@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import remm.sharedtrip.BrowseActivity;
 import remm.sharedtrip.CreateEvent;
 import remm.sharedtrip.MainActivity;
+import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import remm.sharedtrip.ProfileView;
 import remm.sharedtrip.R;
 import android.annotation.SuppressLint;
@@ -69,7 +70,7 @@ public class BrowseEvents extends Fragment {
     private ProfileTracker profileTracker;
     private TextView t;
     private Intent ownIntent;
-    static MainActivity.FbUserModel fbUserModel;
+    static FbGoogleUserModel fbUserModel;
     private Gson gson = new Gson();
     private SearchView searchView;
     private BottomNavigationView bottomNavigationView;

@@ -66,6 +66,7 @@
     <string name="approve">APPROVE</string>
     <string name="deny">DENY</string>
     <string name="api_address_with_prefix">http://146.185.135.219/api/v1</string>
+    <string name="send_message">Send message</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

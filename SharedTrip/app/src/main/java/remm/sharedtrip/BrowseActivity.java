@@ -26,18 +26,19 @@ import models.UserEventModel;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import utils.BottomNavigationViewHelper;
 
 
 public class BrowseActivity extends AppCompatActivity {
 
 
-    static MainActivity.FbUserModel fbUserModel;
+    static FbGoogleUserModel fbUserModel;
 
-    public MainActivity.FbUserModel getFbUserModel() {
+    public FbGoogleUserModel getFbUserModel() {
         return gson.fromJson(
                 getIntent().getStringExtra("user")
-                , MainActivity.FbUserModel.class);
+                , FbGoogleUserModel.class);
     }
 
     private BottomNavigationView bottomNavigationView;
@@ -54,7 +55,7 @@ public class BrowseActivity extends AppCompatActivity {
         ownIntent = getIntent();
         fbUserModel = gson.fromJson(
                 getIntent().getStringExtra("user")
-                , MainActivity.FbUserModel.class);
+                , FbGoogleUserModel.class);
 
         setContentView(R.layout.activity_browse);
         if (savedInstanceState == null) {

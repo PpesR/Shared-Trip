@@ -1,5 +1,4 @@
 package remm.sharedtrip;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -10,6 +9,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -32,6 +32,12 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -39,7 +45,6 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Set;
 
 import utils.UserAccountUtil.UserActivityHandle;
 import utils.UserAccountUtil.UserCheckCallback;
@@ -64,6 +69,8 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
     private ProgressBar progressBar;
     private GoogleSignInAccount account;
     private String apiPrefix;
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentFirebaseUser;
 
     public static GoogleSignInClient getGoogleSignInClient() { return mGoogleSignInClient; }
 
@@ -73,6 +80,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
         super.onCreate(savedInstanceState);
         self = this;
 
+        mAuth = FirebaseAuth.getInstance();
         apiPrefix = getResources().getString(R.string.api_address_with_prefix);
 
         /*
@@ -121,9 +129,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
 
         /* Handling existing users*/
-
-        // Facebook user token exists (already logged in)
-        if (AccessToken.getCurrentAccessToken() != null) {
+        if (AccessToken.getCurrentAccessToken() != null) { // Facebook
             GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
                 new GraphRequest.GraphJSONObjectCallback() {
 
@@ -134,18 +140,18 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
             }).executeAsync();
         }
-        else {
+        else { // Google
             account = GoogleSignIn.getLastSignedInAccount(this);
-
-            // Google user has already logged in
-            if (account != null) {
-                tryLogInExistingUser(account.getId(), null);
-            }
+            if (account != null) { tryLogInExistingUser(account.getId(), null); }
         }
     }
 
-    private void tryLogInExistingUser(String gId, String fbId) {
-        UserCheckingTask<Void> task = new UserCheckingTask<>(apiPrefix, new UserCheckCallback(this), gId, fbId);
+    private void tryLogInExistingUser(String googleId, String facebookId) {
+        UserCheckingTask<Void> task = new UserCheckingTask<>(
+                apiPrefix,
+                new UserCheckCallback(this),
+                googleId,
+                facebookId);
         task.execute();
     }
 
@@ -166,7 +172,13 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
             model.description = getValueOrNull(obj.getString("user_desc"));
             model.imageUri = getValueOrNull(obj.getString("user_pic"));
             model.gender = getValueOrNull(obj.getString("gender"));
-            redirect();
+
+            if (currentFirebaseUser != null) {
+                if (model.hasGoogle()) firebaseAuthWithGoogle(account);
+                if (model.hasFacebook()) handleFacebookAccessToken(AccessToken.getCurrentAccessToken());
+            }
+            else redirect();
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -179,7 +191,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
 
-            // The Task returned from this call is always completed, no need to attach a listener.
+            // The Task returned from this call is always completed
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
         }
@@ -199,30 +211,20 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
             model.googleId = account.getId();
             model.imageUri = photoUri == null ? "null" : photoUri.toString();
 
-            Set<Scope> scopes = account.getGrantedScopes();
+//            Set<Scope> scopes = account.getGrantedScopes();
             postUserToDb();
 
-        } catch (ApiException e) {
-
-            // Google log in failed
-            showLogInButtons();
-            AlertDialog.Builder builder;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
-            } else {
-                builder = new AlertDialog.Builder(this);
-            }
-            builder.setTitle("Log In Failed")
-                    .setMessage("Something went wrong... Make sure you are logged in to Google on your device!")
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-        }
+        } catch (ApiException e) { displayAuthError(); }
     }
 
     @Override
     public void onUserCheckReady(FbGoogleUserModel checkedModel) {
-        if (checkedModel == null) {
-            if (model.fbId != null) {
+        if (checkedModel == null) { // Logged in user is no longer in database -> force log out
+
+            if (currentFirebaseUser != null)
+                FirebaseAuth.getInstance().signOut();
+
+            if (model.facebookId != null) {
                 LoginManager.getInstance().logOut();
                 showLogInButtons();
             }
@@ -237,10 +239,16 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
                 });
             }
 
-        } else {
+        } else { // Signed in user is present in database
             model = checkedModel;
             hideLogInButtons();
-            redirect();
+
+            currentFirebaseUser = mAuth.getCurrentUser();
+            if (currentFirebaseUser != null) { redirect(); }
+            else {
+                if (model.hasGoogle()) { firebaseAuthWithGoogle(account); }
+                if (model.hasFacebook()) { handleFacebookAccessToken(AccessToken.getCurrentAccessToken()); }
+            }
         }
     }
 
@@ -254,19 +262,19 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
     public static class FbGoogleUserModel implements Serializable {
 
-        public String fbId = null;
+        public String facebookId = null;
         public String googleId = null;
         public int id;
         public String name;
         public String gender;
         public String description;
         public String imageUri;
+
         String firstName;
-
         String birthDate;
-        public boolean hasGoogle() { return googleId != null; }
 
-        public boolean hasFacebook() { return fbId != null; }
+        public boolean hasGoogle() { return googleId != null; }
+        public boolean hasFacebook() { return facebookId != null; }
     }
 
     private FacebookCallback<LoginResult> facebookCallback = new FacebookCallback<LoginResult>() {
@@ -279,7 +287,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
                         public void onCompleted(JSONObject object, GraphResponse response) {
                             try {
                                 model = new FbGoogleUserModel();
-                                model.fbId = object.optString("id");
+                                model.facebookId = object.optString("id");
                                 model.name = object.getString("name");
                                 model.gender = object.getString("gender");
                                 postUserToDb();
@@ -294,6 +302,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
             request.setParameters(parameters);
             request.executeAsync();
         }
+
         @Override
         public void onCancel() { showLogInButtons(); }
 
@@ -340,6 +349,55 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
     public static String getValueOrNull(String in) {
         return in.equals("null") || in.equals("") ? null : in;
+    }
+
+    public static String getNullSafeValue(String in) {
+        return in == null ? "null" : in;
+    }
+
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) { // Sign in success, update UI with the signed-in user's information
+                            currentFirebaseUser = mAuth.getCurrentUser();
+                            redirect();
+
+                        } else { displayAuthError(); }
+                    }
+                });
+    }
+
+    private void handleFacebookAccessToken(AccessToken token) {
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            currentFirebaseUser = mAuth.getCurrentUser();
+                            redirect();
+
+                        } else { displayAuthError(); }
+                    }
+                });
+    }
+
+    private void displayAuthError() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(
+                        MainActivity.this,
+                        "Authentication failed.",
+                        Toast.LENGTH_SHORT
+                ).show();
+                showLogInButtons();
+            }
+        });
     }
 }
 
