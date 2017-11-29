@@ -89,7 +89,7 @@ public class UserAccountUtil {
                     if (!obj.has("error")) {
                         model = new FbGoogleUserModel();
                         model.id = obj.getInt("id");
-                        model.fbId = getValueOrNull(obj.getString("fb_id"));
+                        model.facebookId = getValueOrNull(obj.getString("fb_id"));
                         model.googleId = getValueOrNull(obj.getString("google_id"));
                         model.name = getValueOrNull(obj.getString("name"));
                         model.description = getValueOrNull(obj.getString("user_desc"));
@@ -129,7 +129,7 @@ public class UserAccountUtil {
                     .add("gender", model.gender == null? "null" : model.gender);
 
             if (model.hasFacebook()) {
-                formBuilder.add("fb_id", model.fbId);
+                formBuilder.add("fb_id", model.facebookId);
                 Uri uri = Profile
                         .getCurrentProfile()
                         .getProfilePictureUri(300, 300);

@@ -6,9 +6,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,6 +37,8 @@ public class EventDetailsActivity extends FragmentActivity {
 
     private Button joinButton;
     private BottomNavigationView bottomNavigationView;
+    private FloatingActionButton fab;
+
     private EventDetailsActivity self;
 
     private UserEventModel model;
@@ -51,6 +55,17 @@ public class EventDetailsActivity extends FragmentActivity {
 
         joinButton = findViewById(R.id.eventViewRequestButton);
         joinButton.setVisibility(View.GONE);
+
+        fab = findViewById(R.id.enter_chat_fbutton);
+        fab.setVisibility(View.GONE);
+        fab.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent chatIntent = new Intent(EventDetailsActivity.this, ChatActivity.class);
+                chatIntent.putExtra("event", getIntent().getStringExtra("event"));
+                startActivity(chatIntent);
+            }
+        });
 
         checkApprovalStatus();
 
@@ -109,7 +124,7 @@ public class EventDetailsActivity extends FragmentActivity {
                     onBanned();
                 } else {
                     joinButton.setVisibility(View.VISIBLE);
-                    joinButton.setOnClickListener(new View.OnClickListener() {
+                    joinButton.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             joinEvent();
@@ -126,6 +141,7 @@ public class EventDetailsActivity extends FragmentActivity {
         joinButton.setTextSize(24);
         joinButton.setText("YOU ARE THE ADMIN!");
         joinButton.setVisibility(View.VISIBLE);
+        fab.setVisibility(View.VISIBLE);
     }
 
     void onPendingApproval() {
@@ -133,6 +149,7 @@ public class EventDetailsActivity extends FragmentActivity {
         joinButton.setTextColor(Color.parseColor("#d99d2e"));
         joinButton.setText("JOIN REQUEST PENDING");
         joinButton.setVisibility(View.VISIBLE);
+        fab.setVisibility(View.GONE);
     }
 
     void onApproved() {
@@ -140,6 +157,7 @@ public class EventDetailsActivity extends FragmentActivity {
         joinButton.setText("YOU ARE PARTICIPATING!");
         joinButton.setTextColor(Color.WHITE);
         joinButton.setVisibility(View.VISIBLE);
+        fab.setVisibility(View.VISIBLE);
     }
 
     void onBanned() {
@@ -147,6 +165,7 @@ public class EventDetailsActivity extends FragmentActivity {
         joinButton.setText("YOU ARE BANNED FROM THIS EVENT!");
         joinButton.setTextColor(Color.WHITE);
         joinButton.setVisibility(View.VISIBLE);
+        fab.setVisibility(View.GONE);
     }
 
     private void setUpNavbar() {

@@ -31,6 +31,8 @@ import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -49,6 +51,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
+import services.SharedTripFirebaseMessagingService;
 import utils.BottomNavigationViewHelper;
 
 import static android.view.View.GONE;
@@ -69,6 +72,8 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     private SearchView searchView;
     private BottomNavigationView bottomNavigationView;
     private AccessTokenTracker accessTokenTracker;
+    private FirebaseUser currentFirebaseUser;
+    private Intent messagingService;
 
     private List<UserEventModel> getEventsfromDB() {
 
@@ -96,10 +101,20 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
 
         accessTokenTracker = new AccessTokenTracker() {
             @Override
-            protected void onCurrentAccessTokenChanged(AccessToken accessToken, AccessToken accessToken2) {
-                if (accessToken2 == null) { finish(); }
+            protected void onCurrentAccessTokenChanged(AccessToken previousToken, AccessToken newToken) {
+                if (newToken == null) {
+                    if (currentFirebaseUser != null) FirebaseAuth.getInstance().signOut();
+                    finish();
+                }
             }
         };
+
+        currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (messagingService==null) {
+            messagingService = new Intent(this, SharedTripFirebaseMessagingService.class);
+            startService(messagingService);
+        }
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(
@@ -349,6 +364,8 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
             @Override
             public void onClick(View view) {
                 MainActivity.getGoogleSignInClient().signOut();
+                if (currentFirebaseUser != null)
+                    FirebaseAuth.getInstance().signOut();
                 finish();
             }
         });
