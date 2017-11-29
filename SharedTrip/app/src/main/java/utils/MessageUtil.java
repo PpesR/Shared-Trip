@@ -16,7 +16,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static remm.sharedtrip.MainActivity.getNullSafeValue;
+import static utils.ValueUtil.toNullSafe;
 
 /**
  * Created by Mark on 28.11.2017.
@@ -57,9 +57,9 @@ public class MessageUtil {
             OkHttpClient client = new OkHttpClient();
 
             Builder formBodyBuilder = new Builder()
-                    .add("message", getNullSafeValue(message))
-                    .add("topic", getNullSafeValue(topic))
-                    .add("sender_id", getNullSafeValue(senderId))
+                    .add("message", toNullSafe(message))
+                    .add("topic", toNullSafe(topic))
+                    .add("sender_id", toNullSafe(senderId))
                     .add("time_sent", new SimpleDateFormat("yyyy-MM-dd hh:mm:dd").format(timeSent));
 
             Request request = new Request.Builder()

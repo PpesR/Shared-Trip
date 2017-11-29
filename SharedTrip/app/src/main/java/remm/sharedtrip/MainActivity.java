@@ -28,7 +28,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -46,11 +45,8 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import utils.UserAccountUtil.UserActivityHandle;
-import utils.UserAccountUtil.UserCheckCallback;
-import utils.UserAccountUtil.UserCheckingTask;
-import utils.UserAccountUtil.UserRegistrationCallback;
-import utils.UserAccountUtil.UserRegistrationTask;
+import utils.UserAccountUtil.*;
+import static utils.ValueUtil.*;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -63,7 +59,6 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
     private static FbGoogleUserModel model;
     private Intent browseEvents;
     private static GoogleSignInClient mGoogleSignInClient;
-    private GoogleApiClient mGoogleApiClient;
     private SignInButton googleButton;
     private LoginButton loginButton;
     private ProgressBar progressBar;
@@ -99,7 +94,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
         callbackManager = CallbackManager.Factory.create();
 
         loginButton = findViewById(R.id.fb_login_button);
-        loginButton.setReadPermissions(Arrays.asList("public_profile", "email", "user_birthday", "user_friends"));
+        loginButton.setReadPermissions(Arrays.asList("public_profile", "email", "user_friends"));
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,7 +124,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
 
         /* Handling existing users*/
-        if (AccessToken.getCurrentAccessToken() != null) { // Facebook
+        if (notNull(AccessToken.getCurrentAccessToken())) { // Facebook
             GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
                 new GraphRequest.GraphJSONObjectCallback() {
 
@@ -142,7 +137,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
         }
         else { // Google
             account = GoogleSignIn.getLastSignedInAccount(this);
-            if (account != null) { tryLogInExistingUser(account.getId(), null); }
+            if (notNull(account)) { tryLogInExistingUser(account.getId(), null); }
         }
     }
 
@@ -168,12 +163,12 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
         try {
             model.id = obj.getInt("id");
-            model.name = getValueOrNull(obj.getString("name"));
-            model.description = getValueOrNull(obj.getString("user_desc"));
-            model.imageUri = getValueOrNull(obj.getString("user_pic"));
-            model.gender = getValueOrNull(obj.getString("gender"));
+            model.name = valueOrNull(obj.getString("name"));
+            model.description = valueOrNull(obj.getString("user_desc"));
+            model.imageUriString = valueOrNull(obj.getString("user_pic"));
+            model.gender = valueOrNull(obj.getString("gender"));
 
-            if (currentFirebaseUser != null) {
+            if (notNull(currentFirebaseUser)) {
                 if (model.hasGoogle()) firebaseAuthWithGoogle(account);
                 if (model.hasFacebook()) handleFacebookAccessToken(AccessToken.getCurrentAccessToken());
             }
@@ -205,11 +200,11 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
             account = completedTask.getResult(ApiException.class);
             Uri photoUri = account.getPhotoUrl();
 
-            if (model == null) model = new FbGoogleUserModel();
+            if (modelIsSet()) model = new FbGoogleUserModel();
 
             model.name = account.getDisplayName();
             model.googleId = account.getId();
-            model.imageUri = photoUri == null ? "null" : photoUri.toString();
+            model.imageUriString = toStringNullSafe(photoUri);
 
 //            Set<Scope> scopes = account.getGrantedScopes();
             postUserToDb();
@@ -219,17 +214,16 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
     @Override
     public void onUserCheckReady(FbGoogleUserModel checkedModel) {
-        if (checkedModel == null) { // Logged in user is no longer in database -> force log out
+        if (isNull(checkedModel)) { // Logged in user is no longer in database -> force log out
 
-            if (currentFirebaseUser != null)
-                FirebaseAuth.getInstance().signOut();
+            if (notNull(currentFirebaseUser)) FirebaseAuth.getInstance().signOut();
 
-            if (model.facebookId != null) {
+            if (model.hasFacebook()) {
                 LoginManager.getInstance().logOut();
                 showLogInButtons();
             }
 
-            if (model.googleId != null){
+            if (model.hasGoogle()){
                 mGoogleSignInClient.signOut()
                     .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                         @Override
@@ -244,7 +238,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
             hideLogInButtons();
 
             currentFirebaseUser = mAuth.getCurrentUser();
-            if (currentFirebaseUser != null) { redirect(); }
+            if (notNull(currentFirebaseUser)) { redirect(); }
             else {
                 if (model.hasGoogle()) { firebaseAuthWithGoogle(account); }
                 if (model.hasFacebook()) { handleFacebookAccessToken(AccessToken.getCurrentAccessToken()); }
@@ -253,7 +247,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
     }
 
     private void redirect() {
-        if (browseEvents==null) browseEvents = new Intent(self, BrowseEvents.class);
+        if (isNull(browseEvents)) browseEvents = new Intent(self, BrowseEvents.class);
 
         model.firstName = model.hasFacebook() ? Profile.getCurrentProfile().getFirstName() : account.getGivenName();
         browseEvents.putExtra("user", new Gson().toJson(model));
@@ -262,13 +256,13 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
     public static class FbGoogleUserModel implements Serializable {
 
+        public int id;
         public String facebookId = null;
         public String googleId = null;
-        public int id;
         public String name;
         public String gender;
         public String description;
-        public String imageUri;
+        public String imageUriString;
 
         String firstName;
         String birthDate;
@@ -347,14 +341,6 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
     @Override
     public void onDestroy() { super.onDestroy(); }
 
-    public static String getValueOrNull(String in) {
-        return in.equals("null") || in.equals("") ? null : in;
-    }
-
-    public static String getNullSafeValue(String in) {
-        return in == null ? "null" : in;
-    }
-
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -399,6 +385,9 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
             }
         });
     }
+
+    private boolean modelNotSet() { return model == null; }
+    private boolean modelIsSet() { return model != null; }
 }
 
 
