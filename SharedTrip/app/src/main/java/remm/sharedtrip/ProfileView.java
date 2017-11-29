@@ -60,11 +60,11 @@ public class ProfileView extends AppCompatActivity {
         hi_text.append("  "+userModel.firstName);
         ImageView prof_pic = (ImageView) findViewById(R.id.profile_image);
 
-        if (userModel.imageUri == null) {
+        if (userModel.imageUriString == null) {
             prof_pic.setImageDrawable(getDrawable(R.mipmap.ic_default_user));
         }
         else {
-            Uri pic = Uri.parse(Uri.decode(userModel.imageUri));
+            Uri pic = Uri.parse(Uri.decode(userModel.imageUriString));
 
             try {
                 URL imageURL = new URL(pic.toString());

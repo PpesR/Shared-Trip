@@ -20,7 +20,11 @@ import okhttp3.Request;
 import okhttp3.Response;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 
-import static remm.sharedtrip.MainActivity.getValueOrNull;
+import static utils.ValueUtil.notNull;
+import static utils.ValueUtil.notNullOrEmpty;
+import static utils.ValueUtil.toNullSafe;
+import static utils.ValueUtil.toStringOrNull;
+import static utils.ValueUtil.valueOrNull;
 
 /**
  * Created by Mark on 27.11.2017.
@@ -52,12 +56,12 @@ public class UserAccountUtil {
         protected final Void doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
 
-            String param = fbId != null
+            String param =
+                    notNull(fbId)
                     ? "?fb_id="+fbId
-                    : (gId != null
+                    : ( notNull(gId)
                         ? "?google_id="+gId
-                        : ""
-            );
+                        : "" );
 
             final Request request = new Request.Builder()
                     .url(apiPrefix+"/user/exists"+param)
@@ -81,7 +85,8 @@ public class UserAccountUtil {
         @Override
         public void onResponse(Call call, Response response) throws IOException {
             String responseBody = response.body().string();
-            if (responseBody != null && responseBody.length() > 0) {
+
+            if (notNullOrEmpty(responseBody)) {
                 try {
                     JSONObject obj = new JSONObject(responseBody);
                     FbGoogleUserModel model = null;
@@ -89,14 +94,13 @@ public class UserAccountUtil {
                     if (!obj.has("error")) {
                         model = new FbGoogleUserModel();
                         model.id = obj.getInt("id");
-                        model.facebookId = getValueOrNull(obj.getString("fb_id"));
-                        model.googleId = getValueOrNull(obj.getString("google_id"));
-                        model.name = getValueOrNull(obj.getString("name"));
-                        model.description = getValueOrNull(obj.getString("user_desc"));
-                        model.imageUri = getValueOrNull(obj.getString("user_pic"));
-                        model.gender = getValueOrNull(obj.getString("gender"));
+                        model.facebookId = valueOrNull(obj.getString("fb_id"));
+                        model.googleId = valueOrNull(obj.getString("google_id"));
+                        model.name = valueOrNull(obj.getString("name"));
+                        model.description = valueOrNull(obj.getString("user_desc"));
+                        model.imageUriString = valueOrNull(obj.getString("user_pic"));
+                        model.gender = valueOrNull(obj.getString("gender"));
                     }
-
                     handle.onUserCheckReady(model);
 
                 } catch (JSONException e) {
@@ -126,18 +130,18 @@ public class UserAccountUtil {
 
             FormBody.Builder formBuilder = new FormBody.Builder()
                     .add("name", model.name)
-                    .add("gender", model.gender == null? "null" : model.gender);
+                    .add("gender", toNullSafe(model.gender));
 
             if (model.hasFacebook()) {
                 formBuilder.add("fb_id", model.facebookId);
                 Uri uri = Profile
                         .getCurrentProfile()
                         .getProfilePictureUri(300, 300);
-                model.imageUri = uri == null ? null : uri.toString();
+                model.imageUriString = toStringOrNull(uri);
             }
             if (model.hasGoogle()) formBuilder.add("google_id", model.googleId);
 
-            formBuilder.add("picture", model.imageUri == null ? "null" : model.imageUri);
+            formBuilder.add("picture", toNullSafe(model.imageUriString));
 
             final Request request = new Request.Builder()
                     .url(apiPrefix+"/user")
@@ -145,9 +149,7 @@ public class UserAccountUtil {
                     .build();
 
             Call call = client.newCall(request);
-
             call.enqueue(callback);
-
             return null;
         }
     }

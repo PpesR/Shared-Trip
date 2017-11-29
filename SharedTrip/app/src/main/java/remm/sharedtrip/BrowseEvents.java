@@ -29,8 +29,11 @@ import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
+import com.facebook.login.LoginBehavior;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
@@ -74,6 +77,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     private AccessTokenTracker accessTokenTracker;
     private FirebaseUser currentFirebaseUser;
     private Intent messagingService;
+    private LoginButton fbLoginButton;
 
     private List<UserEventModel> getEventsfromDB() {
 
@@ -356,10 +360,10 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
             headerUsername.setCompoundDrawablesWithIntrinsicBounds(googleG, null, null, null);
         }
 
-        LoginButton fbLoginButton = findViewById(R.id.header_logoff_button);
+        fbLoginButton = findViewById(R.id.header_logoff_button);
         fbLoginButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 
-        Button googleLogoutButton = findViewById(R.id.google_logout_btn);
+        final Button googleLogoutButton = findViewById(R.id.google_logout_btn);
         googleLogoutButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
