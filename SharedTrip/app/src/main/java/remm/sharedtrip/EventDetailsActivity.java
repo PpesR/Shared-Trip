@@ -2,12 +2,15 @@ package remm.sharedtrip;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,9 +21,14 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 
+import org.json.JSONObject;
+
 import models.UserEventModel;
+import services.SharedTripFirebaseMessagingService;
 import utils.BottomNavigationViewHelper;
 import utils.EventDetailsUtils;
+
+import static utils.ValueUtil.notNull;
 
 /**
  * Created by Mark on 12.11.2017.
@@ -42,6 +50,7 @@ public class EventDetailsActivity extends FragmentActivity {
     private EventDetailsActivity self;
 
     private UserEventModel model;
+    private LocalBroadcastManager broadcaster;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,6 +58,7 @@ public class EventDetailsActivity extends FragmentActivity {
 
         self = this;
         model = new Gson().fromJson(getIntent().getStringExtra("event"), UserEventModel.class);
+        broadcaster = LocalBroadcastManager.getInstance(this);
 
         setContentView(R.layout.activity_event_view);
         setUpNavbar();
@@ -59,10 +69,13 @@ public class EventDetailsActivity extends FragmentActivity {
         fab = findViewById(R.id.enter_chat_fbutton);
         fab.setVisibility(View.GONE);
         fab.setOnClickListener(new OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View view) {
                 Intent chatIntent = new Intent(EventDetailsActivity.this, ChatActivity.class);
                 chatIntent.putExtra("event", getIntent().getStringExtra("event"));
+                broadcaster.sendBroadcast(new Intent("Switch to immediate"));
+
                 startActivity(chatIntent);
             }
         });

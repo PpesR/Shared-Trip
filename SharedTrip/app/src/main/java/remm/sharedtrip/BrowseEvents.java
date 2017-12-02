@@ -8,7 +8,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -59,6 +61,8 @@ import utils.BottomNavigationViewHelper;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static utils.ValueUtil.isNull;
+import static utils.ValueUtil.notNull;
 
 public class BrowseEvents extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
@@ -70,7 +74,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     private EventAdapter adapter;
     private TextView headerUsername;
     private Intent ownIntent;
-    static FbGoogleUserModel userModel;
+    public static FbGoogleUserModel userModel;
     private Gson gson = new Gson();
     private SearchView searchView;
     private BottomNavigationView bottomNavigationView;
@@ -78,6 +82,8 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     private FirebaseUser currentFirebaseUser;
     private Intent messagingService;
     private LoginButton fbLoginButton;
+
+    private static BrowseEvents self;
 
     private List<UserEventModel> getEventsfromDB() {
 
@@ -98,6 +104,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        self = this;
         ownIntent = getIntent();
         userModel = gson.fromJson(
                 ownIntent.getStringExtra("user")
@@ -116,7 +123,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
 
         currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (messagingService==null) {
+        if (isNull(messagingService)) {
             messagingService = new Intent(this, SharedTripFirebaseMessagingService.class);
             startService(messagingService);
         }
@@ -248,7 +255,6 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
         searchRecyclerView.setAdapter(adapter);
     }
 
-
     public static class EventRetrievalTask<Void> extends AsyncTask<Void, Void, List<UserEventModel>> {
 
          @SafeVarargs
@@ -315,6 +321,12 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
         MenuItem myButton = bottomNavigationView.getMenu().findItem(R.id.bottombaritem_events);
         myButton.setChecked(true);
         events = getEventsfromDB();
+
+        if (isNull(messagingService)) {
+            messagingService = new Intent(this, SharedTripFirebaseMessagingService.class);
+            startService(messagingService);
+        }
+
 
         if (Profile.getCurrentProfile() == null && GoogleSignIn.getLastSignedInAccount(this) == null) {
             finish();
