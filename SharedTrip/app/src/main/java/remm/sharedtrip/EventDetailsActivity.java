@@ -107,7 +107,12 @@ public class EventDetailsActivity extends FragmentActivity {
     }
 
     public void onJoinSuccess() {
-        onPendingApproval();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                onPendingApproval();
+            }
+        });
     }
 
     public void onApprovalStatusReady() {
