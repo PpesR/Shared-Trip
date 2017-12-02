@@ -1,6 +1,7 @@
 package utils;
 
 import android.annotation.SuppressLint;
+import android.net.Uri;
 import android.os.AsyncTask;
 
 import org.json.JSONException;
@@ -25,13 +26,23 @@ import static utils.ValueUtil.toNullSafe;
 public class MessageUtil {
 
     public static class MessageSaveResponse {
-        public MessageSaveResponse(int messageId, Date sendTime) {
+        public int senderId;
+        public int eventId;
+
+        public MessageSaveResponse(int messageId, Date deliverTime) {
             this.messageId = messageId;
-            this.sendTime = sendTime;
+            this.deliverTime = deliverTime;
         }
 
         public int messageId;
         public Date sendTime;
+        public Date actualSendTime;
+        public Date deliverTime;
+        public String topic;
+        public String message;
+        public String FirebaseCloudMessagingId;
+        public Uri senderPicture;
+        public String senderName;
     }
 
     public static class MessageSavingTask<Void> extends AsyncTask<Void, Void, MessageSaveResponse> {
@@ -41,13 +52,17 @@ public class MessageUtil {
         private String topic;
         private String senderId;
         private Date timeSent;
+        private int eventId;
 
-        public MessageSavingTask(String apiPrefix, String message, String topic, String senderId, Date timeSent) {
+        public SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:dd");
+
+        public MessageSavingTask(String apiPrefix, String message, String topic, String senderId, Date timeSent, int eventId) {
             this.apiPrefix = apiPrefix;
             this.message = message;
             this.topic = topic;
             this.senderId = senderId;
             this.timeSent = timeSent;
+            this.eventId = eventId;
         }
 
         @SafeVarargs
@@ -56,11 +71,13 @@ public class MessageUtil {
         protected final MessageSaveResponse doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
 
+            /* TODO: Add event id*/
             Builder formBodyBuilder = new Builder()
                     .add("message", toNullSafe(message))
                     .add("topic", toNullSafe(topic))
                     .add("sender_id", toNullSafe(senderId))
-                    .add("time_sent", new SimpleDateFormat("yyyy-MM-dd hh:mm:dd").format(timeSent));
+                    .add("time_sent", dateFormat.format(timeSent))
+                    .add("event", eventId+"");
 
             Request request = new Request.Builder()
                     .url(apiPrefix+"/message")
@@ -77,8 +94,17 @@ public class MessageUtil {
                 if (!obj.has("error")){
                     int messageId = obj.getInt("message_id");
                     String timeString = obj.getString("time_sent_utc");
-                    Date timeSent =  new SimpleDateFormat("yyyy-MM-dd hh:mm:dd").parse(timeString);
+                    Date timeSent =  dateFormat.parse(timeString);
                     saveResponse = new MessageSaveResponse(messageId, timeSent);
+                    saveResponse.senderId = obj.getInt("sender_id");
+                    saveResponse.eventId = obj.getInt("event_id");
+                    saveResponse.topic = obj.getString("topic");
+                    saveResponse.message = obj.getString("message");
+                    saveResponse.actualSendTime = dateFormat.parse(obj.getString("time_fcm_received_utc"));
+                    saveResponse.FirebaseCloudMessagingId = obj.getString("fcm_id");
+                    saveResponse.senderName = obj.getString("sender_name");
+                    saveResponse.senderPicture = Uri.parse(obj.getString("sender_picture"));
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();
