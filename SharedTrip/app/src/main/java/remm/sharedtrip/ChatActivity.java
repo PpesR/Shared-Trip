@@ -26,15 +26,18 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
 import models.UserEventModel;
-import services.ImmediateMessagingService;
 import utils.MessageUtil;
-import utils.ValueUtil;
+import utils.MessageUtil.HistoryRetrievalTask;
+import utils.MessageUtil.MessageSaveResponse;
 
 import static remm.sharedtrip.BrowseEvents.userModel;
 import static utils.ValueUtil.notNull;
@@ -74,6 +77,7 @@ public class ChatActivity extends AppCompatActivity {
         adapter = new ArrayAdapter<>(ChatActivity.this, R.layout.single_chat_message, messages);
         listView = findViewById(R.id.chat_message_list);
         listView.setAdapter(adapter);
+        getMessageHistory();
 
         messageInput = findViewById(R.id.chat_message_input);
         messageInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -112,7 +116,7 @@ public class ChatActivity extends AppCompatActivity {
                         now,
                         event.getId());
         try {
-            MessageUtil.MessageSaveResponse response = task.execute().get();
+            MessageSaveResponse response = task.execute().get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -136,6 +140,29 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    private void getMessageHistory() {
+        HistoryRetrievalTask<Void> task = new HistoryRetrievalTask<>(
+                userModel.id, event.getId(), getResources().getString(R.string.api_address_with_prefix));
+        try {
+            final List<String> history = task.execute().get();
+            if (notNull(history)) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.addAll(history);
+                        adapter.notifyDataSetChanged();
+                        listView.setSelection(adapter.getCount() - 1);
+                    }
+                });
+
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
     private ListView listView;
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -143,7 +170,18 @@ public class ChatActivity extends AppCompatActivity {
             String json = intent.getStringExtra("messageData");
             try {
                 JSONObject obj = new JSONObject(json);
-                ChatActivity.this.addMessage(obj.getString("sender_name")+": "+obj.getString("message"));
+                String dateStr = obj.getString("time");
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd kk:mm:dd");
+                df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                Date date = null;
+                try {
+                    date = df.parse(dateStr);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                df.setTimeZone(TimeZone.getDefault());
+                String formattedDate = df.format(date);
+                ChatActivity.this.addMessage(formattedDate+"\r\n"+obj.getString("sender_name")+": "+obj.getString("message"));
 
             } catch (JSONException e) {
                 e.printStackTrace();
