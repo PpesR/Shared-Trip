@@ -4,13 +4,17 @@ import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.AsyncTask;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 
 import okhttp3.FormBody.Builder;
 import okhttp3.OkHttpClient;
@@ -35,7 +39,6 @@ public class MessageUtil {
         }
 
         public int messageId;
-        public Date sendTime;
         public Date actualSendTime;
         public Date deliverTime;
         public String topic;
@@ -54,7 +57,7 @@ public class MessageUtil {
         private Date timeSent;
         private int eventId;
 
-        public SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:dd");
+        public SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd kk:mm:dd");
 
         public MessageSavingTask(String apiPrefix, String message, String topic, String senderId, Date timeSent, int eventId) {
             this.apiPrefix = apiPrefix;
@@ -92,7 +95,7 @@ public class MessageUtil {
                 JSONObject obj = new JSONObject(bodystring);
 
                 if (!obj.has("error")){
-                    int messageId = obj.getInt("message_id");
+                    int messageId = obj.getInt("id");
                     String timeString = obj.getString("time_sent_utc");
                     Date timeSent =  dateFormat.parse(timeString);
                     saveResponse = new MessageSaveResponse(messageId, timeSent);
@@ -115,6 +118,76 @@ public class MessageUtil {
             }
 
             return saveResponse;
+        }
+    }
+
+    public static class HistoryRetrievalTask<Void> extends AsyncTask<Void, Void, List<String>> {
+
+        private int userId;
+        private int eventId;
+        private String apiPrefix;
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd kk:mm:dd");
+
+        public HistoryRetrievalTask(int userId, int eventId, String apiPrefix) {
+            this.userId = userId;
+            this.eventId = eventId;
+            this.apiPrefix = apiPrefix;
+        }
+
+        @SafeVarargs
+        @Override
+        @SuppressLint("SimpleDateFormat")
+        protected final  List<String> doInBackground(Void... voids) {
+            OkHttpClient client = new OkHttpClient();
+
+            Request request = new Request.Builder()
+                    .url(apiPrefix+"/user/"+userId+"/conversation?event="+eventId)
+                    .build();
+
+            List<String> historyResponse = new ArrayList<>();
+            try {
+                Response response = client.newCall(request).execute();
+                String bodyString = response.body().string();
+
+                if (bodyString.equals("")) return null;
+
+                if (bodyString.substring(0,1).equals("{")){
+                    JSONObject obj = new JSONObject(bodyString);
+                    if (obj.has("error")){
+
+                    }
+                }
+                else {
+                    JSONArray arr = new JSONArray(bodyString);
+                    int len = arr.length();
+
+                    for (int i = len-1; i >= 0; i--) {
+                        JSONObject message = arr.getJSONObject(i);
+                        String dateStr = message.getString("time_fcm_received_utc");
+                        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+                        Date date = null;
+                        try {
+                            date = dateFormat.parse(dateStr);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        TimeZone def = TimeZone.getDefault();
+                        dateFormat.setTimeZone(def);
+                        String formattedDate = dateFormat.format(date);
+
+                        historyResponse.add(formattedDate+"\r\n"+
+                                message.getString("sender_name")+": "+message.getString("message"));
+                    }
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return historyResponse;
         }
     }
 }
