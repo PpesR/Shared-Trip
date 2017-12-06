@@ -20,7 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import fragments.FriendsView;
+import fragments.*;
+import fragments.BrowseEvents;
 import models.UserEventModel;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -44,16 +45,21 @@ public class BrowseActivity extends AppCompatActivity {
     private Intent ownIntent;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_browse);
+
+
 
         ownIntent = getIntent();
         fbUserModel = gson.fromJson(
                 getIntent().getStringExtra("user")
                 , MainActivity.FbUserModel.class);
+
+        setContentView(R.layout.activity_browse);
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, new BrowseEvents()).commit();
+        }
 
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
 
@@ -64,25 +70,23 @@ public class BrowseActivity extends AppCompatActivity {
                 .findItem(R.id.bottombaritem_profile);
         profileItem.setTitle(fbUserModel.firstName);
 
+
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.bottombaritem_events:
-                                // TODO
+                                switchToFragmentBrowseEvents();
                                 return true;
                             case R.id.bottombaritem_friends:
-
                                 switchToFragmentFriendsView();
-//                                Intent friendsViewActivity = new Intent(BrowseEvents.this, FriendsViewActivity.class);
-//                                startActivity(friendsViewActivity);
                                 break;
                             case R.id.bottombaritem_stats:
-
+                                switchToFragmentStats();
                                 return true;
                             case R.id.bottombaritem_profile:
-
+                                switchToFragmentProfile();
                                 return true;
                         }
                         return true;
@@ -90,9 +94,33 @@ public class BrowseActivity extends AppCompatActivity {
                 });
     }
 
+    private void switchToFragmentProfile() {
+        FragmentManager manager = getSupportFragmentManager();
+        manager.beginTransaction().replace(R.id.container, new FriendsView()).commit();
+
+    }
+
+    private void switchToFragmentStats() {
+        FragmentManager manager = getSupportFragmentManager();
+        manager.beginTransaction().replace(R.id.container, new StatsFragment()).commit();
+
+    }
+
+    private void switchToFragmentBrowseEvents() {
+        FragmentManager manager = getSupportFragmentManager();
+        manager.beginTransaction().replace(R.id.container, new BrowseEvents()).commit();
+
+    }
+
+    public void switchToFragmentFriendsView(){
+        FragmentManager manager = getSupportFragmentManager();
+        manager.beginTransaction().replace(R.id.container, new FriendsView()).commit();
+
+    }
+
     public List<UserEventModel> getEventsfromDB() {
 
-        BrowseActivity.EventRetrievalTask<Object> asyncTask = new BrowseActivity.EventRetrievalTask<>();
+        EventRetrievalTask<Object> asyncTask = new EventRetrievalTask<>();
         try {
             return asyncTask.execute().get();
         } catch (InterruptedException e) {
@@ -148,11 +176,5 @@ public class BrowseActivity extends AppCompatActivity {
             }
             return events;
         }
-    }
-
-    public void switchToFragmentFriendsView(){
-        FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.friends_view_fragment, new FriendsView()).commit();
-
     }
 }

@@ -79,15 +79,11 @@ public class BrowseEvents extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-//        getActivity().requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        getActivity().getWindow().setFlags(
-//                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        View view =  inflater.inflate(R.layout.fragment_browse_events, container, false);
-
         ownIntent = getActivity().getIntent();
         fbUserModel = ((BrowseActivity) getActivity()).getFbUserModel();
+
+
+        View view =  inflater.inflate(R.layout.fragment_browse_events, container, false);
 
 
         recyclerView = (RecyclerView) view.findViewById(R.id.eventResults);
@@ -112,30 +108,40 @@ public class BrowseEvents extends Fragment {
             }
         });
 
-        /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (gridLayout.findLastCompletelyVisibleItemPosition() == events.size() - 1)
-                    events = getEventsfromDB();
+                    events = ((BrowseActivity) getActivity()).getEventsfromDB();
             }
-        });*/
+        });
 
         LoginButton loginButton = view.findViewById(R.id.header_logoff_button);
         loginButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.add_event_fbutton);
+        FloatingActionButton fab = view.findViewById(R.id.add_event_fbutton);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent myIntent = new Intent(getActivity(), CreateEvent.class);
+                Intent myIntent = new Intent((BrowseActivity) getActivity(), CreateEvent.class);
                 getActivity().startActivity(myIntent);
             }
         });
 
         //registers when text is typed on search bar and calls onQuery... methods
         searchView = (SearchView) view.findViewById(R.id.searchView);
-        searchView.setOnQueryTextListener((SearchView.OnQueryTextListener) getActivity());
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
 
         profileTracker = new ProfileTracker() {
             @Override
@@ -143,8 +149,8 @@ public class BrowseEvents extends Fragment {
                 if (currentProfile==null) redirect();
             }
         };
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_browse_events, container, false);
+
+        return view;
     }
 
 

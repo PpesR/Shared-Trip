@@ -78,7 +78,7 @@ public class EventDetailsActivity extends FragmentActivity {
         EventDetailsUtils.JoinRequestTask requestTask =
                 new EventDetailsUtils.JoinRequestTask<>(
                         model.getId(),
-                        BrowseEvents.fbUserModel.id,
+                        BrowseActivity.fbUserModel.id,
                         new EventDetailsUtils.JoinCallback(this));
         requestTask.execute();
     }
@@ -87,7 +87,7 @@ public class EventDetailsActivity extends FragmentActivity {
         EventDetailsUtils.ApprovalStatusTask task =
                 new EventDetailsUtils.ApprovalStatusTask(
                         model.getId(),
-                        BrowseEvents.fbUserModel.id,
+                        BrowseActivity.fbUserModel.id,
                         new EventDetailsUtils.ApprovalCallback(this, model));
         task.execute();
     }
@@ -157,7 +157,7 @@ public class EventDetailsActivity extends FragmentActivity {
 
         MenuItem profileItem = bottomNavigationView.getMenu()
                 .findItem(R.id.bottombaritem_profile);
-        profileItem.setTitle(BrowseEvents.fbUserModel.firstName);
+        profileItem.setTitle(BrowseActivity.fbUserModel.firstName);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {

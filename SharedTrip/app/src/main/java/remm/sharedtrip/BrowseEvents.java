@@ -181,6 +181,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
 
         //registers when text is typed on search bar and calls onQuery... methods
         searchView = (SearchView) findViewById(R.id.searchView);
+        //searchView.setOnQueryTextListener(this);
         searchView.setOnQueryTextListener(this);
 
     }

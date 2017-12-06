@@ -6,13 +6,8 @@
     android:layout_height="match_parent"
     android:background="@color/background_grey">
 
-    <!--<fragment android:name="fragments.BrowseEvents"-->
-        <!--android:id="@+id/browse_event_fragment"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent" />-->
-
-    <fragment android:name="fragments.FriendsView"
-        android:id="@+id/friends_view_fragment"
+    <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -26,17 +21,5 @@
         app:itemTextColor="@drawable/selector_bottombar_item"
         app:menu="@menu/bottombar_menu" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/add_event_fbutton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="@dimen/add_event_fbutton_marginbottom"
-        android:layout_marginEnd="@dimen/add_event_fbutton_margin"
-        android:layout_marginRight="@dimen/add_event_fbutton_margin"
-        android:src="@drawable/ic_add_white_24px"
-        app:backgroundTint="@color/orangered"
-        app:layout_anchor="@id/result_content"
-        app:layout_anchorGravity="bottom|end" />
 </android.support.design.widget.CoordinatorLayout>
 
