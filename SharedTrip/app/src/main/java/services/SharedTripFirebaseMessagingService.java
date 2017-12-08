@@ -19,6 +19,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 import remm.sharedtrip.R;
@@ -59,6 +61,8 @@ public class SharedTripFirebaseMessagingService extends FirebaseMessagingService
                 }
 
                 if (mode == IMMEDIATE) {
+                    long t = remoteMessage.getSentTime();
+                    String s = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss").format(new Date(t));
                     Intent intent = new Intent("Message received");
                     intent.putExtra(
                             "messageData",

@@ -52,7 +52,7 @@ public class AdminEventAdapter extends RecyclerView.Adapter<AdminEventAdapter.Ad
             badge = itemView.findViewById(R.id.admin_event_badge);
             startDate = itemView.findViewById(R.id.admin_event_start);
             location = itemView.findViewById(R.id.admin_event_location);
-            imageView.setOnClickListener(this);
+            itemView.setOnClickListener(this);
         }
 
         @Override
@@ -85,7 +85,7 @@ public class AdminEventAdapter extends RecyclerView.Adapter<AdminEventAdapter.Ad
         }
         Glide
             .with(context)
-            .load(myAdminEvents.get(position).getImageLink())
+            .load(event.getImageLink())
             .into(holder.imageView);
     }
 

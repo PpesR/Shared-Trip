@@ -171,17 +171,7 @@ public class ChatActivity extends AppCompatActivity {
             try {
                 JSONObject obj = new JSONObject(json);
                 String dateStr = obj.getString("time");
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd kk:mm:dd");
-                df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                Date date = null;
-                try {
-                    date = df.parse(dateStr);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                df.setTimeZone(TimeZone.getDefault());
-                String formattedDate = df.format(date);
-                ChatActivity.this.addMessage(formattedDate+"\r\n"+obj.getString("sender_name")+": "+obj.getString("message"));
+                ChatActivity.this.addMessage(dateStr+"\r\n"+obj.getString("sender_name")+": "+obj.getString("message"));
 
             } catch (JSONException e) {
                 e.printStackTrace();

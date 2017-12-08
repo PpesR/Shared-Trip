@@ -3,7 +3,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentActivity;
@@ -16,7 +15,6 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
-import com.facebook.GraphRequestAsyncTask;
 import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
@@ -48,11 +46,12 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import utils.UserAccountUtil.*;
 
-import static com.facebook.GraphResponse.PagingDirection.NEXT;
 import static utils.ValueUtil.*;
 
 import static android.view.View.GONE;
@@ -244,7 +243,9 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
             hideLogInButtons();
 
             currentFirebaseUser = mAuth.getCurrentUser();
-            if (notNull(currentFirebaseUser)) { redirect(); }
+            if (notNull(currentFirebaseUser)) {
+                updateFacebookFriendsAndRedirect();
+            }
             else {
                 if (model.hasGoogle()) { firebaseAuthWithGoogle(account); }
                 if (model.hasFacebook()) { handleFacebookAccessToken(AccessToken.getCurrentAccessToken()); }
@@ -256,7 +257,9 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
         if (isNull(browseEvents)) browseEvents = new Intent(self, BrowseEvents.class);
 
         model.firstName = model.hasFacebook() ? Profile.getCurrentProfile().getFirstName() : account.getGivenName();
+
         browseEvents.putExtra("user", new Gson().toJson(model));
+        browseEvents.putExtra("prefix", apiPrefix);
         startActivity(browseEvents);
     }
 
@@ -274,7 +277,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
         public int ageMin = -1;
         public int ageMax = -1;
 
-        final public List<String> facebookFriends = new ArrayList<>();
+        final public Set<String> facebookFriends = new HashSet<>();
 
         String firstName;
         String birthDate;
@@ -302,7 +305,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
                                 if (ageRange.has("min")) { model.ageMin = ageRange.getInt("min"); }
                                 if (ageRange.has("max")) { model.ageMax = ageRange.getInt("max"); }
 
-                                GraphRequest request = GraphRequest.newMyFriendsRequest(token, onFriendsResponse);
+                                GraphRequest request = GraphRequest.newMyFriendsRequest(token, onLogInFriendsResponse);
                                 Bundle parameters = new Bundle();
                                 parameters.putString("limit", "999");
                                 request.setParameters(parameters);
@@ -326,7 +329,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
         public void onError(FacebookException e) { showLogInButtons(); }
     };
 
-    private GraphRequest.GraphJSONArrayCallback onFriendsResponse =
+    private GraphRequest.GraphJSONArrayCallback onLogInFriendsResponse =
             new GraphRequest.GraphJSONArrayCallback() {
                 @Override
                 public void onCompleted(JSONArray array, GraphResponse response) {
@@ -337,6 +340,25 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
                         }
 
                         postUserToDb();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            };
+
+    private GraphRequest.GraphJSONArrayCallback onResumeFriendsResponse =
+            new GraphRequest.GraphJSONArrayCallback() {
+                @Override
+                public void onCompleted(JSONArray array, GraphResponse response) {
+                    try {
+                        for (int i = 0; i < array.length(); i++) {
+                            model.facebookFriends.add(
+                                    array.getJSONObject(i).getString("id"));
+                        }
+
+                        redirect();
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -382,14 +404,19 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
                 model.googleId = null;
                 showLogInButtons();
             }
-            else redirect();
+            else {
+                updateFacebookFriendsAndRedirect();
+            }
         }
 
         else {
-            if (!bothAreNull(googleAccount, facebookToken))
-                hideLogInButtons();
-            else
+            if (notNull(googleAccount))
+                tryLogInExistingUser(googleAccount.getId(), null);
+            else if (notNull(facebookToken))
+                tryLogInExistingUser(null, facebookToken.getUserId());
+            else {
                 showLogInButtons();
+            }
         }
     }
 
@@ -427,7 +454,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 currentFirebaseUser = mAuth.getCurrentUser();
-                                redirect();
+                                updateFacebookFriendsAndRedirect();
 
                             } else {
                                 displayAuthError();
@@ -460,6 +487,20 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
     private boolean modelNotSet() { return model == null; }
     private boolean modelIsSet() { return model != null; }
+
+    private void updateFacebookFriendsAndRedirect () {
+        AccessToken facebookToken = AccessToken.getCurrentAccessToken();
+        if (notNull(facebookToken) && model.hasFacebook() && model.facebookFriends.isEmpty()) {
+            GraphRequest request = GraphRequest.newMyFriendsRequest(
+                            facebookToken,
+                            onResumeFriendsResponse);
+            Bundle parameters = new Bundle();
+            parameters.putString("limit", "999");
+            request.setParameters(parameters);
+            request.executeAsync();
+        }
+        else redirect();
+    }
 }
 
 
