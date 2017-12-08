@@ -258,7 +258,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
             showLogInButtons();
             return;
         }
-        if (isNull(browseEvents)) browseEvents = new Intent(self, BrowseEvents.class);
+        if (isNull(browseEvents)) browseEvents = new Intent(self, BrowseActivity.class);
 
         model.firstName = model.hasFacebook() ? Profile.getCurrentProfile().getFirstName() : account.getGivenName();
 

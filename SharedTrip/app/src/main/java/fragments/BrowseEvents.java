@@ -34,9 +34,12 @@ import android.widget.Button;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
-import com.facebook.login.widget.LoginButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -57,6 +60,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 import utils.BottomNavigationViewHelper;
 
+import static android.view.View.GONE;
+
 
 public class BrowseEvents extends Fragment {
 
@@ -69,19 +74,22 @@ public class BrowseEvents extends Fragment {
     private ProfileTracker profileTracker;
     private TextView t;
     private Intent ownIntent;
-    static FbGoogleUserModel fbUserModel;
+    static FbGoogleUserModel userModel;
     private Gson gson = new Gson();
     private SearchView searchView;
     private BottomNavigationView bottomNavigationView;
-
+    private String apiPrefix;
+    private AccessTokenTracker accessTokenTracker;
+    private FirebaseUser currentFirebaseUser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         ownIntent = getActivity().getIntent();
-        fbUserModel = ((BrowseActivity) getActivity()).getFbUserModel();
+        userModel = ((BrowseActivity) getActivity()).getUserModel();
 
+        apiPrefix = ownIntent.getStringExtra("prefix");
 
         View view =  inflater.inflate(R.layout.fragment_browse_events, container, false);
 
@@ -92,17 +100,6 @@ public class BrowseEvents extends Fragment {
         gridLayout = new GridLayoutManager(getActivity(), events.size());
         recyclerView.setLayoutManager(gridLayout);
 
-        t = (TextView) view.findViewById(R.id.user_header_name);
-        t.append("  "+fbUserModel.name);
-        t.setCompoundDrawablesWithIntrinsicBounds(R.drawable.com_facebook_button_icon_blue, 0, 0, 0);
-        t.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent profileIntent = new Intent(getActivity(), ProfileView.class);
-                profileIntent.putExtra("user", ownIntent.getStringExtra("user"));
-                getActivity().startActivity(profileIntent);
-            }
-        });
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
@@ -113,8 +110,6 @@ public class BrowseEvents extends Fragment {
             }
         });
 
-        LoginButton loginButton = view.findViewById(R.id.header_logoff_button);
-        loginButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 
         FloatingActionButton fab = view.findViewById(R.id.add_event_fbutton);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -149,7 +144,6 @@ public class BrowseEvents extends Fragment {
         return view;
     }
 
-
     private void redirect() {
         Intent browseEvents = new Intent(getActivity(), MainActivity.class);
         startActivity(browseEvents);
@@ -158,7 +152,6 @@ public class BrowseEvents extends Fragment {
     public void passBrowseActivity(BrowseActivity ba) {
         adapter = new EventAdapter(getActivity(), events);
         adapter.be = ba;
-        recyclerView.setAdapter(adapter);
+     //   recyclerView.setAdapter(adapter);
     }
-
 }

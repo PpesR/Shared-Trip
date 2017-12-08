@@ -34,6 +34,12 @@
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+        <activity
+            android:name=".BrowseActivity">
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+
         <activity android:name=".CreateEvent"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
         <activity android:name=".ProfileView"
