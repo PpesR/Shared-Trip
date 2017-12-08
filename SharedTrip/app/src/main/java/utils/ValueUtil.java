@@ -48,6 +48,10 @@ public class ValueUtil {
 
     public static boolean isNull(Object obj) { return obj == null; }
 
+    public static boolean bothAreNull(Object obj1, Object obj2) {
+        return obj1 == null && obj2 == null;
+    }
+
     public static String valueOrNull(String str) { return str.equals("null") || str.equals("") ? null : str; }
 
     public static String toNullSafe(String str) { return str == null ? "null" : str; }

@@ -16,6 +16,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
+import com.facebook.GraphRequestAsyncTask;
 import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
@@ -40,13 +41,18 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import utils.UserAccountUtil.*;
+
+import static com.facebook.GraphResponse.PagingDirection.NEXT;
 import static utils.ValueUtil.*;
 
 import static android.view.View.GONE;
@@ -84,8 +90,8 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
          * TODO: move to the page that displays the pictures
          * Until then, DO NOT REMOVE
          */
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+        /*StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);*/
         setContentView(R.layout.activity_main);
 
         progressBar = findViewById(R.id.indeterminateBar);
@@ -96,11 +102,9 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
         loginButton = findViewById(R.id.fb_login_button);
         loginButton.setReadPermissions(Arrays.asList("public_profile", "email", "user_friends"));
-
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) { hideLogInButtons(); }});
-
         loginButton.registerCallback(callbackManager, facebookCallback);
 
 
@@ -259,12 +263,18 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
     public static class FbGoogleUserModel implements Serializable {
 
         public int id;
+
         public String facebookId = null;
         public String googleId = null;
         public String name;
         public String gender;
         public String description;
         public String imageUriString;
+
+        public int ageMin = -1;
+        public int ageMax = -1;
+
+        final public List<String> facebookFriends = new ArrayList<>();
 
         String firstName;
         String birthDate;
@@ -276,8 +286,9 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
     private FacebookCallback<LoginResult> facebookCallback = new FacebookCallback<LoginResult>() {
         @Override
         public void onSuccess(LoginResult loginResult) {
+            final AccessToken token = loginResult.getAccessToken();
             GraphRequest request = GraphRequest.newMeRequest(
-                    loginResult.getAccessToken(),
+                    token,
                     new GraphRequest.GraphJSONObjectCallback() {
                         @Override
                         public void onCompleted(JSONObject object, GraphResponse response) {
@@ -286,7 +297,16 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
                                 model.facebookId = object.optString("id");
                                 model.name = object.getString("name");
                                 model.gender = object.getString("gender");
-                                postUserToDb();
+                                JSONObject ageRange = object.getJSONObject("age_range");
+
+                                if (ageRange.has("min")) { model.ageMin = ageRange.getInt("min"); }
+                                if (ageRange.has("max")) { model.ageMax = ageRange.getInt("max"); }
+
+                                GraphRequest request = GraphRequest.newMyFriendsRequest(token, onFriendsResponse);
+                                Bundle parameters = new Bundle();
+                                parameters.putString("limit", "999");
+                                request.setParameters(parameters);
+                                request.executeAsync();
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -305,6 +325,25 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
         @Override
         public void onError(FacebookException e) { showLogInButtons(); }
     };
+
+    private GraphRequest.GraphJSONArrayCallback onFriendsResponse =
+            new GraphRequest.GraphJSONArrayCallback() {
+                @Override
+                public void onCompleted(JSONArray array, GraphResponse response) {
+                    try {
+                        for (int i = 0; i < array.length(); i++) {
+                            model.facebookFriends.add(
+                                    array.getJSONObject(i).getString("id"));
+                        }
+
+                        postUserToDb();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            };
 
     private void showLogInButtons() {
         runOnUiThread(new Runnable() {
@@ -332,23 +371,26 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
     protected void onResume() {
         super.onResume();
 
+        GoogleSignInAccount googleAccount = GoogleSignIn.getLastSignedInAccount(this);
+        AccessToken facebookToken = AccessToken.getCurrentAccessToken();
+
         if (notNull(model)) {
             hideLogInButtons();
-            GoogleSignInAccount googleAccount = GoogleSignIn.getLastSignedInAccount(this);
-            AccessToken facebookToken = AccessToken.getCurrentAccessToken();
 
-            if (model.hasGoogle() && isNull(googleAccount)) {
-                    model.googleId = null;
-                    showLogInButtons();
+            if (bothAreNull(googleAccount, facebookToken)){
+                model.facebookId = null;
+                model.googleId = null;
+                showLogInButtons();
             }
-
-            if (model.hasFacebook() && isNull(facebookToken)) {
-                    model.facebookId = null;
-                    showLogInButtons();
-            }
+            else redirect();
         }
 
-        else showLogInButtons();
+        else {
+            if (!bothAreNull(googleAccount, facebookToken))
+                hideLogInButtons();
+            else
+                showLogInButtons();
+        }
     }
 
     @Override
