@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 import org.json.JSONObject;
 
 import models.UserEventModel;
+import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import services.SharedTripFirebaseMessagingService;
 import utils.BottomNavigationViewHelper;
 import utils.EventDetailsUtils;
@@ -51,6 +52,7 @@ public class EventDetailsActivity extends FragmentActivity {
 
     private UserEventModel model;
     private LocalBroadcastManager broadcaster;
+    private FbGoogleUserModel userModel;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,6 +60,7 @@ public class EventDetailsActivity extends FragmentActivity {
 
         self = this;
         model = new Gson().fromJson(getIntent().getStringExtra("event"), UserEventModel.class);
+        userModel = new Gson().fromJson(getIntent().getStringExtra("user"), FbGoogleUserModel.class);
         broadcaster = LocalBroadcastManager.getInstance(this);
 
         setContentView(R.layout.activity_event_view);
@@ -73,6 +76,7 @@ public class EventDetailsActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 Intent chatIntent = new Intent(EventDetailsActivity.this, ChatActivity.class);
+                chatIntent.putExtra("user", getIntent().getStringExtra("user"));
                 chatIntent.putExtra("event", getIntent().getStringExtra("event"));
                 broadcaster.sendBroadcast(new Intent("Switch to immediate"));
 
@@ -105,7 +109,7 @@ public class EventDetailsActivity extends FragmentActivity {
         EventDetailsUtils.JoinRequestTask requestTask =
                 new EventDetailsUtils.JoinRequestTask<>(
                         model.getId(),
-                        BrowseEvents.userModel.id,
+                        userModel.id,
                         new EventDetailsUtils.JoinCallback(this));
         requestTask.execute();
     }
@@ -114,7 +118,7 @@ public class EventDetailsActivity extends FragmentActivity {
         EventDetailsUtils.ApprovalStatusTask task =
                 new EventDetailsUtils.ApprovalStatusTask(
                         model.getId(),
-                        BrowseEvents.userModel.id,
+                        userModel.id,
                         new EventDetailsUtils.ApprovalCallback(this, model));
         task.execute();
     }
@@ -193,7 +197,7 @@ public class EventDetailsActivity extends FragmentActivity {
 
         MenuItem profileItem = bottomNavigationView.getMenu()
                 .findItem(R.id.bottombaritem_profile);
-        profileItem.setTitle(BrowseEvents.userModel.firstName);
+        profileItem.setTitle(userModel.firstName);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -212,7 +216,6 @@ public class EventDetailsActivity extends FragmentActivity {
                                 startActivity(statsViewActivity);
                                 return true;
                             case R.id.bottombaritem_profile:
-                                // TODO
                                 return true;
                         }
                         return true;

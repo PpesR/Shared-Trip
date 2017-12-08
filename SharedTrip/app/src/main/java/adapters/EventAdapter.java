@@ -91,6 +91,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
 
             String gsonString = gson.toJson(eventModel);
             detailViewIntent.putExtra("event", gsonString);
+            detailViewIntent.putExtra("user", gson.toJson(be.getUserModel()));
 
             be.startActivity(detailViewIntent);
         }

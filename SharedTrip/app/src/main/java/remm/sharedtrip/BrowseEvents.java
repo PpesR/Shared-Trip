@@ -68,7 +68,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     private EventAdapter adapter;
     private TextView headerUsername;
     private Intent ownIntent;
-    public static FbGoogleUserModel userModel;
+    private FbGoogleUserModel userModel;
     private Gson gson = new Gson();
     private SearchView searchView;
     private BottomNavigationView bottomNavigationView;
@@ -82,7 +82,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
 
     private List<UserEventModel> getEventsfromDB() {
 
-        EventRetrievalTask<Void> asyncTask = new EventRetrievalTask<>();
+        EventRetrievalTask<Void> asyncTask = new EventRetrievalTask<>(userModel.id);
         try {
             return asyncTask.execute().get();
         } catch (InterruptedException e) {
@@ -150,7 +150,6 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.bottombaritem_events:
-                                // TODO
                                 return true;
                             case R.id.bottombaritem_friends:
                                 Intent friendsViewActivity = new Intent(BrowseEvents.this, FriendsViewActivity.class);
@@ -164,6 +163,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
                                 return true;
                             case R.id.bottombaritem_profile:
                                 Intent adminViewActivity = new Intent(BrowseEvents.this, AdminEventActivity.class);
+                                adminViewActivity.putExtra("user", ownIntent.getStringExtra("user"));
                                 startActivity(adminViewActivity);
                                 return true;
                         }
@@ -198,6 +198,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
             @Override
             public void onClick(View view) {
                 Intent myIntent = new Intent(BrowseEvents.this, CreateEvent.class);
+                myIntent.putExtra("user", ownIntent.getStringExtra("user"));
                 BrowseEvents.this.startActivity(myIntent);
             }
         });
@@ -256,12 +257,18 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
 
     public static class EventRetrievalTask<Void> extends AsyncTask<Void, Void, List<UserEventModel>> {
 
-         @SafeVarargs
+        private int userId;
+
+        public EventRetrievalTask(int userId) {
+            this.userId = userId;
+        }
+
+        @SafeVarargs
          @Override
          protected final List<UserEventModel> doInBackground(Void... voids) {
              OkHttpClient client = new OkHttpClient();
              Request request = new Request.Builder()
-                     .url("http://146.185.135.219/requestrouter.php?hdl=event&act=wappr&user="+ userModel.id)
+                     .url("http://146.185.135.219/requestrouter.php?hdl=event&act=wappr&user="+ userId)
                      .build();
              List<UserEventModel> events = new ArrayList<>();
              try {
@@ -401,5 +408,9 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
             fbLoginButton.setVisibility(GONE);
             googleLogoutButton.setVisibility(VISIBLE);
         }
+    }
+
+    public FbGoogleUserModel getUserModel() {
+        return userModel;
     }
 }

@@ -35,11 +35,11 @@ import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
 import models.UserEventModel;
+import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import utils.MessageUtil;
 import utils.MessageUtil.HistoryRetrievalTask;
 import utils.MessageUtil.MessageSaveResponse;
 
-import static remm.sharedtrip.BrowseEvents.userModel;
 import static utils.ValueUtil.notNull;
 
 /**
@@ -57,10 +57,12 @@ public class ChatActivity extends AppCompatActivity {
     private List<String> messages;
     private ArrayAdapter<String> adapter;
     private String messageText;
+    private FbGoogleUserModel userModel;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        userModel = new Gson().fromJson(getIntent().getStringExtra("user"), FbGoogleUserModel.class);
 
         fm = FirebaseMessaging.getInstance();
         LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver),
