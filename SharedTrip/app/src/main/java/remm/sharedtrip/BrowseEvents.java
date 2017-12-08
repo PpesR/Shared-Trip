@@ -4,20 +4,16 @@ import android.annotation.SuppressLint;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,8 +26,6 @@ import android.widget.TextView;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.Profile;
-import com.facebook.ProfileTracker;
-import com.facebook.login.LoginBehavior;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -61,8 +55,8 @@ import utils.BottomNavigationViewHelper;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static utils.EventDetailsUtils.bitmapFromBase64String;
 import static utils.ValueUtil.isNull;
-import static utils.ValueUtil.notNull;
 
 public class BrowseEvents extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
@@ -82,6 +76,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     private FirebaseUser currentFirebaseUser;
     private Intent messagingService;
     private LoginButton fbLoginButton;
+    private String apiPrefix;
 
     private static BrowseEvents self;
 
@@ -109,6 +104,8 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
         userModel = gson.fromJson(
                 ownIntent.getStringExtra("user")
                 , FbGoogleUserModel.class);
+
+        apiPrefix = ownIntent.getStringExtra("prefix");
 
         accessTokenTracker = new AccessTokenTracker() {
             @Override
@@ -157,6 +154,8 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
                                 return true;
                             case R.id.bottombaritem_friends:
                                 Intent friendsViewActivity = new Intent(BrowseEvents.this, FriendsViewActivity.class);
+                                friendsViewActivity.putExtra("user", gson.toJson(userModel));
+                                friendsViewActivity.putExtra("prefix", ownIntent.getStringExtra("prefix"));
                                 startActivity(friendsViewActivity);
                                 return true;
                             case R.id.bottombaritem_stats:
@@ -295,12 +294,12 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
                      event.setUserBanned(object.getInt("banned")==1);
                      event.setAdmin(object.getInt("is_admin")==1);
 
-                     if (!object.getString("event_picture").contains("http")) {
-                         byte[] bytes = Base64.decode(object.getString("event_picture"), Base64.DEFAULT);
-                         event.setBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                     String pictureString = object.getString("event_picture");
+                     if (!pictureString.matches("^http(s?)://.*")) {
+                         event.setBitmap(bitmapFromBase64String(pictureString));
                      }
                      else {
-                         event.setImageLink(object.getString("event_picture"));
+                         event.setImageLink(pictureString);
                      }
                      events.add(event);
                  }

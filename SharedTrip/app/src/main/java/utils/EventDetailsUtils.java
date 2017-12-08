@@ -1,12 +1,17 @@
 package utils;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.Base64;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import models.UserEventModel;
 import okhttp3.Call;
@@ -129,6 +134,31 @@ public class EventDetailsUtils {
             } catch (JSONException e) { e.printStackTrace();
             } catch (IOException e) { e.printStackTrace(); }
         }
+    }
+
+    public static Bitmap bitmapFromBase64String(String encodedString) {
+        byte[] bytes = Base64.decode(encodedString, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
+
+    public static Bitmap bitmapFromUriString(String uriString) {
+        try {
+            URL url = new URL(uriString);
+            return BitmapFactory.decodeStream(url.openStream());
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Bitmap bitmapFromString(String imageString) {
+        if (imageString.matches("^https?://.*"))
+            return bitmapFromUriString(imageString);
+
+        return bitmapFromBase64String(imageString);
     }
 
 }
