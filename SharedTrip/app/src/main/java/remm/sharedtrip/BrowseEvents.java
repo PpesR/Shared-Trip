@@ -64,6 +64,7 @@ import static android.view.View.VISIBLE;
 import static utils.ValueUtil.isNull;
 import static utils.ValueUtil.notNull;
 
+@RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
 public class BrowseEvents extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private List<UserEventModel> events;
