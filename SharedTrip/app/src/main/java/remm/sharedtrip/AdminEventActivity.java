@@ -8,6 +8,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+
 import java.util.List;
 
 import adapters.AdminEventAdapter;
@@ -15,6 +17,7 @@ import adapters.ParticipatorsAdapter;
 import fragments.ParticipatorsFragment;
 import models.AdminEventModel;
 import models.ParticipatorModel;
+import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import utils.AdminEventUtils;
 
 /**
@@ -29,6 +32,7 @@ public class AdminEventActivity extends FragmentActivity {
     private RecyclerView recyclerView;
     private RecyclerView subRecyclerView;
     private ParticipatorsFragment frag;
+    private FbGoogleUserModel userModel;
 
     private List<AdminEventModel> adminEvents;
     private List<ParticipatorModel> participators;
@@ -38,6 +42,7 @@ public class AdminEventActivity extends FragmentActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         self = this;
+        userModel = new Gson().fromJson(getIntent().getStringExtra("user"), FbGoogleUserModel.class);
         setContentView(R.layout.activity_user_admin_events);
         recyclerView = findViewById(R.id.admin_event_results);
         getMyAdminEvents();
@@ -46,7 +51,7 @@ public class AdminEventActivity extends FragmentActivity {
     private void getMyAdminEvents() {
         AdminEventUtils.AdminEventRetrievalTask<Void> task =
                 new AdminEventUtils.AdminEventRetrievalTask<>(
-                        BrowseEvents.userModel.id,
+                        userModel.id,
                         new AdminEventUtils.AndminEventRetrievalCallback(this));
         task.execute();
     }

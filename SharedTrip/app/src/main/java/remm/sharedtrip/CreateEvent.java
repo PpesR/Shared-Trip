@@ -17,10 +17,13 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import models.CreatorEventModel;
+import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import utils.CreateEventUtils;
 import utils.DatePickerFragment;
 
@@ -38,6 +41,7 @@ public class CreateEvent extends AppCompatActivity {
     static Boolean private_event;
     static CreatorEventModel model;
     static CreateEvent self;
+    private FbGoogleUserModel userModel;
 
 
     private void postEventsToDb() {
@@ -55,12 +59,14 @@ public class CreateEvent extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         self = this;
-        model = new CreatorEventModel("","","", BrowseEvents.userModel.id);
+        userModel = new Gson().fromJson(getIntent().getStringExtra("user"), FbGoogleUserModel.class);
+
+        model = new CreatorEventModel("","","", userModel.id);
         setContentView(R.layout.activity_create_event);
 
         getIntent().setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-        creator_id = BrowseEvents.userModel.id;
+        creator_id = userModel.id;
         imageView = findViewById(R.id.add_picture_preview);
         title = findViewById(R.id.title);
         destination = findViewById(R.id.destination);

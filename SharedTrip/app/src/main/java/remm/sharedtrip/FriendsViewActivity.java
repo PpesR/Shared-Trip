@@ -102,7 +102,7 @@ public class FriendsViewActivity extends AppCompatActivity implements FriendsEve
         BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
 
         MenuItem profileItem = bottomNavigationView.getMenu().findItem(R.id.bottombaritem_profile);
-        profileItem.setTitle(BrowseEvents.userModel.firstName);
+        profileItem.setTitle(loggedInUserModel.firstName);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {

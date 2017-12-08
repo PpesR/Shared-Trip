@@ -74,7 +74,6 @@ public class MessageUtil {
         protected final MessageSaveResponse doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
 
-            /* TODO: Add event id*/
             Builder formBodyBuilder = new Builder()
                     .add("message", toNullSafe(message))
                     .add("topic", toNullSafe(topic))
