@@ -60,7 +60,6 @@ import utils.BottomNavigationViewHelper;
 
 public class BrowseEvents extends Fragment {
 
-
     private List<UserEventModel> events;
     private RecyclerView recyclerView;
     private RecyclerView searchRecyclerView;
@@ -92,10 +91,6 @@ public class BrowseEvents extends Fragment {
 
         gridLayout = new GridLayoutManager(getActivity(), events.size());
         recyclerView.setLayoutManager(gridLayout);
-
-        adapter = new EventAdapter(getActivity(), events);
-        adapter.be = getActivity();
-        recyclerView.setAdapter(adapter);
 
         t = (TextView) view.findViewById(R.id.user_header_name);
         t.append("  "+fbUserModel.name);
@@ -158,6 +153,12 @@ public class BrowseEvents extends Fragment {
     private void redirect() {
         Intent browseEvents = new Intent(getActivity(), MainActivity.class);
         startActivity(browseEvents);
+    }
+
+    public void passBrowseActivity(BrowseActivity ba) {
+        adapter = new EventAdapter(getActivity(), events);
+        adapter.be = ba;
+        recyclerView.setAdapter(adapter);
     }
 
 }

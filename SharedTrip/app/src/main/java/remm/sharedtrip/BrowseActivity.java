@@ -59,7 +59,9 @@ public class BrowseActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_browse);
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new BrowseEvents()).commit();
+            BrowseEvents fragment = new BrowseEvents();
+            fragment.passBrowseActivity(this);
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
         }
 
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
@@ -177,5 +179,9 @@ public class BrowseActivity extends AppCompatActivity {
             }
             return events;
         }
+    }
+
+    public FbGoogleUserModel getUserModel() {
+        return fbUserModel;
     }
 }
