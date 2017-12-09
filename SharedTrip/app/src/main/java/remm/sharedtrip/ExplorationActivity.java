@@ -107,7 +107,7 @@ public class ExplorationActivity extends AppCompatActivity implements SearchView
     }
 
     private void setWindow(Bundle savedInstanceState){
-        setContentView(R.layout.activity_browse);
+        setContentView(R.layout.activity_exploration);
 
         setUpUserHeader();
 
