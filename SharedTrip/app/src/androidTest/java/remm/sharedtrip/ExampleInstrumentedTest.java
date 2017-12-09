@@ -1,38 +1,28 @@
 package remm.sharedtrip;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-
-import com.google.gson.Gson;
 
 import junit.framework.Assert;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
-import models.EventModel;
 import models.UserEventModel;
 import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import testutils.TestEventUtils;
 
 import static org.junit.Assert.*;
 
@@ -67,9 +57,9 @@ public class ExampleInstrumentedTest {
             true,     // initialTouchMode
             false);   // launchActivity. False to customize the intent
     @Rule
-    public ActivityTestRule<CreateEvent> createEventsActivityRule
+    public ActivityTestRule<CreateEventActivity> createEventsActivityRule
             = new ActivityTestRule<>(
-            CreateEvent.class,
+            CreateEventActivity.class,
             true,     // initialTouchMode
             false);   // launchActivity. False to customize the intent
 

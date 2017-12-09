@@ -21,12 +21,12 @@ import adapters.MyEventsAdapter.MyEventsManager;
 import adapters.ParticipatorsAdapter;
 import models.MyEventModel;
 import models.ParticipatorModel;
-import remm.sharedtrip.BrowseActivity;
+import remm.sharedtrip.ExplorationActivity;
 import remm.sharedtrip.MainActivity;
 import remm.sharedtrip.R;
-import utils.MyEventsUtils;
-import utils.MyEventsUtils.ApprovalTask;
-import utils.MyEventsUtils.DenialTask;
+import utils.MyEventsUtil;
+import utils.MyEventsUtil.ApprovalTask;
+import utils.MyEventsUtil.DenialTask;
 
 import static utils.ValueUtil.notNull;
 
@@ -35,7 +35,7 @@ import static utils.ValueUtil.notNull;
  */
 
 public class MyEventsFragment extends Fragment implements MyEventsManager {
-    private BrowseActivity myActivity;
+    private ExplorationActivity myActivity;
     private MainActivity.FbGoogleUserModel userModel;
     private String apiPrefix;
     private View myView;
@@ -55,7 +55,7 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
                              Bundle savedInstanceState) {
 
         self = this;
-        myActivity = (BrowseActivity) getActivity();
+        myActivity = (ExplorationActivity) getActivity();
         userModel = myActivity.getUserModel();
         apiPrefix = myActivity.getApiPrefix();
 
@@ -67,8 +67,8 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
     }
 
     private void getMyEvents() {
-        MyEventsUtils.MyEventsRetrievalTask<Void> task =
-                new MyEventsUtils.MyEventsRetrievalTask<>(userModel.id);
+        MyEventsUtil.MyEventsRetrievalTask<Void> task =
+                new MyEventsUtil.MyEventsRetrievalTask<>(userModel.id);
         try {
             List<MyEventModel> events = task.execute().get();
             provideEvents(events);
@@ -135,10 +135,10 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
     }
 
     public void eventClicked(int i, TextView badge) {
-        MyEventsUtils.ParticipatorRetrievalTask<Void> task =
-                new MyEventsUtils.ParticipatorRetrievalTask<>(
+        MyEventsUtil.ParticipatorRetrievalTask<Void> task =
+                new MyEventsUtil.ParticipatorRetrievalTask<>(
                         myEvents.get(i).getId(),
-                        new MyEventsUtils.ParticipatorRetrievalCallback(this, myEvents.get(i), badge));
+                        new MyEventsUtil.ParticipatorRetrievalCallback(this, myEvents.get(i), badge));
         task.execute();
     }
 

@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 import remm.sharedtrip.R;
 
-public class FriendsView extends Fragment {
+public class FriendsFragment extends Fragment {
      @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

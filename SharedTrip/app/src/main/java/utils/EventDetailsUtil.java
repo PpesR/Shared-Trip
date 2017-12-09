@@ -26,7 +26,7 @@ import remm.sharedtrip.EventDetailsActivity;
  * Created by Mark on 12.11.2017.
  */
 
-public class EventDetailsUtils {
+public class EventDetailsUtil {
 
     public static class JoinRequestTask<Void> extends AsyncTask<Void, Void, Void> {
         private int eventId;

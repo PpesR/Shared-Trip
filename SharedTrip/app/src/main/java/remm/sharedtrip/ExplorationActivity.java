@@ -38,7 +38,7 @@ import java.util.List;
 
 import adapters.EventAdapter;
 import fragments.*;
-import fragments.BrowseEvents;
+import fragments.BrowseEventsFragment;
 import models.UserEventModel;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import services.SharedTripFirebaseMessagingService;
@@ -48,7 +48,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static utils.ValueUtil.isNull;
 
-public class BrowseActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class ExplorationActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private List<UserEventModel> events;
     private RecyclerView recyclerView;
@@ -68,7 +68,7 @@ public class BrowseActivity extends AppCompatActivity implements SearchView.OnQu
     private LoginButton fbLoginButton;
     private String apiPrefix;
 
-    private static BrowseActivity self;
+    private static ExplorationActivity self;
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -140,7 +140,7 @@ public class BrowseActivity extends AppCompatActivity implements SearchView.OnQu
                 });
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new BrowseEvents()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, new BrowseEventsFragment()).commit();
         }
     }
 
@@ -216,9 +216,9 @@ public class BrowseActivity extends AppCompatActivity implements SearchView.OnQu
         headerUsername.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent profileIntent = new Intent(BrowseActivity.this, ProfileView.class);
+                Intent profileIntent = new Intent(ExplorationActivity.this, ProfileActivity.class);
                 profileIntent.putExtra("user", ownIntent.getStringExtra("user"));
-                BrowseActivity.this.startActivity(profileIntent);
+                ExplorationActivity.this.startActivity(profileIntent);
             }
         });
 
@@ -287,13 +287,13 @@ public class BrowseActivity extends AppCompatActivity implements SearchView.OnQu
 
     private void switchToFragmentBrowseEvents() {
         FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.container, new BrowseEvents()).commit();
+        manager.beginTransaction().replace(R.id.container, new BrowseEventsFragment()).commit();
 
     }
 
     public void switchToFragmentFriendsView(){
         FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.container, new FriendsView()).commit();
+        manager.beginTransaction().replace(R.id.container, new FriendsFragment()).commit();
 
     }
 }

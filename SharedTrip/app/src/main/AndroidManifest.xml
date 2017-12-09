@@ -30,24 +30,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".BrowseEvents">
-            <meta-data android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-        </activity>
-        <activity
-            android:name=".BrowseActivity">
+            android:name=".ExplorationActivity">
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
 
-        <activity android:name=".CreateEvent"
+        <activity android:name=".CreateEventActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
-        <activity android:name=".ProfileView"
+        <activity android:name=".ProfileActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
-        <activity android:name=".FriendsViewActivity" />
-        <activity android:name=".StatsViewActivity" />
+        <activity android:name=".FriendsActivity" />
         <activity android:name=".EventDetailsActivity" />
-        <activity android:name=".AdminActivity" />
         <activity android:name=".ChatActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
 
@@ -72,12 +65,6 @@
             android:name="services.SharedTripFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
-        </service>
-        <service
-            android:name="services.SharedTripFirebaseInstanceIDService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
 

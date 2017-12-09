@@ -17,7 +17,6 @@ import adapters.MyEventsAdapter.MyEventsManager;
 import de.hdodenhof.circleimageview.CircleImageView;
 import models.MyEventModel;
 import models.ParticipatorModel;
-import remm.sharedtrip.AdminActivity;
 import remm.sharedtrip.R;
 
 /**

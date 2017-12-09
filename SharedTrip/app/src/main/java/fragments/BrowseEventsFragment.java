@@ -17,14 +17,14 @@ import java.util.concurrent.ExecutionException;
 
 import adapters.EventAdapter;
 import models.UserEventModel;
-import remm.sharedtrip.BrowseActivity;
-import remm.sharedtrip.CreateEvent;
+import remm.sharedtrip.ExplorationActivity;
+import remm.sharedtrip.CreateEventActivity;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import remm.sharedtrip.R;
 import utils.BrowseUtil;
 
 
-public class BrowseEvents extends Fragment {
+public class BrowseEventsFragment extends Fragment {
 
     private List<UserEventModel> events;
     private RecyclerView recyclerView;
@@ -33,14 +33,14 @@ public class BrowseEvents extends Fragment {
     private FbGoogleUserModel userModel;
     private SearchView searchView;
     private String apiPrefix;
-    private BrowseActivity myActivity;
+    private ExplorationActivity myActivity;
     private View myView;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        myActivity = (BrowseActivity) getActivity();
+        myActivity = (ExplorationActivity) getActivity();
         userModel = myActivity.getUserModel();
         apiPrefix = myActivity.getApiPrefix();
 
@@ -60,7 +60,7 @@ public class BrowseEvents extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent myIntent = new Intent(myActivity, CreateEvent.class);
+                Intent myIntent = new Intent(myActivity, CreateEventActivity.class);
                 myIntent.putExtra("user", myActivity.getIntent().getStringExtra("user"));
                 myIntent.putExtra("prefix", apiPrefix);
                 myActivity.startActivity(myIntent);

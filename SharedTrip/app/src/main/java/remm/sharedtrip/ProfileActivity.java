@@ -6,12 +6,10 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.StrictMode;
-import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,9 +33,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
-import utils.BottomNavigationViewHelper;
 
-public class ProfileView extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity {
 
     private Intent ownIntent;
     private TextView hi_text;
@@ -47,7 +44,7 @@ public class ProfileView extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
     private FbGoogleUserModel userModel;
     private Gson gson = new Gson();
-    static  ProfileView self;
+    static ProfileActivity self;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override

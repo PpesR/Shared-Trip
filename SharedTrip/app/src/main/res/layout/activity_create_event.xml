@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="remm.sharedtrip.CreateEvent"
+    tools:context="remm.sharedtrip.CreateEventActivity"
     android:background="#fafafa">
     <TextView
         android:id="@+id/share_trip_title"
@@ -158,28 +158,6 @@
                 android:layout_toRightOf="@+id/event_dates_dash"
                 android:hint="@string/pick_date2"
                 android:onClick="showEndDatePickerDialog" />
-
-            <!--<EditText
-                android:id="@+id/start_date"
-                android:layout_width="175dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/textView31"
-                android:hint="@string/create_event_from_date"
-                android:inputType="date"
-                android:textSize="16sp" />
-
-            <EditText
-                android:id="@+id/end_date"
-                android:layout_width="175dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/textView31"
-                android:layout_toEndOf="@+id/start_date"
-                android:layout_toRightOf="@+id/start_date"
-                android:hint="@string/create_event_to_date"
-                android:inputType="date"
-                android:textSize="16sp" />-->
 
             <EditText
                 android:id="@+id/title"

@@ -1,7 +1,5 @@
 package remm.sharedtrip;
 
-import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,18 +11,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import adapters.FriendsEventsAdapter;
-import utils.BottomNavigationViewHelper;
 
 import static remm.sharedtrip.MainActivity.*;
 import static utils.DebugUtil.doNothing;
 import static utils.FriendsUtil.*;
 import static utils.ValueUtil.isNull;
 
-public class FriendsViewActivity extends AppCompatActivity implements FriendsEventsReceiver, FriendEventListener {
+public class FriendsActivity extends AppCompatActivity implements FriendsEventsReceiver, FriendEventListener {
 
     private Gson gson;
     private String apiPrefix;
-    private FriendsViewActivity self;
+    private FriendsActivity self;
 
     private BottomNavigationView bottomNavigationView;
     private FbGoogleUserModel loggedInUserModel;
@@ -40,7 +37,6 @@ public class FriendsViewActivity extends AppCompatActivity implements FriendsEve
         apiPrefix = getIntent().getStringExtra("prefix");
 
         setContentView(R.layout.activity_friends_view);
-        setUpNavbar();
 
         // data exchange starts here. Read method descriptions for more info!
         requestFriendEventsFromDb();
@@ -89,44 +85,5 @@ public class FriendsViewActivity extends AppCompatActivity implements FriendsEve
         // Don't forget to include clicked event's complete data (cost, description, etc)!
         // Might need to query separately using eventId value and methods in EventUtils.
         // See BrowseEvents activity for "open details" workflow. Use gson to serialize data.
-    }
-
-
-    /**
-     * Helper method for setting up the navbar. Should use as copy-paste across activities.
-     * NB! needs rework eventually, consider this as quickfix:
-     *  https://stackoverflow.com/questions/5467922/how-to-find-last-activity-from-which-current-activity-is-opened-in-android
-     */
-    private void setUpNavbar() {
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
-        BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
-
-        MenuItem profileItem = bottomNavigationView.getMenu().findItem(R.id.bottombaritem_profile);
-        profileItem.setTitle(loggedInUserModel.firstName);
-
-        bottomNavigationView.setOnNavigationItemSelectedListener(
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.bottombaritem_events:
-                                finish();
-                                return true;
-                            case R.id.bottombaritem_friends:
-                                return true;
-                            case R.id.bottombaritem_stats:
-                                finish();
-                                Intent statsViewActivity = new Intent(self, StatsViewActivity.class);
-                                startActivity(statsViewActivity);
-                                return true;
-                            case R.id.bottombaritem_profile:
-                                finish();
-                                Intent adminViewActivity = new Intent(self, AdminActivity.class);
-                                startActivity(adminViewActivity);
-                                return true;
-                        }
-                        return true;
-                    }
-                });
     }
 }

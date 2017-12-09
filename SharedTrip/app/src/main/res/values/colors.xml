@@ -23,5 +23,6 @@
     <color name="peel_yellow">#ffdf75</color>
     <color name="mustard">#d99d2e</color>
     <color name="calm_red">#c75652</color>
+    <color name="see_through_white">#99ffffff</color>
 
 </resources>

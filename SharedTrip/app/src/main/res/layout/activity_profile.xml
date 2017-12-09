@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="remm.sharedtrip.ProfileView">
+    tools:context="remm.sharedtrip.ProfileActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,16 +37,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!--<ImageView
-                    android:id="@+id/prof_image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="20dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:focusable="true"
-                    android:gravity="top|start"
-                    android:orientation="vertical"
-                    android:scaleType="centerCrop" />-->
                 <TextView
                     android:id="@+id/profile_hi"
                     android:layout_width="match_parent"
@@ -143,17 +133,7 @@
 
                     android:textStyle="normal"
                     android:typeface="sans" />
-                <!--<EditText
-                    android:id="@+id/description_info"
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="20dp"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="15dp"
-                    android:layout_below="@+id/prof_description"
-                    android:hint="@string/enter_info"
-                    android:inputType="text"
-                    android:textSize="16sp" />-->
+
                 <EditText
                     android:id="@+id/description_info"
                     android:layout_width="match_parent"
@@ -166,9 +146,8 @@
 
                     android:hint="@string/enter_info"
                     android:inputType="textMultiLine"
-                    android:lines="8"
+                    android:lines="3"
                     android:maxLines="8"
-                    android:minLines="6"
                     android:paddingLeft="15dp"
                     android:paddingRight="15dp"
                     android:paddingTop="15dp"
@@ -181,7 +160,9 @@
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
                     android:text="@string/prof_edit"
-                    android:visibility="visible" />
+                    android:visibility="visible"
+                    android:textColor="@color/button_grey"
+                    android:background="@android:color/transparent"/>
 
                 <Button
                     android:id="@+id/prof_save"
@@ -190,7 +171,9 @@
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
                     android:text="@string/prof_save"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    android:background="@android:color/transparent"
+                    android:textColor="@color/orangered"/>
             </LinearLayout>
 
         </ScrollView>

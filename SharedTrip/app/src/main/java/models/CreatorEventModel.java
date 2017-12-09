@@ -5,8 +5,8 @@ import android.net.Uri;
 import java.io.File;
 import java.net.URISyntaxException;
 
-import remm.sharedtrip.CreateEvent;
-import utils.CreateEventUtils;
+import remm.sharedtrip.CreateEventActivity;
+import utils.CreateEventUtil;
 
 import static utils.ValueUtil.notNull;
 
@@ -37,9 +37,9 @@ public class CreatorEventModel extends EventModel {
         return imageFile;
     }
 
-    public void setImageFile(Uri imageUri, CreateEvent activity) {
+    public void setImageFile(Uri imageUri, CreateEventActivity activity) {
         try {
-            String filePath = CreateEventUtils.getFilePath(activity, imageUri);
+            String filePath = CreateEventUtil.getFilePath(activity, imageUri);
             if (notNull(filePath)) this.imageFile = new File(filePath);
         } catch (URISyntaxException e) {
             e.printStackTrace();

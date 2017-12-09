@@ -19,6 +19,7 @@
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottom_navigation"
+        android:background="@color/see_through_white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/result_content"

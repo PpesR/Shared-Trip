@@ -27,7 +27,7 @@ import static utils.ValueUtil.isNull;
  * Created by Mark on 12.11.2017.
  */
 
-public class MyEventsUtils {
+public class MyEventsUtil {
 
     public static class MyEventsRetrievalTask<Void> extends AsyncTask<Void, Void, List<MyEventModel>>{
 

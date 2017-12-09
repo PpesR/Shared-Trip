@@ -1,7 +1,6 @@
 package remm.sharedtrip;
 import android.Manifest;
 import android.content.ActivityNotFoundException;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -12,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -29,14 +27,15 @@ import java.util.concurrent.ExecutionException;
 
 import models.CreatorEventModel;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
-import utils.CreateEventUtils;
-import utils.CreateEventUtils.EventCreator;
-import utils.DatePickerFragment;
+import utils.CreateEventUtil;
+import utils.CreateEventUtil.EventCreationTask;
+import utils.CreateEventUtil.EventCreator;
+import fragments.DatePickerFragment;
 
 import static utils.DebugUtil.doNothing;
 import static utils.ValueUtil.notNullOrWhitespace;
 
-public class CreateEvent extends AppCompatActivity implements EventCreator {
+public class CreateEventActivity extends AppCompatActivity implements EventCreator {
 
     private static final int READ_EXTERNAL_STORAGE_PERMISSION_REQUEST = 120;
     private static final int IMAGE_REQUEST = 700;
@@ -50,13 +49,13 @@ public class CreateEvent extends AppCompatActivity implements EventCreator {
     CheckBox private_event_state;
     static Boolean private_event;
     static CreatorEventModel model;
-    CreateEvent self;
+    CreateEventActivity self;
     private FbGoogleUserModel userModel;
     private String apiPrefix;
 
 
     private void postEventsToDb() {
-        CreateEventUtils.EventCreationTask<String> asyncTask = new CreateEventUtils.EventCreationTask<>(model, apiPrefix, this);
+        EventCreationTask<String> asyncTask = new EventCreationTask<>(model, apiPrefix, this);
         try {
             String s = asyncTask.execute().get();
         } catch (InterruptedException e) {
@@ -265,7 +264,7 @@ public class CreateEvent extends AppCompatActivity implements EventCreator {
             @Override
             public void run() {
                 Toast.makeText(
-                        CreateEvent.this,
+                        CreateEventActivity.this,
                         message,
                         Toast.LENGTH_SHORT
                 ).show();;
@@ -278,7 +277,7 @@ public class CreateEvent extends AppCompatActivity implements EventCreator {
             @Override
             public void run() {
                 Toast.makeText(
-                        CreateEvent.this,
+                        CreateEventActivity.this,
                         message,
                         Toast.LENGTH_LONG
                 ).show();;

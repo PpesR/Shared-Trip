@@ -1,4 +1,4 @@
-package utils;
+package fragments;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -11,8 +11,7 @@ import android.widget.DatePicker;
 import java.util.Calendar;
 
 import models.CreatorEventModel;
-import models.UserEventModel;
-import remm.sharedtrip.CreateEvent;
+import remm.sharedtrip.CreateEventActivity;
 
 public class DatePickerFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
@@ -22,9 +21,9 @@ public class DatePickerFragment extends DialogFragment
     String date;
     CreatorEventModel model;
     char whichDate;
-    CreateEvent creationView;
+    CreateEventActivity creationView;
 
-    public void setModel(CreatorEventModel model, char whichDate, CreateEvent handle) {
+    public void setModel(CreatorEventModel model, char whichDate, CreateEventActivity handle) {
         this.model = model;
         this.whichDate = whichDate;
         this.creationView = handle;

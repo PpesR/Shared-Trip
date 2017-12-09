@@ -29,14 +29,9 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -44,10 +39,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import utils.UserAccountUtil.*;
@@ -238,7 +231,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
             return;
         }
 
-        if (isNull(browseEvents)) browseEvents = new Intent(self, BrowseActivity.class);
+        if (isNull(browseEvents)) browseEvents = new Intent(self, ExplorationActivity.class);
 
         model.firstName = model.hasFacebook()
                 ? Profile.getCurrentProfile().getFirstName()

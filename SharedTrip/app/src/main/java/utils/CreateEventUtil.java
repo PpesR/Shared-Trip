@@ -30,7 +30,7 @@ import static utils.DebugUtil.doNothing;
  * Created by Mark on 14.11.2017.
  */
 
-public class CreateEventUtils {
+public class CreateEventUtil {
 
     public interface EventCreator {
         void onEventCreated();

@@ -27,8 +27,12 @@ import java.util.concurrent.ExecutionException;
 import models.UserEventModel;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import utils.BottomNavigationViewHelper;
-import utils.EventDetailsUtils;
+import utils.EventDetailsUtil;
+import utils.EventDetailsUtil.ApprovalStatusTask;
+import utils.EventDetailsUtil.GetImageTask;
+import utils.EventDetailsUtil.JoinRequestTask;
 
+import static utils.EventDetailsUtil.*;
 import static utils.ValueUtil.notNull;
 
 /**
@@ -65,7 +69,7 @@ public class EventDetailsActivity extends FragmentActivity {
         apiPrefix = getIntent().getStringExtra("prefix");
         broadcaster = LocalBroadcastManager.getInstance(this);
 
-        setContentView(R.layout.activity_event_view);
+        setContentView(R.layout.activity_event_details);
 
         joinButton = findViewById(R.id.eventViewRequestButton);
         joinButton.setVisibility(View.GONE);
@@ -107,7 +111,7 @@ public class EventDetailsActivity extends FragmentActivity {
                     .into(eventPic);
         }
         else {
-            EventDetailsUtils.GetImageTask<Void> task = new EventDetailsUtils.GetImageTask<>(model.getId(), apiPrefix);
+            GetImageTask<Void> task = new GetImageTask<>(model.getId(), apiPrefix);
             try {
                 String base64 = task.execute().get();
                 model.setBitmap(base64);
@@ -123,20 +127,20 @@ public class EventDetailsActivity extends FragmentActivity {
     }
 
     private void joinEvent() {
-        EventDetailsUtils.JoinRequestTask requestTask =
-                new EventDetailsUtils.JoinRequestTask<>(
+        JoinRequestTask requestTask =
+                new JoinRequestTask<>(
                         model.getId(),
                         userModel.id,
-                        new EventDetailsUtils.JoinCallback(this));
+                        new JoinCallback(this));
         requestTask.execute();
     }
 
     private void checkApprovalStatus() {
-        EventDetailsUtils.ApprovalStatusTask task =
-                new EventDetailsUtils.ApprovalStatusTask(
+        ApprovalStatusTask task =
+                new ApprovalStatusTask(
                         model.getId(),
                         userModel.id,
-                        new EventDetailsUtils.ApprovalCallback(this, model));
+                        new ApprovalCallback(this, model));
         task.execute();
     }
 

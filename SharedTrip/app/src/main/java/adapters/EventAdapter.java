@@ -18,11 +18,10 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 
-import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import models.UserEventModel;
-import remm.sharedtrip.BrowseActivity;
+import remm.sharedtrip.ExplorationActivity;
 import remm.sharedtrip.EventDetailsActivity;
 import remm.sharedtrip.R;
 
@@ -96,8 +95,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
 
             String gsonString = gson.toJson(eventModel.copyWithoutBitmap());
             detailViewIntent.putExtra("event", gsonString);
-            detailViewIntent.putExtra("prefix", ((BrowseActivity) browseActivity).getApiPrefix());
-            detailViewIntent.putExtra("user", gson.toJson(((BrowseActivity) browseActivity).getUserModel()));
+            detailViewIntent.putExtra("prefix", ((ExplorationActivity) browseActivity).getApiPrefix());
+            detailViewIntent.putExtra("user", gson.toJson(((ExplorationActivity) browseActivity).getUserModel()));
 
             browseActivity.startActivity(detailViewIntent);
         }

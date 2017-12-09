@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import static utils.EventDetailsUtils.bitmapFromBase64String;
+import static utils.EventDetailsUtil.bitmapFromBase64String;
 import static utils.ValueUtil.isNull;
 
 /**

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="remm.sharedtrip.FriendsViewActivity">
+    tools:context="remm.sharedtrip.FriendsActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,7 +19,7 @@
             android:layout_weight="9.2"
             android:background="@color/white_text">
 
-            <fragment android:name="fragments.FriendsView"
+            <fragment android:name="fragments.FriendsFragment"
                 android:id="@+id/friends_view_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
