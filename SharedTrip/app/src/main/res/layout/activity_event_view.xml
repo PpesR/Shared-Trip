@@ -154,15 +154,6 @@
 
     </ScrollView>
 
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/eventViewScrollView"
-        android:layout_gravity="bottom"
-        app:itemIconTint="@drawable/selector_bottombar_item_profile"
-        app:itemTextColor="@drawable/selector_bottombar_item_profile"
-        app:menu="@menu/bottombar_menu" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/enter_chat_fbutton"

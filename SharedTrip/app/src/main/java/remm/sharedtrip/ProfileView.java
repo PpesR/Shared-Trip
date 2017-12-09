@@ -145,47 +145,6 @@ public class ProfileView extends AppCompatActivity {
             }
         });
 
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
-
-        BottomNavigationViewHelper
-                .disableShiftMode(bottomNavigationView);
-
-        MenuItem profileItem = bottomNavigationView.getMenu()
-                .findItem(R.id.bottombaritem_profile);
-        profileItem.setTitle(userModel.firstName);
-        profileItem.setChecked(false);
-
-        MenuItem eventItem = bottomNavigationView.getMenu()
-                .findItem(R.id.bottombaritem_profile);
-        eventItem.setChecked(false);
-
-        bottomNavigationView.setOnNavigationItemSelectedListener(
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.bottombaritem_events:
-                                finish();
-                                return true;
-                            case R.id.bottombaritem_friends:
-                                finish();
-                                Intent friendsViewActivity = new Intent(ProfileView.this, FriendsViewActivity.class);
-                                startActivity(friendsViewActivity);
-                                return true;
-                            case R.id.bottombaritem_stats:
-                                finish();
-                                Intent statsViewActivity = new Intent(ProfileView.this, StatsViewActivity.class);
-                                startActivity(statsViewActivity);
-                                return true;
-                            case R.id.bottombaritem_profile:
-                                finish();
-                                Intent adminViewActivity = new Intent(ProfileView.this, AdminActivity.class);
-                                startActivity(adminViewActivity);
-                                return true;
-                        }
-                        return true;
-                    }
-                });
 
     }
 

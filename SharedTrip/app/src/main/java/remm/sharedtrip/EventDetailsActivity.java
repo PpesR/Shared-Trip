@@ -66,7 +66,6 @@ public class EventDetailsActivity extends FragmentActivity {
         broadcaster = LocalBroadcastManager.getInstance(this);
 
         setContentView(R.layout.activity_event_view);
-        setUpNavbar();
 
         joinButton = findViewById(R.id.eventViewRequestButton);
         joinButton.setVisibility(View.GONE);
@@ -206,38 +205,5 @@ public class EventDetailsActivity extends FragmentActivity {
         joinButton.setTextColor(Color.WHITE);
         joinButton.setVisibility(View.VISIBLE);
         fab.setVisibility(View.GONE);
-    }
-
-    private void setUpNavbar() {
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
-        BottomNavigationViewHelper
-                .disableShiftMode(bottomNavigationView);
-
-        MenuItem profileItem = bottomNavigationView.getMenu()
-                .findItem(R.id.bottombaritem_profile);
-        profileItem.setTitle(userModel.firstName);
-
-        bottomNavigationView.setOnNavigationItemSelectedListener(
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.bottombaritem_events:
-                                finish();
-                                return true;
-                            case R.id.bottombaritem_friends:
-                                Intent friendsViewActivity = new Intent(self, FriendsViewActivity.class);
-                                startActivity(friendsViewActivity);
-                                return true;
-                            case R.id.bottombaritem_stats:
-                                Intent statsViewActivity = new Intent(self, StatsViewActivity.class);
-                                startActivity(statsViewActivity);
-                                return true;
-                            case R.id.bottombaritem_profile:
-                                return true;
-                        }
-                        return true;
-                    }
-                });
     }
 }
