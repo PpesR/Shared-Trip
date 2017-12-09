@@ -13,10 +13,11 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
+import adapters.MyEventsAdapter.MyEventsManager;
 import de.hdodenhof.circleimageview.CircleImageView;
-import models.AdminEventModel;
+import models.MyEventModel;
 import models.ParticipatorModel;
-import remm.sharedtrip.AdminEventActivity;
+import remm.sharedtrip.AdminActivity;
 import remm.sharedtrip.R;
 
 /**
@@ -25,15 +26,15 @@ import remm.sharedtrip.R;
 
 public class ParticipatorsAdapter extends RecyclerView.Adapter<ParticipatorsAdapter.ParticipatorViewHolder> {
 
-    private AdminEventActivity aea;
-    public AdminEventModel eventModel;
+    private MyEventsManager manager;
+    public MyEventModel eventModel;
     public List<ParticipatorModel> participators;
     private Context context;
     private TextView badge;
 
-    public ParticipatorsAdapter(AdminEventActivity aea, Context context, List<ParticipatorModel> participators, AdminEventModel eventModel, TextView badge) {
+    public ParticipatorsAdapter(MyEventsManager manager, Context context, List<ParticipatorModel> participators, MyEventModel eventModel, TextView badge) {
         this.eventModel = eventModel;
-        this.aea = aea;
+        this.manager = manager;
         this.participators = participators;
         this.context = context;
         this.badge = badge;
@@ -41,7 +42,7 @@ public class ParticipatorsAdapter extends RecyclerView.Adapter<ParticipatorsAdap
 
     public class ParticipatorViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public AdminEventModel eventModel;
+        public MyEventModel eventModel;
         public Context context;
         public TextView name;
         public CircleImageView imageView;
@@ -83,7 +84,7 @@ public class ParticipatorsAdapter extends RecyclerView.Adapter<ParticipatorsAdap
             @Override
             public void onClick(View view) {
                 eventModel.decreaseUsersPending();
-                aea.onUserApproved(position, eventModel, badge);
+                manager.onUserApproved(position, eventModel, badge);
             }
         });
         holder.rejectButton.getBackground().setColorFilter(context.getResources().getColor(R.color.calm_red), PorterDuff.Mode.MULTIPLY);
@@ -91,7 +92,7 @@ public class ParticipatorsAdapter extends RecyclerView.Adapter<ParticipatorsAdap
             @Override
             public void onClick(View view) {
                 eventModel.decreaseUsersPending();
-                aea.onUserBanned(position, eventModel, badge);
+                manager.onUserBanned(position, eventModel, badge);
             }
         });
         Glide

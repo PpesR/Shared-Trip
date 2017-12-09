@@ -161,7 +161,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
                                 startActivity(statsViewActivity);
                                 return true;
                             case R.id.bottombaritem_profile:
-                                Intent adminViewActivity = new Intent(BrowseEvents.this, AdminEventActivity.class);
+                                Intent adminViewActivity = new Intent(BrowseEvents.this, AdminActivity.class);
                                 adminViewActivity.putExtra("user", ownIntent.getStringExtra("user"));
                                 startActivity(adminViewActivity);
                                 return true;

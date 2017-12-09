@@ -47,7 +47,7 @@
         <activity android:name=".FriendsViewActivity" />
         <activity android:name=".StatsViewActivity" />
         <activity android:name=".EventDetailsActivity" />
-        <activity android:name=".AdminEventActivity" />
+        <activity android:name=".AdminActivity" />
         <activity android:name=".ChatActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
 

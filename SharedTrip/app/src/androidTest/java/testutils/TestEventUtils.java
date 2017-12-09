@@ -1,8 +1,6 @@
 package testutils;
 
 import android.os.AsyncTask;
-import android.view.View;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,15 +8,11 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-import models.AdminEventModel;
 import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import remm.sharedtrip.AdminEventActivity;
-import utils.AdminEventUtils;
 
 /**
  * Created by Mark on 13.11.2017.

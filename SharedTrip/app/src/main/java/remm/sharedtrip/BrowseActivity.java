@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
@@ -30,34 +29,23 @@ import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import adapters.EventAdapter;
 import fragments.*;
 import fragments.BrowseEvents;
 import models.UserEventModel;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import services.SharedTripFirebaseMessagingService;
 import utils.BottomNavigationViewHelper;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static utils.EventDetailsUtils.bitmapFromBase64String;
 import static utils.ValueUtil.isNull;
 
 public class BrowseActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
@@ -144,7 +132,7 @@ public class BrowseActivity extends AppCompatActivity implements SearchView.OnQu
                                 switchToFragmentStats();
                                 return true;
                             case R.id.bottombaritem_profile:
-                                switchToFragmentProfile();
+                                switchToFragmentMyEvents();
                                 return true;
                         }
                         return true;
@@ -152,9 +140,7 @@ public class BrowseActivity extends AppCompatActivity implements SearchView.OnQu
                 });
 
         if (savedInstanceState == null) {
-            BrowseEvents fragment = new BrowseEvents();
-            fragment.passBrowseActivity(this);
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, new BrowseEvents()).commit();
         }
     }
 
@@ -287,9 +273,9 @@ public class BrowseActivity extends AppCompatActivity implements SearchView.OnQu
         return apiPrefix;
     }
 
-    private void switchToFragmentProfile() {
+    private void switchToFragmentMyEvents() {
         FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.container, new FriendsView()).commit();
+        manager.beginTransaction().replace(R.id.container, new MyEventsFragment()).commit();
 
     }
 

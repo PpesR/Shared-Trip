@@ -70,12 +70,6 @@ public class BrowseEvents extends Fragment {
         return myView;
     }
 
-    public void passBrowseActivity(BrowseActivity ba) {
-        /*adapter = new EventAdapter(myActivity, events);
-        adapter.be = ba;
-        recyclerView.setAdapter(adapter);*/
-    }
-
     private List<UserEventModel> getEventsfromDB() {
 
         BrowseUtil.EventRetrievalTask<Void> asyncTask = new BrowseUtil.EventRetrievalTask<>(userModel.id, apiPrefix);

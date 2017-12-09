@@ -84,13 +84,6 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
         mAuth = FirebaseAuth.getInstance();
         apiPrefix = getResources().getString(R.string.api_address_with_prefix);
 
-        /*
-         * Mark: Needed for getting pictures from FB/Google/elsewhere.
-         * TODO: move to the page that displays the pictures
-         * Until then, DO NOT REMOVE
-         */
-        /*StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);*/
         setContentView(R.layout.activity_main);
 
         progressBar = findViewById(R.id.indeterminateBar);
@@ -172,12 +165,6 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
             model.description = valueOrNull(obj.getString("user_desc"));
             model.imageUriString = valueOrNull(obj.getString("user_pic"));
             model.gender = valueOrNull(obj.getString("gender"));
-
-            /*if (notNull(currentFirebaseUser)) {
-                if (model.hasGoogle()) firebaseAuthWithGoogle(account);
-                if (model.hasFacebook()) handleFacebookAccessToken(AccessToken.getCurrentAccessToken());
-            }
-            else*/
             redirect();
 
         } catch (JSONException e) {
@@ -212,7 +199,6 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
             model.googleId = account.getId();
             model.imageUriString = toStringNullSafe(photoUri);
 
-//            Set<Scope> scopes = account.getGrantedScopes();
             postUserToDb();
 
         } catch (ApiException e) { displayAuthError(); }
@@ -222,7 +208,6 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
     public void onUserCheckReady(FbGoogleUserModel checkedModel) {
         if (isNull(checkedModel)) { // Logged in user is no longer in database -> force log out
 
-//            if (notNull(currentFirebaseUser)) FirebaseAuth.getInstance().signOut();
 
             if (model.hasFacebook()) {
                 LoginManager.getInstance().logOut();
@@ -243,14 +228,6 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
             model = checkedModel;
             hideLogInButtons();
             updateFacebookFriendsAndRedirect();
-            /*currentFirebaseUser = mAuth.getCurrentUser();
-            if (notNull(currentFirebaseUser)) {
-                updateFacebookFriendsAndRedirect();
-            /*}
-            else {
-                if (model.hasGoogle()) { firebaseAuthWithGoogle(account); }
-                if (model.hasFacebook()) { handleFacebookAccessToken(AccessToken.getCurrentAccessToken()); }
-            }*/
         }
     }
 
@@ -436,49 +413,6 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
     @Override
     public void onDestroy() { super.onDestroy(); }
-
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        String accountToken = acct.getIdToken();
-        AuthCredential credential = GoogleAuthProvider.getCredential(accountToken, null);
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) { // Sign in success, update UI with the signed-in user's information
-                            currentFirebaseUser = mAuth.getCurrentUser();
-                            redirect();
-
-                        } else { displayAuthError(); }
-                    }
-                });
-    }
-
-    private void handleFacebookAccessToken(AccessToken token) {
-
-        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        if (isNull(mAuth.getCurrentUser())) {
-            mAuth.signInWithCredential(credential)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                currentFirebaseUser = mAuth.getCurrentUser();
-                                updateFacebookFriendsAndRedirect();
-
-                            } else {
-                                displayAuthError();
-                            }
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    displayAuthError();
-                }
-            });
-        }
-        else
-            redirect();
-    }
 
     private void displayAuthError() {
         runOnUiThread(new Runnable() {
