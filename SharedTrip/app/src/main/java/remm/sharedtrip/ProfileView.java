@@ -3,9 +3,9 @@ package remm.sharedtrip;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,6 +34,7 @@ import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import utils.BottomNavigationViewHelper;
 
 public class ProfileView extends AppCompatActivity {
@@ -43,17 +45,25 @@ public class ProfileView extends AppCompatActivity {
     private Button save;
     private EditText desc_field;
     private BottomNavigationView bottomNavigationView;
-    private MainActivity.FbGoogleUserModel userModel;
+    private FbGoogleUserModel userModel;
     private Gson gson = new Gson();
     static  ProfileView self;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // For displaying images
+        StrictMode.setThreadPolicy(
+                new StrictMode
+                        .ThreadPolicy.Builder()
+                        .permitAll()
+                        .build());
+
         self = this;
         super.onCreate(savedInstanceState);
         ownIntent = getIntent();
-        userModel = BrowseEvents.userModel;//gson.fromJson(ownIntent.getStringExtra("user"), MainActivity.FbUserModel.class);
+        userModel = gson.fromJson(ownIntent.getStringExtra("user"), FbGoogleUserModel.class);
         setContentView(R.layout.activity_profile);
 
         hi_text = (TextView) findViewById(R.id.profile_hi);
@@ -64,12 +74,12 @@ public class ProfileView extends AppCompatActivity {
             prof_pic.setImageDrawable(getDrawable(R.mipmap.ic_default_user));
         }
         else {
-            Uri pic = Uri.parse(Uri.decode(userModel.imageUriString));
-
             try {
-                URL imageURL = new URL(pic.toString());
-                Bitmap bitmap = BitmapFactory.decodeStream(imageURL.openConnection().getInputStream());
+                URL imageURL = new URL(userModel.imageUriString);
+                Bitmap bitmap = BitmapFactory.decodeStream(imageURL.openStream());
                 prof_pic.setImageBitmap(bitmap);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -169,7 +179,7 @@ public class ProfileView extends AppCompatActivity {
                                 return true;
                             case R.id.bottombaritem_profile:
                                 finish();
-                                Intent adminViewActivity = new Intent(ProfileView.this, AdminEventActivity.class);
+                                Intent adminViewActivity = new Intent(ProfileView.this, AdminActivity.class);
                                 startActivity(adminViewActivity);
                                 return true;
                         }
@@ -187,10 +197,10 @@ public class ProfileView extends AppCompatActivity {
     private static class DescChangeTask<Void> extends AsyncTask<Void, Void, Void> {
 
         private String apiPrefix = self.getString(R.string.api_address_with_prefix);
-        private MainActivity.FbGoogleUserModel model;
+        private FbGoogleUserModel model;
         private String descriptionText;
 
-        public DescChangeTask(MainActivity.FbGoogleUserModel model, String descriptionText) {
+        public DescChangeTask(FbGoogleUserModel model, String descriptionText) {
             this.model = model;
             this.descriptionText = descriptionText;
         }
@@ -222,7 +232,7 @@ public class ProfileView extends AppCompatActivity {
                     try {
                         String bodyString = response.body().string();
                         int len = bodyString.length();
-                        BrowseEvents.userModel.description = descriptionText;
+                        model.description = descriptionText;
 
                     } catch (Exception e) {
                         e.printStackTrace();

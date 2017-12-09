@@ -1,20 +1,26 @@
 package models;
 
+import android.graphics.Bitmap;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
+import static utils.EventDetailsUtils.bitmapFromBase64String;
+import static utils.ValueUtil.isNull;
 
 /**
  * Created by Mark on 12.11.2017.
  */
 
-public class AdminEventModel extends EventModel {
+public class MyEventModel extends EventModel {
 
-    public AdminEventModel(String name, String imageUri, String location) {
+    public MyEventModel(String name, String imageUri, String location) {
         super(name, imageUri, location);
     }
 
     protected int adminId;
     protected int usersPending;
+    private Bitmap bitmap;
 
     public int getAdminId() { return adminId; }
     public void setAdminId(int adminId) { this.adminId = adminId; }
@@ -33,6 +39,11 @@ public class AdminEventModel extends EventModel {
             }
         }
         this.startDate = startDate;
+    }
+
+    public Bitmap getBitmap() { return bitmap; }
+    public void setBitmap(String base64) {
+        this.bitmap = isNull(base64) ? null : bitmapFromBase64String(base64);
     }
 
     public void decreaseUsersPending() {

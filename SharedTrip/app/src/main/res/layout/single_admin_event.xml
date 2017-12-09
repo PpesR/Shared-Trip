@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -8,7 +8,7 @@
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:orientation="horizontal"
@@ -30,72 +30,65 @@
             android:layout_alignParentStart="true" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:paddingTop="10dp"
-            android:layout_toRightOf="@id/admin_event_pic">
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:layout_toRightOf="@id/admin_event_pic"
+            android:layout_toEndOf="@id/admin_event_pic"
+            app:layout_constraintLeft_toRightOf="@id/admin_event_pic"
+            app:layout_constraintRight_toRightOf="parent"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp">
 
         <TextView
             android:id="@+id/admin_event_name"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="10dp"
-            android:textSize="20sp"
-            android:textStyle="bold"
+            android:textSize="16sp"
             android:typeface="sans"
             android:text="@string/todo" />
 
-        <TextView
-            android:id="@+id/admin_event_badge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp"
-            android:background="@drawable/badge"
-            android:minWidth="20dp"
-            android:minHeight="20dp"
-            android:gravity="center"
-            android:text="@string/numeric_zero"
-            android:textColor="#ffffffff"
-            android:textStyle="bold"
-            android:textSize="14sp" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/admin_event_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/badge"
+                    android:minWidth="20dp"
+                    android:minHeight="20dp"
+                    android:gravity="center"
+                    android:text="@string/numeric_zero"
+                    android:textColor="#ffffffff"
+                    android:textStyle="bold"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/my_event_status"
+                    android:textColor="@color/button_grey"
+                    android:textStyle="italic"
+                    android:text="visitor"
+                    android:textAlignment="center"
+                     />
+
+            </LinearLayout>
 
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="20dp"
-        android:layout_marginStart="20dp"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true">
 
-        <TextView
-            android:id="@+id/admin_event_start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAlignment="gravity"
-            android:textSize="16sp"
-            android:textStyle="normal"
-            android:typeface="sans"
-            android:text="@string/todo"
-            android:layout_gravity="end"
-            android:gravity="end" />
 
-        <TextView
-            android:id="@+id/admin_event_location"
-            android:layout_marginTop="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="12sp"
-            android:textStyle="normal"
-            android:typeface="sans"
-            android:text="@string/todo"/>
-    </LinearLayout>
-
-    </RelativeLayout>
+    </android.support.constraint.ConstraintLayout>
 
 </LinearLayout>

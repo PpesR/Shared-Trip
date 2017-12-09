@@ -8,6 +8,8 @@ import java.net.URISyntaxException;
 import remm.sharedtrip.CreateEvent;
 import utils.CreateEventUtils;
 
+import static utils.ValueUtil.notNull;
+
 /**
  * Created by Mark on 14.11.2017.
  */
@@ -37,7 +39,8 @@ public class CreatorEventModel extends EventModel {
 
     public void setImageFile(Uri imageUri, CreateEvent activity) {
         try {
-            this.imageFile = new File(CreateEventUtils.getFilePath(activity, imageUri));
+            String filePath = CreateEventUtils.getFilePath(activity, imageUri);
+            if (notNull(filePath)) this.imageFile = new File(filePath);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

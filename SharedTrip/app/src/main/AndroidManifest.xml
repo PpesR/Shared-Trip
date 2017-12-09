@@ -34,6 +34,12 @@
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+        <activity
+            android:name=".BrowseActivity">
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+
         <activity android:name=".CreateEvent"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
         <activity android:name=".ProfileView"
@@ -41,7 +47,7 @@
         <activity android:name=".FriendsViewActivity" />
         <activity android:name=".StatsViewActivity" />
         <activity android:name=".EventDetailsActivity" />
-        <activity android:name=".AdminEventActivity" />
+        <activity android:name=".AdminActivity" />
         <activity android:name=".ChatActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
 

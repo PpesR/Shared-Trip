@@ -1,12 +1,17 @@
 package utils;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.Base64;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import models.UserEventModel;
 import okhttp3.Call;
@@ -128,6 +133,65 @@ public class EventDetailsUtils {
 
             } catch (JSONException e) { e.printStackTrace();
             } catch (IOException e) { e.printStackTrace(); }
+        }
+    }
+
+    public static Bitmap bitmapFromBase64String(String encodedString) {
+        byte[] bytes = Base64.decode(encodedString, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
+
+    public static Bitmap bitmapFromUriString(String uriString) {
+        try {
+            URL url = new URL(uriString);
+            return BitmapFactory.decodeStream(url.openStream());
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Bitmap bitmapFromString(String imageString) {
+        if (imageString.matches("^https?://.*"))
+            return bitmapFromUriString(imageString);
+
+        return bitmapFromBase64String(imageString);
+    }
+
+    public static class GetImageTask<Void> extends AsyncTask<Void, Void, String> {
+        private int eventId;
+        private String apiPrefix;
+
+        public GetImageTask(int eventId, String apiPrefix) {
+            this.eventId = eventId;
+            this.apiPrefix = apiPrefix;
+        }
+
+        @SafeVarargs
+        @Override
+        protected final String doInBackground(Void... voids) {
+            OkHttpClient client = new OkHttpClient();
+            final Request request = new Request.Builder()
+                    .url(apiPrefix+"/event/"+eventId+"/image")
+                    .build();
+            try {
+                Response response = client.newCall(request).execute();
+                String bodyString = response.body().string();
+
+                if (bodyString.length() > 0) {
+                    return new JSONObject(bodyString).getString("event_picture");
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
         }
     }
 

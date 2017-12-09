@@ -26,20 +26,17 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
 import models.UserEventModel;
+import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import utils.MessageUtil;
 import utils.MessageUtil.HistoryRetrievalTask;
 import utils.MessageUtil.MessageSaveResponse;
 
-import static remm.sharedtrip.BrowseEvents.userModel;
 import static utils.ValueUtil.notNull;
 
 /**
@@ -57,10 +54,12 @@ public class ChatActivity extends AppCompatActivity {
     private List<String> messages;
     private ArrayAdapter<String> adapter;
     private String messageText;
+    private FbGoogleUserModel userModel;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        userModel = new Gson().fromJson(getIntent().getStringExtra("user"), FbGoogleUserModel.class);
 
         fm = FirebaseMessaging.getInstance();
         LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver),
@@ -70,7 +69,6 @@ public class ChatActivity extends AppCompatActivity {
         event = new Gson().fromJson(getIntent().getStringExtra("event"), UserEventModel.class);
         messageTopic = event.getId()+"-"+event.getLoc().toLowerCase().replaceAll("[^a-z]", "");
         fm.subscribeToTopic(messageTopic);
-        fm.subscribeToTopic("0-test-topic");
 
         setContentView(R.layout.temp_chat_layout);
         messages = new ArrayList<>();
@@ -171,17 +169,7 @@ public class ChatActivity extends AppCompatActivity {
             try {
                 JSONObject obj = new JSONObject(json);
                 String dateStr = obj.getString("time");
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd kk:mm:dd");
-                df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                Date date = null;
-                try {
-                    date = df.parse(dateStr);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                df.setTimeZone(TimeZone.getDefault());
-                String formattedDate = df.format(date);
-                ChatActivity.this.addMessage(formattedDate+"\r\n"+obj.getString("sender_name")+": "+obj.getString("message"));
+                ChatActivity.this.addMessage(dateStr+"\r\n"+obj.getString("sender_name")+": "+obj.getString("message"));
 
             } catch (JSONException e) {
                 e.printStackTrace();

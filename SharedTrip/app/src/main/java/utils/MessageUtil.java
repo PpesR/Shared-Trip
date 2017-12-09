@@ -74,7 +74,6 @@ public class MessageUtil {
         protected final MessageSaveResponse doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
 
-            /* TODO: Add event id*/
             Builder formBodyBuilder = new Builder()
                     .add("message", toNullSafe(message))
                     .add("topic", toNullSafe(topic))
@@ -127,7 +126,7 @@ public class MessageUtil {
         private int eventId;
         private String apiPrefix;
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd kk:mm:dd");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
 
         public HistoryRetrievalTask(int userId, int eventId, String apiPrefix) {
             this.userId = userId;

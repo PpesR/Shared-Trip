@@ -4,20 +4,16 @@ import android.annotation.SuppressLint;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,8 +26,6 @@ import android.widget.TextView;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.Profile;
-import com.facebook.ProfileTracker;
-import com.facebook.login.LoginBehavior;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -62,7 +56,6 @@ import utils.BottomNavigationViewHelper;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static utils.ValueUtil.isNull;
-import static utils.ValueUtil.notNull;
 
 @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
 public class BrowseEvents extends AppCompatActivity implements SearchView.OnQueryTextListener {
@@ -75,7 +68,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     private EventAdapter adapter;
     private TextView headerUsername;
     private Intent ownIntent;
-    public static FbGoogleUserModel userModel;
+    private FbGoogleUserModel userModel;
     private Gson gson = new Gson();
     private SearchView searchView;
     private BottomNavigationView bottomNavigationView;
@@ -83,12 +76,13 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
     private FirebaseUser currentFirebaseUser;
     private Intent messagingService;
     private LoginButton fbLoginButton;
+    private String apiPrefix;
 
     private static BrowseEvents self;
 
     private List<UserEventModel> getEventsfromDB() {
 
-        EventRetrievalTask<Void> asyncTask = new EventRetrievalTask<>();
+        EventRetrievalTask<Void> asyncTask = new EventRetrievalTask<>(userModel.id);
         try {
             return asyncTask.execute().get();
         } catch (InterruptedException e) {
@@ -110,6 +104,8 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
         userModel = gson.fromJson(
                 ownIntent.getStringExtra("user")
                 , FbGoogleUserModel.class);
+
+        apiPrefix = ownIntent.getStringExtra("prefix");
 
         accessTokenTracker = new AccessTokenTracker() {
             @Override
@@ -154,10 +150,11 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.bottombaritem_events:
-                                // TODO
                                 return true;
                             case R.id.bottombaritem_friends:
                                 Intent friendsViewActivity = new Intent(BrowseEvents.this, FriendsViewActivity.class);
+                                friendsViewActivity.putExtra("user", gson.toJson(userModel));
+                                friendsViewActivity.putExtra("prefix", ownIntent.getStringExtra("prefix"));
                                 startActivity(friendsViewActivity);
                                 return true;
                             case R.id.bottombaritem_stats:
@@ -165,7 +162,8 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
                                 startActivity(statsViewActivity);
                                 return true;
                             case R.id.bottombaritem_profile:
-                                Intent adminViewActivity = new Intent(BrowseEvents.this, AdminEventActivity.class);
+                                Intent adminViewActivity = new Intent(BrowseEvents.this, AdminActivity.class);
+                                adminViewActivity.putExtra("user", ownIntent.getStringExtra("user"));
                                 startActivity(adminViewActivity);
                                 return true;
                         }
@@ -182,7 +180,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
             recyclerView.setLayoutManager(gridLayout);
 
             adapter = new EventAdapter(this, events);
-            adapter.be = this;
+            adapter.browseActivity = this;
             recyclerView.setAdapter(adapter);
         }
 
@@ -200,6 +198,8 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
             @Override
             public void onClick(View view) {
                 Intent myIntent = new Intent(BrowseEvents.this, CreateEvent.class);
+                myIntent.putExtra("user", ownIntent.getStringExtra("user"));
+                myIntent.putExtra("prefix", apiPrefix);
                 BrowseEvents.this.startActivity(myIntent);
             }
         });
@@ -258,12 +258,18 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
 
     public static class EventRetrievalTask<Void> extends AsyncTask<Void, Void, List<UserEventModel>> {
 
-         @SafeVarargs
+        private int userId;
+
+        public EventRetrievalTask(int userId) {
+            this.userId = userId;
+        }
+
+        @SafeVarargs
          @Override
          protected final List<UserEventModel> doInBackground(Void... voids) {
              OkHttpClient client = new OkHttpClient();
              Request request = new Request.Builder()
-                     .url("http://146.185.135.219/requestrouter.php?hdl=event&act=wappr&user="+ userModel.id)
+                     .url("http://146.185.135.219/requestrouter.php?hdl=event&act=wappr&user="+ userId)
                      .build();
              List<UserEventModel> events = new ArrayList<>();
              try {
@@ -296,12 +302,11 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
                      event.setUserBanned(object.getInt("banned")==1);
                      event.setAdmin(object.getInt("is_admin")==1);
 
-                     if (!object.getString("event_picture").contains("http")) {
-                         byte[] bytes = Base64.decode(object.getString("event_picture"), Base64.DEFAULT);
-                         event.setBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                     }
-                     else {
-                         event.setImageLink(object.getString("event_picture"));
+                     String pictureString = object.getString("event_picture");
+                     if (pictureString.matches("^http(s?)://.*")) {
+                         event.setImageLink(pictureString);
+                     } else {
+                         event.setBitmap(pictureString);
                      }
                      events.add(event);
                  }
@@ -338,7 +343,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
             recyclerView.setLayoutManager(gridLayout);
 
             adapter = new EventAdapter(this, events);
-            adapter.be = this;
+            adapter.browseActivity = this;
             recyclerView.setAdapter(adapter);
         }
     }
@@ -403,5 +408,9 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
             fbLoginButton.setVisibility(GONE);
             googleLogoutButton.setVisibility(VISIBLE);
         }
+    }
+
+    public FbGoogleUserModel getUserModel() {
+        return userModel;
     }
 }

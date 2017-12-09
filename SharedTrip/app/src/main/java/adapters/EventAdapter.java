@@ -6,6 +6,8 @@ package adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +18,11 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import models.UserEventModel;
-import remm.sharedtrip.BrowseEvents;
+import remm.sharedtrip.BrowseActivity;
 import remm.sharedtrip.EventDetailsActivity;
 import remm.sharedtrip.R;
 
@@ -28,7 +31,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
 
     private Context context;
     private List<UserEventModel> events;
-    public BrowseEvents be;
+    public AppCompatActivity browseActivity;
 
     public EventAdapter(Context context, List<UserEventModel> events) {
         this.context = context;
@@ -48,15 +51,17 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.eventModel = events.get(position);
-        holder.name.setText(events.get(position).getName());
-        holder.loc.setText(events.get(position).getLoc());
-        if (events.get(position).getBitmap()!=null)
-            holder.imageView.setImageBitmap(events.get(position).getBitmap());
+        UserEventModel model = events.get(position);
+        holder.eventModel = model;
+        holder.name.setText(model.getName());
+        holder.loc.setText(model.getLoc());
+        Bitmap bitmap = model.getBitmap();
+        if (bitmap!=null)
+            holder.imageView.setImageBitmap(bitmap);
         else {
             Glide
                 .with(context)
-                .load(events.get(position).getImageLink())
+                .load(model.getImageLink())
                 .into(holder.imageView);
         }
     }
@@ -87,12 +92,14 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
             int position = getAdapterPosition();
             Gson gson = new Gson();
 
-            Intent detailViewIntent = new Intent(be, EventDetailsActivity.class);
+            Intent detailViewIntent = new Intent(browseActivity, EventDetailsActivity.class);
 
-            String gsonString = gson.toJson(eventModel);
+            String gsonString = gson.toJson(eventModel.copyWithoutBitmap());
             detailViewIntent.putExtra("event", gsonString);
+            detailViewIntent.putExtra("prefix", ((BrowseActivity) browseActivity).getApiPrefix());
+            detailViewIntent.putExtra("user", gson.toJson(((BrowseActivity) browseActivity).getUserModel()));
 
-            be.startActivity(detailViewIntent);
+            browseActivity.startActivity(detailViewIntent);
         }
     }
 }
