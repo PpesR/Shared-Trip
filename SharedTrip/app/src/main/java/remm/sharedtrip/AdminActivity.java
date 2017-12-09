@@ -1,5 +1,6 @@
 package remm.sharedtrip;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
@@ -12,31 +13,31 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
-import adapters.AdminEventAdapter;
+import adapters.MyEventsAdapter;
 import adapters.ParticipatorsAdapter;
 import fragments.ParticipatorsFragment;
-import models.AdminEventModel;
+import models.MyEventModel;
 import models.ParticipatorModel;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
-import utils.AdminEventUtils;
+import utils.MyEventsUtils;
 
 /**
  * Created by Mark on 12.11.2017.
  */
 
-public class AdminEventActivity extends FragmentActivity {
+public class AdminActivity extends FragmentActivity implements MyEventsAdapter.MyEventsManager {
 
-    private AdminEventActivity self;
-    private AdminEventAdapter adapter;
+    private AdminActivity self;
+    private MyEventsAdapter adapter;
     public ParticipatorsAdapter subAdapter;
     private RecyclerView recyclerView;
     private RecyclerView subRecyclerView;
     private ParticipatorsFragment frag;
     private FbGoogleUserModel userModel;
 
-    private List<AdminEventModel> adminEvents;
+    private List<MyEventModel> adminEvents;
     private List<ParticipatorModel> participators;
-    private AdminEventModel lastClicked;
+    private MyEventModel lastClicked;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,14 +50,14 @@ public class AdminEventActivity extends FragmentActivity {
     }
 
     private void getMyAdminEvents() {
-        AdminEventUtils.AdminEventRetrievalTask<Void> task =
-                new AdminEventUtils.AdminEventRetrievalTask<>(
+        /*AdminEventUtils.MyEventsRetrievalTask<Void> task =
+                new AdminEventUtils.MyEventsRetrievalTask<>(
                         userModel.id,
-                        new AdminEventUtils.AndminEventRetrievalCallback(this));
-        task.execute();
+                        new AdminEventUtils.MyEventRetrievalCallback(this));
+        task.execute();*/
     }
 
-    public void provideEvents(final List<AdminEventModel> events) {
+    public void provideEvents(final List<MyEventModel> events) {
         adminEvents = events;
         runOnUiThread(new Runnable() {
             @Override
@@ -64,7 +65,7 @@ public class AdminEventActivity extends FragmentActivity {
                 RecyclerView.LayoutManager manager = new LinearLayoutManager(self, 1, false);
                 recyclerView.setLayoutManager(manager);
 
-                adapter = new AdminEventAdapter(self, adminEvents, self);
+                adapter = new MyEventsAdapter(self, adminEvents, self);
                 recyclerView.setAdapter(adapter);
 
             }
@@ -72,7 +73,7 @@ public class AdminEventActivity extends FragmentActivity {
 
     }
 
-    public void provideParticipators(List<ParticipatorModel> models, final AdminEventModel aeModel, final TextView badge) {
+    public void provideParticipators(List<ParticipatorModel> models, final MyEventModel aeModel, final TextView badge) {
         this.participators = models;
         runOnUiThread(new Runnable() {
             @Override
@@ -90,9 +91,9 @@ public class AdminEventActivity extends FragmentActivity {
                 else {
                     lastClicked = aeModel;
                     frag = new ParticipatorsFragment();
-                    frag.setAea(self);
-                    frag.aem = aeModel;
-                    frag.badge = badge;
+                    frag.setManager(self);
+                    frag.eventModel = aeModel;
+                    frag.pendingBadge = badge;
                     recyclerView.getLayoutManager().scrollToPosition(0);
                     fm.beginTransaction()
                             .add(R.id.fragment_container, frag)
@@ -102,7 +103,7 @@ public class AdminEventActivity extends FragmentActivity {
         });
     }
 
-    public void doAdapterThing(RecyclerView subRecycler, final AdminEventModel aem, final TextView badge) {
+    public void setSubAdapter(RecyclerView subRecycler, final MyEventModel aem, final TextView badge) {
         subRecyclerView = subRecycler;
         runOnUiThread(new Runnable() {
             @Override
@@ -116,29 +117,37 @@ public class AdminEventActivity extends FragmentActivity {
     }
 
     public void eventClicked(int i, TextView badge) {
-        AdminEventUtils.ParticipatorRetrievalTask<Void> task =
-                new AdminEventUtils.ParticipatorRetrievalTask<>(
+        MyEventsUtils.ParticipatorRetrievalTask<Void> task =
+                new MyEventsUtils.ParticipatorRetrievalTask<>(
                         adminEvents.get(i).getId(),
-                        new AdminEventUtils.ParticipatorRetrievalCallback(this, adminEvents.get(i), badge));
+                        new MyEventsUtils.ParticipatorRetrievalCallback(this, adminEvents.get(i), badge));
         task.execute();
     }
 
 
-    public void onUserApproved(int participatorPosition, AdminEventModel eventModel, TextView badge) {
-        AdminEventUtils.ApprovalTask<Void> task =
-                new AdminEventUtils.ApprovalTask<>(
+    public void onUserApproved(int participatorPosition, MyEventModel eventModel, TextView badge) {
+        MyEventsUtils.ApprovalTask<Void> task =
+                new MyEventsUtils.ApprovalTask<>(
                         eventModel.getId(),
-                        participators.get(participatorPosition).getId(),
-                        new AdminEventUtils.ApprovalCallback(self, participatorPosition, badge, eventModel));
+                        participators.get(participatorPosition).getId());
         task.execute();
     }
 
-    public void onUserBanned(int participatorPosition, AdminEventModel eventModel, TextView badge) {
-        AdminEventUtils.DenialTask<Void> task =
-                new AdminEventUtils.DenialTask<>(
+    public void onUserBanned(int participatorPosition, MyEventModel eventModel, TextView badge) {
+        MyEventsUtils.DenialTask<Void> task =
+                new MyEventsUtils.DenialTask<>(
                         eventModel.getId(),
-                        participators.get(participatorPosition).getId(),
-                        new AdminEventUtils.DenialCallback(self, participatorPosition, badge, eventModel));
+                        participators.get(participatorPosition).getId());
         task.execute();
+    }
+
+    @Override
+    public int getLoggedInUSerId() {
+        return 0;
+    }
+
+    @Override
+    public Drawable getDrawableById(int id) {
+        return null;
     }
 }

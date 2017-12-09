@@ -161,4 +161,38 @@ public class EventDetailsUtils {
         return bitmapFromBase64String(imageString);
     }
 
+    public static class GetImageTask<Void> extends AsyncTask<Void, Void, String> {
+        private int eventId;
+        private String apiPrefix;
+
+        public GetImageTask(int eventId, String apiPrefix) {
+            this.eventId = eventId;
+            this.apiPrefix = apiPrefix;
+        }
+
+        @SafeVarargs
+        @Override
+        protected final String doInBackground(Void... voids) {
+            OkHttpClient client = new OkHttpClient();
+            final Request request = new Request.Builder()
+                    .url(apiPrefix+"/event/"+eventId+"/image")
+                    .build();
+            try {
+                Response response = client.newCall(request).execute();
+                String bodyString = response.body().string();
+
+                if (bodyString.length() > 0) {
+                    return new JSONObject(bodyString).getString("event_picture");
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+    }
+
 }

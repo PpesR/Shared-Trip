@@ -44,7 +44,7 @@ public class ValueUtil {
 
     public static boolean notNullOrEmpty(String str) { return str != null && str.length() > 0; }
 
-    public static boolean notNullOrWhitespace(String str) { return str != null && !str.matches("^"+whitespace_charclass+"+$"); }
+    public static boolean notNullOrWhitespace(String str) { return str != null && str.length() > 0 && !str.matches("^"+whitespace_charclass+"+$"); }
 
     public static boolean isNull(Object obj) { return obj == null; }
 

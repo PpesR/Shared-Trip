@@ -121,7 +121,7 @@ public class FriendsViewActivity extends AppCompatActivity implements FriendsEve
                                 return true;
                             case R.id.bottombaritem_profile:
                                 finish();
-                                Intent adminViewActivity = new Intent(self, AdminEventActivity.class);
+                                Intent adminViewActivity = new Intent(self, AdminActivity.class);
                                 startActivity(adminViewActivity);
                                 return true;
                         }

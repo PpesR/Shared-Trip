@@ -39,7 +39,7 @@ public class StatsViewActivity extends AppCompatActivity {
                                 return true;
                             case R.id.bottombaritem_profile:
                                 finish();
-                                Intent adminViewActivity = new Intent(StatsViewActivity.this, AdminEventActivity.class);
+                                Intent adminViewActivity = new Intent(StatsViewActivity.this, AdminActivity.class);
                                 startActivity(adminViewActivity);
                                 return true;
                         }

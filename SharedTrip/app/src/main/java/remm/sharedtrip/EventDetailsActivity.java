@@ -17,15 +17,15 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 
-import org.json.JSONObject;
+import java.util.concurrent.ExecutionException;
 
 import models.UserEventModel;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
-import services.SharedTripFirebaseMessagingService;
 import utils.BottomNavigationViewHelper;
 import utils.EventDetailsUtils;
 
@@ -53,6 +53,7 @@ public class EventDetailsActivity extends FragmentActivity {
     private UserEventModel model;
     private LocalBroadcastManager broadcaster;
     private FbGoogleUserModel userModel;
+    private String apiPrefix;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,6 +62,7 @@ public class EventDetailsActivity extends FragmentActivity {
         self = this;
         model = new Gson().fromJson(getIntent().getStringExtra("event"), UserEventModel.class);
         userModel = new Gson().fromJson(getIntent().getStringExtra("user"), FbGoogleUserModel.class);
+        apiPrefix = getIntent().getStringExtra("prefix");
         broadcaster = LocalBroadcastManager.getInstance(this);
 
         setContentView(R.layout.activity_event_view);
@@ -99,10 +101,26 @@ public class EventDetailsActivity extends FragmentActivity {
         eventFreeSpots.setText(eventFreeSpots.getText()+": "+model.getSpots());
         eventLocation.setText(eventLocation.getText()+": "+model.getLoc());
 
-        Glide
-            .with(this)
-            .load(model.getImageLink())
-            .into(eventPic);
+        if (notNull(model.getImageLink())){
+            Glide
+                    .with(this)
+                    .load(model.getImageLink())
+                    .into(eventPic);
+        }
+        else {
+            EventDetailsUtils.GetImageTask<Void> task = new EventDetailsUtils.GetImageTask<>(model.getId(), apiPrefix);
+            try {
+                String base64 = task.execute().get();
+                model.setBitmap(base64);
+                eventPic.setImageBitmap(model.getBitmap());
+                return;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            Toast.makeText(this, "Image download failed", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void joinEvent() {

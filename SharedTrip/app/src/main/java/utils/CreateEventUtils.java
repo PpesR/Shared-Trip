@@ -3,40 +3,28 @@ package utils;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentUris;
-import android.content.res.Resources;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.util.Base64;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import models.AdminEventModel;
 import models.CreatorEventModel;
-import models.EventModel;
-import models.UserEventModel;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import remm.sharedtrip.CreateEvent;
-import remm.sharedtrip.R;
+
+import static utils.DebugUtil.doNothing;
 
 /**
  * Created by Mark on 14.11.2017.
@@ -44,18 +32,20 @@ import remm.sharedtrip.R;
 
 public class CreateEventUtils {
 
-    public static interface IEventCreatorCaller {
+    public interface EventCreator {
         void onEventCreated();
     }
 
     public static class EventCreationTask<Void> extends AsyncTask<Void, Void, Void> {
 
-        private String apiPrefix = Resources.getSystem().getString(R.string.api_address_with_prefix);
-
         private CreatorEventModel model;
+        private String apiPrefix;
+        private EventCreator creatorActivity;
 
-        public EventCreationTask(CreatorEventModel model) {
+        public EventCreationTask(CreatorEventModel model, String apiPrefix, EventCreator creatorActivity) {
             this.model = model;
+            this.apiPrefix = apiPrefix;
+            this.creatorActivity = creatorActivity;
         }
 
         @SafeVarargs
@@ -74,7 +64,8 @@ public class CreateEventUtils {
                     .addFormDataPart("spots", model.getSpots()+"")
                     .addFormDataPart("start_date", model.getStartDate()+"")
                     .addFormDataPart("end_date", model.getEndDate()+"")
-                    .addFormDataPart("private", model.isPrivate() ? "1" : "0");
+                    .addFormDataPart("private", model.isPrivate() ? "1" : "0")
+                    .addFormDataPart("admin", model.getAdminId()+"");
 
             if (model.getImageFile()!=null) {
                 builder.addFormDataPart(
@@ -99,7 +90,9 @@ public class CreateEventUtils {
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-
+                    String bodyString = response.body().string();
+                    doNothing();
+                    creatorActivity.onEventCreated();
                 }
             });
 

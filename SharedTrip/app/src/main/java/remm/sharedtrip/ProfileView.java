@@ -3,7 +3,6 @@ package remm.sharedtrip;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.StrictMode;
@@ -22,7 +21,6 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -181,7 +179,7 @@ public class ProfileView extends AppCompatActivity {
                                 return true;
                             case R.id.bottombaritem_profile:
                                 finish();
-                                Intent adminViewActivity = new Intent(ProfileView.this, AdminEventActivity.class);
+                                Intent adminViewActivity = new Intent(ProfileView.this, AdminActivity.class);
                                 startActivity(adminViewActivity);
                                 return true;
                         }
