@@ -58,12 +58,12 @@ public class FriendsUtil {
         }
     }
 
-    // The activity that uses friends' events must implement this interface
+    // The fragment that uses friends' events must implement this interface
     public interface FriendsEventsReceiver {
         void provideFriendsEvents(List<FriendEvent> friendEvents);
     }
 
-    // The data model we'll be using in our Activity and Adapter
+    // The data model we'll be using in our Fragment and Adapter
     public static class FriendEvent {
 
         public int eventId;
@@ -81,11 +81,11 @@ public class FriendsUtil {
     // A Callback is something that's supposed to react after we get a response from the server
     public static class FriendsEventsCallback implements Callback {
 
-        private FriendsEventsReceiver receiverActivity;
+        private FriendsEventsReceiver receiverFragment;
 
-        // When you instantiate this callback in activity, pass activity itself aka "this"
-        public FriendsEventsCallback(FriendsEventsReceiver receiverActivity) {
-            this.receiverActivity = receiverActivity;
+        // When you instantiate this callback in fragment, pass fragment itself aka "this" as argument
+        public FriendsEventsCallback(FriendsEventsReceiver receiverFragment) {
+            this.receiverFragment = receiverFragment;
         }
 
         @Override
@@ -99,15 +99,17 @@ public class FriendsUtil {
                 String responseBodyString = response.body().string();
                 JSONArray allFriendsEvents = new JSONArray(responseBodyString);
 
-                // Need to populate this ArrayList<FriendEvent> from allFriendsEvents above
+                // TODO: Need to populate this list with FriendEvents. Create them from allFriendsEvents' data below
                 List<FriendEvent> output = new ArrayList<>();
 
-                if (allFriendsEvents.length() > 0) {
+                if (allFriendsEvents.length() > 0) { // this is important, keep it around everything you do.
 
-                    // instead of index 0, use for-loop
-                    JSONObject firstFriendEvent = allFriendsEvents.getJSONObject(0);
-                    int example1 = firstFriendEvent.getInt("user_id");
-                    String example2 = firstFriendEvent.getString("event_name");
+                    // TODO: instead of index 0, use for-loop to get all FriendsEvents
+                    JSONObject firstRawEventData = allFriendsEvents.getJSONObject(0);
+
+                    // TODO: see some examples on how to get the data
+                    int exampleId = firstRawEventData.getInt("user_id");
+                    String exampleName = firstRawEventData.getString("event_name");
 
                    /*
                     *  allFriendsEvents is an array of JSONObjects like this:
@@ -125,17 +127,22 @@ public class FriendsUtil {
                     *   }
                     */
 
-                   String pictureString = firstFriendEvent.getString("event_picture");
+                   // Using my own helper method to decode both URIs and base64's when applicable, so you don't need to worry about it
+                    String pictureString = firstRawEventData.getString("event_picture");
+                    Bitmap exampleEventPicture = bitmapFromString(pictureString);
 
-                   Bitmap example3 = bitmapFromString(pictureString); // My own helper method to decode both URIs and base64's
+                    // This one is always a URI, so we use built-in methods
+                    Uri exampleProfilePicture = Uri.parse(firstRawEventData.getString("user_picture"));
 
-                   Uri example4 = Uri.parse(firstFriendEvent.getString("user_picture"));
+                   // TODO: make a model for every for-loop iteration, set all its values (ids, names...), and then add it to list.
+                    FriendEvent exampleEventModel = new FriendEvent();
+                    output.add(exampleEventModel);
 
-                   doNothing(); // use as a breakpoint to see what the examples or actual response values are
+                    doNothing(); // use as a breakpoint to see what the examples or actual response values are
                 }
 
-                // After everything is done, pass the output (might be empty!) back to activity:
-                receiverActivity.provideFriendsEvents(output);
+                // TODO: After everything is done, pass the output (might be empty and it's OK!) back to fragment:
+                receiverFragment.provideFriendsEvents(output);
 
             } catch (JSONException e) {
                 e.printStackTrace(); // should show an error or sth

@@ -39,7 +39,6 @@
             android:windowSoftInputMode="stateHidden|adjustResize"/>
         <activity android:name=".ProfileActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
-        <activity android:name=".FriendsActivity" />
         <activity android:name=".EventDetailsActivity" />
         <activity android:name=".ChatActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"/>

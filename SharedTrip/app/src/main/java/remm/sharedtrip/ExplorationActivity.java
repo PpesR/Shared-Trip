@@ -245,9 +245,6 @@ public class ExplorationActivity extends AppCompatActivity implements SearchView
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         googleLogoutButton.setVisibility(GONE);
-//                        if (currentFirebaseUser != null)
-//                            FirebaseAuth.getInstance().signOut();
-
                         finish();
                     }
                 });
@@ -294,6 +291,5 @@ public class ExplorationActivity extends AppCompatActivity implements SearchView
     public void switchToFragmentFriendsView(){
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.container, new FriendsFragment()).commit();
-
     }
 }
