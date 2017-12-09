@@ -2,6 +2,12 @@ package models;
 
 import android.graphics.Bitmap;
 
+import utils.EventDetailsUtils;
+import utils.ValueUtil;
+
+import static utils.EventDetailsUtils.bitmapFromBase64String;
+import static utils.ValueUtil.isNull;
+
 /**
  * Created by Mark on 12.11.2017.
  */
@@ -34,11 +40,26 @@ public class UserEventModel extends EventModel {
     public boolean isAdmin() { return isAdmin; }
     public void setAdmin(boolean admin) { isAdmin = admin; }
 
-    public Bitmap getBitmap() {
-        return bitmap;
+    public Bitmap getBitmap() { return bitmap; }
+    public void setBitmap(String base64) {
+        this.bitmap = isNull(base64) ? null : bitmapFromBase64String(base64);
     }
 
-    public void setBitmap(Bitmap bitmap) {
-        this.bitmap = bitmap;
+    public UserEventModel copyWithoutBitmap() {
+        UserEventModel copy = new UserEventModel();
+        copy.setImageLink(imageLink);
+        copy.setLoc(loc);
+        copy.setName(name);
+        copy.setUserBanned(userBanned);
+        copy.setUserApproved(userApproved);
+        copy.setAdmin(isAdmin);
+        copy.setApprovalPending(approvalPending);
+        copy.setCost(cost);
+        copy.setDescription(description);
+        copy.setEndDate(endDate);
+        copy.setStartDate(startDate);
+        copy.setSpots(spots);
+        copy.setId(id);
+        return copy;
     }
 }

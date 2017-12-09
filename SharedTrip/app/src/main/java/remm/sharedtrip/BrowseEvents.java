@@ -55,7 +55,6 @@ import utils.BottomNavigationViewHelper;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static utils.EventDetailsUtils.bitmapFromBase64String;
 import static utils.ValueUtil.isNull;
 
 public class BrowseEvents extends AppCompatActivity implements SearchView.OnQueryTextListener {
@@ -180,7 +179,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
             recyclerView.setLayoutManager(gridLayout);
 
             adapter = new EventAdapter(this, events);
-            adapter.be = this;
+            adapter.browseActivity = this;
             recyclerView.setAdapter(adapter);
         }
 
@@ -199,6 +198,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
             public void onClick(View view) {
                 Intent myIntent = new Intent(BrowseEvents.this, CreateEvent.class);
                 myIntent.putExtra("user", ownIntent.getStringExtra("user"));
+                myIntent.putExtra("prefix", apiPrefix);
                 BrowseEvents.this.startActivity(myIntent);
             }
         });
@@ -302,11 +302,10 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
                      event.setAdmin(object.getInt("is_admin")==1);
 
                      String pictureString = object.getString("event_picture");
-                     if (!pictureString.matches("^http(s?)://.*")) {
-                         event.setBitmap(bitmapFromBase64String(pictureString));
-                     }
-                     else {
+                     if (pictureString.matches("^http(s?)://.*")) {
                          event.setImageLink(pictureString);
+                     } else {
+                         event.setBitmap(pictureString);
                      }
                      events.add(event);
                  }
@@ -343,7 +342,7 @@ public class BrowseEvents extends AppCompatActivity implements SearchView.OnQuer
             recyclerView.setLayoutManager(gridLayout);
 
             adapter = new EventAdapter(this, events);
-            adapter.be = this;
+            adapter.browseActivity = this;
             recyclerView.setAdapter(adapter);
         }
     }

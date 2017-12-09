@@ -82,20 +82,6 @@ public class BrowseActivity extends AppCompatActivity implements SearchView.OnQu
 
     private static BrowseActivity self;
 
-    public List<UserEventModel> getEventsfromDB() {
-
-        EventRetrievalTask<Void> asyncTask = new EventRetrievalTask<>(userModel.id);
-        try {
-            return asyncTask.execute().get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
     @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,13 +100,10 @@ public class BrowseActivity extends AppCompatActivity implements SearchView.OnQu
             protected void onCurrentAccessTokenChanged(AccessToken previousToken, AccessToken newToken) {
                 if (newToken == null) {
                     fbLoginButton.setVisibility(GONE);
-                    if (currentFirebaseUser != null) FirebaseAuth.getInstance().signOut();
                     finish();
                 }
             }
         };
-
-        currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (isNull(messagingService)) {
             messagingService = new Intent(this, SharedTripFirebaseMessagingService.class);
@@ -173,13 +156,6 @@ public class BrowseActivity extends AppCompatActivity implements SearchView.OnQu
             fragment.passBrowseActivity(this);
             getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
         }
-
-
-    }
-
-    private void redirect() {
-        Intent browseActivity = new Intent(this, MainActivity.class);
-        startActivity(browseActivity);
     }
 
     //method not used (searchview), but required by default
@@ -217,77 +193,11 @@ public class BrowseActivity extends AppCompatActivity implements SearchView.OnQu
         adapter = new EventAdapter(this, filteredEvents);
         if(filteredEvents.size() < 1){  //quickfix, to be changed later
             searchGridLayout = new GridLayoutManager(this, 1);
-        }else{
+        } else{
             searchGridLayout = new GridLayoutManager(this, filteredEvents.size());
         }
         searchRecyclerView.setLayoutManager(searchGridLayout);
         searchRecyclerView.setAdapter(adapter);
-    }
-
-    public static class EventRetrievalTask<Void> extends AsyncTask<Void, Void, List<UserEventModel>> {
-
-        private int userId;
-
-        public EventRetrievalTask(int userId) {
-            this.userId = userId;
-        }
-
-        @SafeVarargs
-        @Override
-        protected final List<UserEventModel> doInBackground(Void... voids) {
-            OkHttpClient client = new OkHttpClient();
-            Request request = new Request.Builder()
-                    .url("http://146.185.135.219/requestrouter.php?hdl=event&act=wappr&user="+ userId)
-                    .build();
-            List<UserEventModel> events = new ArrayList<>();
-            try {
-                Response response = client.newCall(request).execute();
-                String bodystring = response.body().string();
-                if (bodystring.equals("")) {
-                    events.add(new UserEventModel("temp", "http://clipart-library.com/images/dT4oqE78c.png", "temp"));
-                    return events;
-                }
-
-                JSONArray array = new JSONArray(bodystring);
-                JSONArray resultArray = array.getJSONArray(2);
-
-                for (int i = 0; i < resultArray.length(); i++) {
-
-                    JSONObject object = resultArray.getJSONObject(i);
-
-                    UserEventModel event = new UserEventModel();
-
-                    event.setName(object.getString("trip_name"));
-                    event.setLoc(object.getString("location"));
-                    event.setDescription(object.getString("description"));
-                    event.setId(object.getInt("id"));
-                    event.setStartDate(object.getString("date_begin"));
-                    event.setEndDate(object.getString("date_end"));
-                    event.setSpots(object.getInt("spots"));
-                    event.setCost(object.getInt("total_cost"));
-                    event.setUserApproved(object.getInt("approved")==1);
-                    event.setApprovalPending(object.getInt("pending")==1);
-                    event.setUserBanned(object.getInt("banned")==1);
-                    event.setAdmin(object.getInt("is_admin")==1);
-
-                    String pictureString = object.getString("event_picture");
-                    if (!pictureString.matches("^http(s?)://.*")) {
-                        event.setBitmap(bitmapFromBase64String(pictureString));
-                    }
-                    else {
-                        event.setImageLink(pictureString);
-                    }
-                    events.add(event);
-                }
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return events;
-        }
     }
 
     @Override
@@ -295,7 +205,6 @@ public class BrowseActivity extends AppCompatActivity implements SearchView.OnQu
         super.onResume();
         MenuItem myButton = bottomNavigationView.getMenu().findItem(R.id.bottombaritem_events);
         myButton.setChecked(true);
-        events = getEventsfromDB();
 
         if (isNull(messagingService)) {
             messagingService = new Intent(this, SharedTripFirebaseMessagingService.class);
@@ -306,7 +215,6 @@ public class BrowseActivity extends AppCompatActivity implements SearchView.OnQu
         if (Profile.getCurrentProfile() == null && GoogleSignIn.getLastSignedInAccount(this) == null) {
             finish();
         }
-
     }
 
     @Override
@@ -351,8 +259,8 @@ public class BrowseActivity extends AppCompatActivity implements SearchView.OnQu
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         googleLogoutButton.setVisibility(GONE);
-                        if (currentFirebaseUser != null)
-                            FirebaseAuth.getInstance().signOut();
+//                        if (currentFirebaseUser != null)
+//                            FirebaseAuth.getInstance().signOut();
 
                         finish();
                     }
@@ -373,6 +281,10 @@ public class BrowseActivity extends AppCompatActivity implements SearchView.OnQu
 
     public FbGoogleUserModel getUserModel() {
         return userModel;
+    }
+
+    public String getApiPrefix() {
+        return apiPrefix;
     }
 
     private void switchToFragmentProfile() {

@@ -173,11 +173,12 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
             model.imageUriString = valueOrNull(obj.getString("user_pic"));
             model.gender = valueOrNull(obj.getString("gender"));
 
-            if (notNull(currentFirebaseUser)) {
+            /*if (notNull(currentFirebaseUser)) {
                 if (model.hasGoogle()) firebaseAuthWithGoogle(account);
                 if (model.hasFacebook()) handleFacebookAccessToken(AccessToken.getCurrentAccessToken());
             }
-            else redirect();
+            else*/
+            redirect();
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -221,7 +222,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
     public void onUserCheckReady(FbGoogleUserModel checkedModel) {
         if (isNull(checkedModel)) { // Logged in user is no longer in database -> force log out
 
-            if (notNull(currentFirebaseUser)) FirebaseAuth.getInstance().signOut();
+//            if (notNull(currentFirebaseUser)) FirebaseAuth.getInstance().signOut();
 
             if (model.hasFacebook()) {
                 LoginManager.getInstance().logOut();
@@ -241,26 +242,30 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
         } else { // Signed in user is present in database
             model = checkedModel;
             hideLogInButtons();
-
-            currentFirebaseUser = mAuth.getCurrentUser();
+            updateFacebookFriendsAndRedirect();
+            /*currentFirebaseUser = mAuth.getCurrentUser();
             if (notNull(currentFirebaseUser)) {
                 updateFacebookFriendsAndRedirect();
-            }
+            /*}
             else {
                 if (model.hasGoogle()) { firebaseAuthWithGoogle(account); }
                 if (model.hasFacebook()) { handleFacebookAccessToken(AccessToken.getCurrentAccessToken()); }
-            }
+            }*/
         }
     }
 
     private void redirect() {
-        if (!model.hasFacebook() && !model.hasGoogle()) {
+        if (!model.hasFacebook() && !model.hasGoogle()
+                || bothAreNull(Profile.getCurrentProfile(), account)) {
             showLogInButtons();
             return;
         }
+
         if (isNull(browseEvents)) browseEvents = new Intent(self, BrowseActivity.class);
 
-        model.firstName = model.hasFacebook() ? Profile.getCurrentProfile().getFirstName() : account.getGivenName();
+        model.firstName = model.hasFacebook()
+                ? Profile.getCurrentProfile().getFirstName()
+                : (notNull(account) ? account.getGivenName() : "You");
 
         browseEvents.putExtra("user", new Gson().toJson(model));
         browseEvents.putExtra("prefix", apiPrefix);

@@ -126,7 +126,7 @@ public class MessageUtil {
         private int eventId;
         private String apiPrefix;
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd kk:mm:dd");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
 
         public HistoryRetrievalTask(int userId, int eventId, String apiPrefix) {
             this.userId = userId;

@@ -26,12 +26,9 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
 import models.UserEventModel;
@@ -72,7 +69,6 @@ public class ChatActivity extends AppCompatActivity {
         event = new Gson().fromJson(getIntent().getStringExtra("event"), UserEventModel.class);
         messageTopic = event.getId()+"-"+event.getLoc().toLowerCase().replaceAll("[^a-z]", "");
         fm.subscribeToTopic(messageTopic);
-        fm.subscribeToTopic("0-test-topic");
 
         setContentView(R.layout.temp_chat_layout);
         messages = new ArrayList<>();

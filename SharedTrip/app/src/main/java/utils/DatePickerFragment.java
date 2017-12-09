@@ -48,7 +48,7 @@ public class DatePickerFragment extends DialogFragment
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onDateSet(DatePicker view, int year, int month, int day) {
         myday = (day < 10 ? "0" : "") + day;
-        mymonth = (month < 10 ? "0" : "") + month;
+        mymonth = (month < 10 ? "0" : "") + month+1;
         myyear = year + "";
         date = myyear + "-" + mymonth + "-" + myday;
         if (whichDate == 's') {
