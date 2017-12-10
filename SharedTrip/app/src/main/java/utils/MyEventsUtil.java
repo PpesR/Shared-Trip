@@ -31,37 +31,47 @@ public class MyEventsUtil {
 
     public static class MyEventsRetrievalTask<Void> extends AsyncTask<Void, Void, List<MyEventModel>>{
 
-        private int adminId;
-        public MyEventsRetrievalTask(int adminId) {
-            this.adminId = adminId;
+        private int userId;
+        private String apiPrefix;
+        public MyEventsRetrievalTask(int userId, String apiPrefix) {
+            this.userId = userId;
+            this.apiPrefix = apiPrefix;
         }
 
         @Override
         protected List<MyEventModel> doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
             final Request request = new Request.Builder()
-                    .url("http://146.185.135.219/requestrouter.php?hdl=admin&user="+adminId)
+                    .url(apiPrefix + "/user/" + userId + "/my-events")
                     .build();
 
             List<MyEventModel> models = new ArrayList<>();
             try {
                 Response response = client.newCall(request).execute();
-                String rstring = response.body().string();
-                JSONArray array = new JSONArray(rstring);
+                String bodyString = response.body().string();
+                if (!bodyString.substring(0,1).equals("{")) { // otherwise it's an { "error": "blah blah" } type of JSON object
+                    JSONArray jsonResults = new JSONArray(bodyString);
 
-                if(array.getString(0).equals("SUCCESS")) {
-                    JSONArray actualResults = array.getJSONArray(2);
-                    for (int i = 0; i<actualResults.length(); i++) {
-                        JSONObject obj = actualResults.getJSONObject(i);
+                    for (int i = 0; i < jsonResults.length(); i++) {
+                        JSONObject obj = jsonResults.getJSONObject(i);
                         MyEventModel adminEventModel = new MyEventModel(
                                 obj.getString("trip_name"),
-                                obj.getString("event_picture").contains("http") ? obj.getString("event_picture") : null,
+                                obj.getString("event_picture").matches("^https?://.*") ? obj.getString("event_picture") : null,
                                 obj.getString("location"));
 
                         adminEventModel.setId(obj.getInt("id"));
-                        adminEventModel.setStartDate(obj.getString("date_begin"));
                         adminEventModel.setAdminId(obj.getInt("admin_id"));
+                        adminEventModel.setSpots(obj.getInt("spots"));
+                        adminEventModel.setCost(obj.getInt("total_cost"));
                         adminEventModel.setUsersPending(obj.getInt("users_pending"));
+
+                        adminEventModel.setEndDate(obj.getString("date_end"));
+                        adminEventModel.setStartDate(obj.getString("date_begin"));
+                        adminEventModel.setDescription(obj.getString("description"));
+
+                        adminEventModel.setAdmin(obj.getInt("is_admin") == 1);
+                        adminEventModel.setApproved(obj.getInt("is_approved") == 1);
+                        adminEventModel.setBanned(obj.getInt("is_banned") == 1);
 
                         if (isNull(adminEventModel.getImageLink()))
                             adminEventModel.setBitmap(obj.getString("event_picture"));

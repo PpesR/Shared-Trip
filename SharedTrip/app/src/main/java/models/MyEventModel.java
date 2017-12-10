@@ -21,6 +21,9 @@ public class MyEventModel extends EventModel {
     protected int adminId;
     protected int usersPending;
     private Bitmap bitmap;
+    private boolean isAdmin;
+    private boolean isApproved;
+    private boolean isBanned;
 
     public int getAdminId() { return adminId; }
     public void setAdminId(int adminId) { this.adminId = adminId; }
@@ -48,5 +51,47 @@ public class MyEventModel extends EventModel {
 
     public void decreaseUsersPending() {
         usersPending--;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
+    public boolean isApproved() {
+        return isApproved;
+    }
+
+    public void setApproved(boolean approved) {
+        isApproved = approved;
+    }
+
+    public boolean isBanned() {
+        return isBanned;
+    }
+
+    public void setBanned(boolean banned) {
+        isBanned = banned;
+    }
+
+    public UserEventModel toDetailsWithoutBitmap() {
+        UserEventModel copy = new UserEventModel();
+        copy.setImageLink(imageLink);
+        copy.setLoc(loc);
+        copy.setName(name);
+        copy.setUserBanned(isBanned);
+        copy.setUserApproved(isApproved);
+        copy.setAdmin(isAdmin);
+        copy.setApprovalPending(!(isAdmin || isApproved || isBanned));
+        copy.setCost(cost);
+        copy.setDescription(description);
+        copy.setEndDate(endDate);
+        copy.setStartDate(startDate);
+        copy.setSpots(spots);
+        copy.setId(id);
+        return copy;
     }
 }

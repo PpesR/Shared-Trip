@@ -78,11 +78,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/my_event_status"
-                    android:textColor="@color/button_grey"
                     android:textStyle="italic"
-                    android:text="visitor"
+                    android:textSize="14sp"
                     android:textAlignment="center"
-                     />
+                    android:textColor="@color/light_gray"
+                    android:paddingLeft="5dp"
+                    android:paddingStart="5dp" />
 
             </LinearLayout>
 

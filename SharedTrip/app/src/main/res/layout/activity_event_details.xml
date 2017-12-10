@@ -5,154 +5,165 @@
     android:layout_height="match_parent"
     android:background="@color/background_grey">
 
-    <ScrollView
-        android:id="@+id/eventViewScrollView"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout
-            android:id="@+id/eventViewResultContent"
+        <ScrollView
+            android:id="@+id/eventViewScrollView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-
-            <ImageView
-                android:id="@+id/eventViewPicture"
+            <RelativeLayout
+                android:id="@+id/eventViewResultContent"
                 android:layout_width="match_parent"
-                android:layout_height="189dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:contentDescription="ok"
-                app:srcCompat="@drawable/com_facebook_close" />
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/eventViewLocation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/eventViewDescriptionTitle"
-                android:layout_alignStart="@+id/eventViewDescriptionTitle"
-                android:layout_below="@+id/eventViewPicture"
-                android:layout_marginTop="22dp"
-                android:text="Location name"
-                android:textSize="22sp" />
+                <TextView
+                    android:id="@+id/events_details_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="just viewing"
+                    android:textColor="@color/light_gray"
+                    android:textAlignment="center"
+                    android:padding="20dp"/>
 
-            <TextView
-                android:id="@+id/eventViewCostPerNight"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/eventViewLocation"
-                android:layout_alignBottom="@+id/eventViewLocation"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginEnd="20dp"
-                android:layout_marginRight="20dp"
-                android:gravity="end"
-                android:lineSpacingExtra="6sp"
-                android:text="per night"
-                android:textColor="#8b000000"
-                android:textSize="14sp" />
+                <ImageView
+                    android:id="@+id/eventViewPicture"
+                    android:layout_width="match_parent"
+                    android:layout_height="189dp"
+                    android:contentDescription="ok"
+                    android:layout_below="@id/events_details_status"
+                    app:srcCompat="@drawable/com_facebook_close" />
 
-            <TextView
-                android:id="@+id/eventViewLocationGPS"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/eventViewLocation"
-                android:layout_alignStart="@+id/eventViewLocation"
-                android:layout_below="@+id/eventViewLocation"
-                android:layout_marginLeft="14dp"
-                android:layout_marginStart="14dp"
-                android:layout_marginTop="6dp"
-                android:lineSpacingExtra="6sp"
-                android:text="Location"
-                android:textColor="#8b000000"
-                android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/eventViewLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/eventViewDescriptionTitle"
+                    android:layout_alignStart="@+id/eventViewDescriptionTitle"
+                    android:layout_below="@+id/eventViewPicture"
+                    android:layout_marginTop="22dp"
+                    android:text="Location name"
+                    android:textSize="22sp" />
 
-            <TextView
-                android:id="@+id/eventViewFreeSpots"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/eventViewLocationGPS"
-                android:layout_alignBottom="@+id/eventViewLocationGPS"
-                android:layout_alignEnd="@+id/eventViewCostPerNight"
-                android:layout_alignRight="@+id/eventViewCostPerNight"
-                android:lineSpacingExtra="8sp"
-                android:text="Free spots"
-                android:textColor="#ff5722"
-                android:textSize="12sp" />
+                <TextView
+                    android:id="@+id/eventViewCostPerNight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/eventViewLocation"
+                    android:layout_alignBottom="@+id/eventViewLocation"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginRight="20dp"
+                    android:gravity="end"
+                    android:lineSpacingExtra="6sp"
+                    android:text="per night"
+                    android:textColor="#8b000000"
+                    android:textSize="14sp" />
 
-            <View
-                android:id="@+id/eventViewUpperDivider"
-                style="@style/Divider"
-                android:layout_alignEnd="@+id/eventViewFreeSpots"
-                android:layout_alignLeft="@+id/eventViewDescriptionTitle"
-                android:layout_alignRight="@+id/eventViewFreeSpots"
-                android:layout_alignStart="@+id/eventViewDescriptionTitle"
-                android:layout_below="@+id/eventViewLocationGPS"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="30dp" />
+                <TextView
+                    android:id="@+id/eventViewLocationGPS"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/eventViewLocation"
+                    android:layout_alignStart="@+id/eventViewLocation"
+                    android:layout_below="@+id/eventViewLocation"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginTop="6dp"
+                    android:lineSpacingExtra="6sp"
+                    android:text="Location"
+                    android:textColor="#8b000000"
+                    android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/eventViewDescriptionTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/eventViewUpperDivider"
-                android:layout_marginLeft="20dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:text="Description"
-                android:textColor="#303030"
-                android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/eventViewFreeSpots"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/eventViewLocationGPS"
+                    android:layout_alignBottom="@+id/eventViewLocationGPS"
+                    android:layout_alignEnd="@+id/eventViewCostPerNight"
+                    android:layout_alignRight="@+id/eventViewCostPerNight"
+                    android:lineSpacingExtra="8sp"
+                    android:text="Free spots"
+                    android:textColor="#ff5722"
+                    android:textSize="12sp" />
 
-            <TextView
-                android:id="@+id/eventViewDescription"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/eventViewFreeSpots"
-                android:layout_alignLeft="@+id/eventViewDescriptionTitle"
-                android:layout_alignRight="@+id/eventViewFreeSpots"
-                android:layout_alignStart="@+id/eventViewDescriptionTitle"
-                android:layout_below="@+id/eventViewDescriptionTitle"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
-                android:lineSpacingExtra="6sp"
-                android:maxLines="5"
-                android:text="Every year middle class American families put off traveling because they’re too busy or too tired or they just don’t have enough money. And, in some ways, they’re right. Traveling can be…  expensive. But by taking the time to learn about discounts readily available to everyone through the internet, newspapers, and even the yellow pages, more families can venture off on vacations that will recharge their batteries, stimulate their minds, and create memories to last a lifetime.  Airfare can be one of the most costly and unavoidable aspects of travel. Air travelers are constantly in search of a good deal. Numerous methods exist to get discounts on your next ticket. First, leave or return in the middle of the week      "
-                android:textColor="#8b000000"
-                android:textSize="14sp" />
+                <View
+                    android:id="@+id/eventViewUpperDivider"
+                    style="@style/Divider"
+                    android:layout_alignEnd="@+id/eventViewFreeSpots"
+                    android:layout_alignLeft="@+id/eventViewDescriptionTitle"
+                    android:layout_alignRight="@+id/eventViewFreeSpots"
+                    android:layout_alignStart="@+id/eventViewDescriptionTitle"
+                    android:layout_below="@+id/eventViewLocationGPS"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="30dp" />
 
-            <View
-                android:id="@+id/eventViewLowerDivider"
-                style="@style/Divider"
-                android:layout_alignEnd="@+id/eventViewFreeSpots"
-                android:layout_alignLeft="@+id/eventViewDescriptionTitle"
-                android:layout_alignRight="@+id/eventViewFreeSpots"
-                android:layout_alignStart="@+id/eventViewDescriptionTitle"
-                android:layout_below="@+id/eventViewDescription"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="51dp" />
+                <TextView
+                    android:id="@+id/eventViewDescriptionTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/eventViewUpperDivider"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:text="Description"
+                    android:textColor="#303030"
+                    android:textSize="16sp" />
 
-            <Button
-                android:id="@+id/eventViewRequestButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/eventViewFreeSpots"
-                android:layout_alignLeft="@+id/eventViewDescriptionTitle"
-                android:layout_alignRight="@+id/eventViewFreeSpots"
-                android:layout_alignStart="@+id/eventViewDescriptionTitle"
-                android:layout_below="@+id/eventViewLowerDivider"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="50dp"
-                android:background="@color/orangered"
-                android:text="REQUEST TO JOIN"
-                android:textSize="14sp" />
-        </RelativeLayout>
+                <TextView
+                    android:id="@+id/eventViewDescription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignEnd="@+id/eventViewFreeSpots"
+                    android:layout_alignLeft="@+id/eventViewDescriptionTitle"
+                    android:layout_alignRight="@+id/eventViewFreeSpots"
+                    android:layout_alignStart="@+id/eventViewDescriptionTitle"
+                    android:layout_below="@+id/eventViewDescriptionTitle"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:lineSpacingExtra="6sp"
+                    android:maxLines="5"
+                    android:text="@string/description_placeholder"
+                    android:textColor="#8b000000"
+                    android:textSize="14sp" />
 
-    </ScrollView>
+                <View
+                    android:id="@+id/eventViewLowerDivider"
+                    style="@style/Divider"
+                    android:layout_alignEnd="@+id/eventViewFreeSpots"
+                    android:layout_alignLeft="@+id/eventViewDescriptionTitle"
+                    android:layout_alignRight="@+id/eventViewFreeSpots"
+                    android:layout_alignStart="@+id/eventViewDescriptionTitle"
+                    android:layout_below="@+id/eventViewDescription"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="51dp" />
+
+                <Button
+                    android:id="@+id/eventViewRequestButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignEnd="@+id/eventViewFreeSpots"
+                    android:layout_alignLeft="@+id/eventViewDescriptionTitle"
+                    android:layout_alignRight="@+id/eventViewFreeSpots"
+                    android:layout_alignStart="@+id/eventViewDescriptionTitle"
+                    android:layout_below="@+id/eventViewLowerDivider"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="50dp"
+                    android:background="@color/orangered"
+                    android:text="REQUEST TO JOIN"
+                    android:textSize="14sp" />
+            </RelativeLayout>
+
+        </ScrollView>
+    </android.support.constraint.ConstraintLayout>
 
 
     <android.support.design.widget.FloatingActionButton

@@ -71,7 +71,11 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+<<<<<<< HEAD
     <string name="search_results">Search Results</string>
+=======
+    <string name="description_placeholder">Every year middle class American families put off traveling because they’re too busy or too tired or they just don’t have enough money. And, in some ways, they’re right. Traveling can be… expensive. But by taking the time to learn about discounts readily available to everyone through the internet, newspapers, and even the yellow pages, more families can venture off on vacations that will recharge their batteries, stimulate their minds, and create memories to last a lifetime. Airfare can be one of the most costly and unavoidable aspects of travel. Air travelers are constantly in search of a good deal. Numerous methods exist to get discounts on your next ticket. First, leave or return in the middle of the week</string>
+>>>>>>> f95f5f972bc7427e7c5868f366323fb013e4f0fe
 
 
 </resources>

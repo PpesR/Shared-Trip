@@ -24,5 +24,7 @@
     <color name="mustard">#d99d2e</color>
     <color name="calm_red">#c75652</color>
     <color name="see_through_white">#99ffffff</color>
+    <color name="golden">#d9bd7e</color>
+    <color name="light_gray">#bdbdbd</color>
 
 </resources>
