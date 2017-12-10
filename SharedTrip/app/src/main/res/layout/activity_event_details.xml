@@ -7,7 +7,8 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/event_details_wrapper">
 
         <ScrollView
             android:id="@+id/eventViewScrollView"
@@ -17,15 +18,17 @@
             <RelativeLayout
                 android:id="@+id/eventViewResultContent"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal">
 
                 <TextView
                     android:id="@+id/events_details_status"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="just viewing"
+                    android:text="  just viewing"
                     android:textColor="@color/light_gray"
-                    android:textAlignment="center"
+                    android:layout_centerHorizontal="true"
+                    android:textSize="14sp"
                     android:padding="20dp"/>
 
                 <ImageView
@@ -37,7 +40,7 @@
                     app:srcCompat="@drawable/com_facebook_close" />
 
                 <TextView
-                    android:id="@+id/eventViewLocation"
+                    android:id="@+id/event_detail_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignLeft="@+id/eventViewDescriptionTitle"
@@ -51,8 +54,8 @@
                     android:id="@+id/eventViewCostPerNight"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignBaseline="@+id/eventViewLocation"
-                    android:layout_alignBottom="@+id/eventViewLocation"
+                    android:layout_alignBaseline="@+id/eventViewLocationGPS"
+                    android:layout_alignBottom="@+id/eventViewLocationGPS"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_marginEnd="20dp"
@@ -67,9 +70,9 @@
                     android:id="@+id/eventViewLocationGPS"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/eventViewLocation"
-                    android:layout_alignStart="@+id/eventViewLocation"
-                    android:layout_below="@+id/eventViewLocation"
+                    android:layout_alignLeft="@+id/event_detail_name"
+                    android:layout_alignStart="@+id/event_detail_name"
+                    android:layout_below="@+id/event_detail_name"
                     android:layout_marginLeft="14dp"
                     android:layout_marginStart="14dp"
                     android:layout_marginTop="6dp"
@@ -82,14 +85,14 @@
                     android:id="@+id/eventViewFreeSpots"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignBaseline="@+id/eventViewLocationGPS"
-                    android:layout_alignBottom="@+id/eventViewLocationGPS"
+                    android:layout_below="@+id/eventViewCostPerNight"
                     android:layout_alignEnd="@+id/eventViewCostPerNight"
                     android:layout_alignRight="@+id/eventViewCostPerNight"
                     android:lineSpacingExtra="8sp"
                     android:text="Free spots"
                     android:textColor="#ff5722"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:layout_marginTop="5dp"/>
 
                 <View
                     android:id="@+id/eventViewUpperDivider"
@@ -134,18 +137,6 @@
                     android:textColor="#8b000000"
                     android:textSize="14sp" />
 
-                <View
-                    android:id="@+id/eventViewLowerDivider"
-                    style="@style/Divider"
-                    android:layout_alignEnd="@+id/eventViewFreeSpots"
-                    android:layout_alignLeft="@+id/eventViewDescriptionTitle"
-                    android:layout_alignRight="@+id/eventViewFreeSpots"
-                    android:layout_alignStart="@+id/eventViewDescriptionTitle"
-                    android:layout_below="@+id/eventViewDescription"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginTop="51dp" />
-
                 <Button
                     android:id="@+id/eventViewRequestButton"
                     android:layout_width="match_parent"
@@ -154,12 +145,13 @@
                     android:layout_alignLeft="@+id/eventViewDescriptionTitle"
                     android:layout_alignRight="@+id/eventViewFreeSpots"
                     android:layout_alignStart="@+id/eventViewDescriptionTitle"
-                    android:layout_below="@+id/eventViewLowerDivider"
+                    android:layout_below="@+id/eventViewDescription"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="50dp"
                     android:background="@color/orangered"
                     android:text="REQUEST TO JOIN"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:textColor="@color/white_text"/>
             </RelativeLayout>
 
         </ScrollView>
@@ -170,14 +162,13 @@
         android:id="@+id/enter_chat_fbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="@dimen/add_event_fbutton_marginbottom"
+        android:layout_marginBottom="@dimen/add_event_fbutton_margin"
         android:layout_marginEnd="@dimen/add_event_fbutton_margin"
         android:layout_marginRight="@dimen/add_event_fbutton_margin"
         android:src="@drawable/ic_chat_black_24dp"
         android:tint="@color/white_text"
         android:visibility="visible"
         app:backgroundTint="@color/orangered"
-        app:layout_anchor="@id/eventViewScrollView"
+        app:layout_anchor="@id/event_details_wrapper"
         app:layout_anchorGravity="bottom|end" />
 </android.support.design.widget.CoordinatorLayout>

@@ -65,7 +65,6 @@
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="5dp"
                         android:layout_marginTop="6dp"
-                        android:scrollbars="horizontal"
                         card_view:cardCornerRadius="4dp"
                         card_view:cardElevation="4dp"
                         card_view:cardUseCompatPadding="true" />

@@ -50,7 +50,7 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
         View itemView =
                 LayoutInflater
                         .from(parent.getContext())
-                        .inflate(R.layout.card, parent,false);
+                        .inflate(R.layout.search_card, parent,false);
 
         itemView.setLayoutParams(new RecyclerView.LayoutParams(dpWidth, dpHeight));
         return new ViewHolder(itemView);
