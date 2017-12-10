@@ -6,9 +6,11 @@ package adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,30 +23,46 @@ import com.google.gson.Gson;
 import java.util.List;
 
 import models.UserEventModel;
-import remm.sharedtrip.ExplorationActivity;
 import remm.sharedtrip.EventDetailsActivity;
+import remm.sharedtrip.ExplorationActivity;
 import remm.sharedtrip.R;
+import remm.sharedtrip.SearchActivity;
 
 
-public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> {
+public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapter.ViewHolder> {
 
     private Context context;
     private List<UserEventModel> events;
     public AppCompatActivity browseActivity;
 
-    public EventAdapter(Context context, List<UserEventModel> events) {
+    public SearchResultAdapter(Context context, List<UserEventModel> events) {
         this.context = context;
         this.events = events;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+
+        //getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        int width_px = Resources.getSystem().getDisplayMetrics().widthPixels;
+
+        int height_px =Resources.getSystem().getDisplayMetrics().heightPixels;
+
+        int pixeldpi = Resources.getSystem().getDisplayMetrics().densityDpi;
+
+
+        int width_dp = (width_px/pixeldpi)*255;
+        int height_dp = (height_px/pixeldpi)*255;
 
         View itemView =
                 LayoutInflater
                         .from(parent.getContext())
                         .inflate(R.layout.card, parent,false);
-
+        int height = parent.getMeasuredHeight();
+        int width = parent.getMeasuredWidth() / 2;
+        itemView.setLayoutParams(new RecyclerView.LayoutParams(width_dp, height_dp));
         return new ViewHolder(itemView);
     }
 
@@ -64,6 +82,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
                 .into(holder.imageView);
         }
     }
+
 
     @Override
     public int getItemCount() {
@@ -95,8 +114,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
 
             String gsonString = gson.toJson(eventModel.copyWithoutBitmap());
             detailViewIntent.putExtra("event", gsonString);
-            detailViewIntent.putExtra("prefix", ((ExplorationActivity) browseActivity).getApiPrefix());
-            detailViewIntent.putExtra("user", gson.toJson(((ExplorationActivity) browseActivity).getUserModel()));
+            detailViewIntent.putExtra("prefix", ((SearchActivity) browseActivity).getApiPrefix());
+            detailViewIntent.putExtra("user", gson.toJson(((SearchActivity) browseActivity).getUserModel()));
 
             browseActivity.startActivity(detailViewIntent);
         }

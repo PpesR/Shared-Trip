@@ -17,10 +17,11 @@ import java.util.concurrent.ExecutionException;
 
 import adapters.EventAdapter;
 import models.UserEventModel;
-import remm.sharedtrip.ExplorationActivity;
 import remm.sharedtrip.CreateEventActivity;
+import remm.sharedtrip.ExplorationActivity;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import remm.sharedtrip.R;
+import remm.sharedtrip.SearchActivity;
 import utils.BrowseUtil;
 
 
@@ -54,6 +55,24 @@ public class BrowseEventsFragment extends Fragment {
         adapter = new EventAdapter(myActivity, events);
         adapter.browseActivity = myActivity;
         recyclerView.setAdapter(adapter);
+        searchView = myView.findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()  {
+            @Override
+            public boolean onQueryTextSubmit(String filter) {
+                Intent myIntent = new Intent(myActivity, SearchActivity.class);
+                myIntent.putExtra("filter", filter);
+                myIntent.putExtra("prefix", apiPrefix);
+                myIntent.putExtra("userid", String.valueOf(userModel.id));
+                myIntent.putExtra("user",myActivity.getIntent().getStringExtra("user"));
+                myActivity.startActivity(myIntent);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String filter) {
+                return false;
+            }
+        });
 
 
         FloatingActionButton fab = myView.findViewById(R.id.add_event_fbutton);
@@ -61,18 +80,20 @@ public class BrowseEventsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent myIntent = new Intent(myActivity, CreateEventActivity.class);
-                myIntent.putExtra("user", myActivity.getIntent().getStringExtra("user"));
+                myIntent.putExtra("user",myActivity.getIntent().getStringExtra("user"));
                 myIntent.putExtra("prefix", apiPrefix);
                 myActivity.startActivity(myIntent);
             }
         });
 
+
         return myView;
     }
 
-    private List<UserEventModel> getEventsfromDB() {
 
+    private List<UserEventModel> getEventsfromDB() {
         BrowseUtil.EventRetrievalTask<Void> asyncTask = new BrowseUtil.EventRetrievalTask<>(userModel.id, apiPrefix);
+
         try {
             return asyncTask.execute().get();
         } catch (InterruptedException e) {

@@ -25,9 +25,15 @@ public class BrowseUtil {
 
         private int userId;
         private String apiPrefix;
+        private String searchText;
 
         public EventRetrievalTask(int userId, String apiPrefix) {
             this.userId = userId;
+            this.apiPrefix = apiPrefix;
+        }
+        public EventRetrievalTask(int userId, String searchText, String apiPrefix) {
+            this.userId = userId;
+            this.searchText = searchText;
             this.apiPrefix = apiPrefix;
         }
 
@@ -35,9 +41,16 @@ public class BrowseUtil {
         @Override
         protected final List<UserEventModel> doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
-            Request request = new Request.Builder()
-                    .url(apiPrefix+"/user/"+userId+"/browse")
-                    .build();
+            Request request;
+            if(searchText != null){
+                 request = new Request.Builder()
+                        .url(apiPrefix+ "/user/" + userId + "/search?name=" + searchText)
+                        .build();
+            }else {
+                request = new Request.Builder()
+                        .url(apiPrefix + "/user/" + userId + "/browse")
+                        .build();
+            }
             List<UserEventModel> events = new ArrayList<>();
             try {
                 Response response = client.newCall(request).execute();

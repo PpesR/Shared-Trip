@@ -104,6 +104,7 @@ public class ExplorationActivity extends AppCompatActivity implements SearchView
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setWindow(savedInstanceState);
+
     }
 
     private void setWindow(Bundle savedInstanceState){
@@ -157,33 +158,9 @@ public class ExplorationActivity extends AppCompatActivity implements SearchView
     }
 
     private void search(String filter){
-        setContentView(R.layout.search_menu);
-        searchRecyclerView = (RecyclerView) findViewById(R.id.searchResults);
-        searchView = (SearchView) findViewById(R.id.searchView);
-        searchView.setOnQueryTextListener(this);
-
-        Button exit = (Button) findViewById(R.id.exitbutton);
-        exit.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setWindow(null);
-            }
-        });
-
-        List<UserEventModel> filteredEvents = new ArrayList<>();
-        for (UserEventModel event : events) {
-            if (event.getName().toLowerCase().contains(filter.toLowerCase())) {
-                filteredEvents.add(event);
-            }
-        }
-        adapter = new EventAdapter(this, filteredEvents);
-        if(filteredEvents.size() < 1){  //quickfix, to be changed later
-            searchGridLayout = new GridLayoutManager(this, 1);
-        } else{
-            searchGridLayout = new GridLayoutManager(this, filteredEvents.size());
-        }
-        searchRecyclerView.setLayoutManager(searchGridLayout);
-        searchRecyclerView.setAdapter(adapter);
+        Intent searchIntent = new Intent(ExplorationActivity.this, SearchActivity.class);
+        searchIntent.putExtra("user", ownIntent.getStringExtra("user"));
+        ExplorationActivity.this.startActivity(searchIntent);
     }
 
     @Override
