@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_grey"
+        tools:context="remm.sharedtrip.AdminActivity">
+
+        <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:card_view="http://schemas.android.com/tools"
+                android:id="@+id/result_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+                <TextView
+                    android:id="@+id/searchText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignEnd="@+id/horizontalScrollSearch"
+                    android:layout_alignRight="@+id/horizontalScrollSearch"
+                    android:layout_marginEnd="182dp"
+                    android:layout_marginRight="182dp"
+                    android:layout_marginTop="6dp"
+                    android:ems="10"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:paddingStart="6dp"
+                    android:text="@string/browse_events_happening_near_you" />
+
+                <HorizontalScrollView
+                    android:id="@+id/horizontalScrollSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/searchText"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="6dp">
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/eventSearchResults"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_marginTop="6dp"
+                            android:scrollbars="horizontal"
+                            card_view:cardCornerRadius="4dp"
+                            card_view:cardElevation="4dp"
+                            card_view:cardUseCompatPadding="true" />
+
+                </HorizontalScrollView>
+            </RelativeLayout>
+        </ScrollView>
+
+    </android.support.constraint.ConstraintLayout>
+</FrameLayout>

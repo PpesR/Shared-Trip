@@ -35,6 +35,10 @@
                 android:resource="@xml/searchable" />
         </activity>
 
+        <activity android:name=".SearchActivity">
+
+        </activity>
+
         <activity android:name=".CreateEventActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
         <activity android:name=".ProfileActivity"
