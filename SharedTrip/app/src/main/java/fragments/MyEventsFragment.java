@@ -24,6 +24,7 @@ import models.ParticipatorModel;
 import remm.sharedtrip.ExplorationActivity;
 import remm.sharedtrip.MainActivity;
 import remm.sharedtrip.R;
+import utils.EventDetailsUtil;
 import utils.MyEventsUtil;
 import utils.MyEventsUtil.ApprovalTask;
 import utils.MyEventsUtil.DenialTask;
@@ -68,7 +69,7 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
 
     private void getMyEvents() {
         MyEventsUtil.MyEventsRetrievalTask<Void> task =
-                new MyEventsUtil.MyEventsRetrievalTask<>(userModel.id);
+                new MyEventsUtil.MyEventsRetrievalTask<>(userModel.id, apiPrefix);
         try {
             List<MyEventModel> events = task.execute().get();
             provideEvents(events);
@@ -135,11 +136,11 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
     }
 
     public void eventClicked(int i, TextView badge) {
-        MyEventsUtil.ParticipatorRetrievalTask<Void> task =
+        /*MyEventsUtil.ParticipatorRetrievalTask<Void> task =
                 new MyEventsUtil.ParticipatorRetrievalTask<>(
                         myEvents.get(i).getId(),
                         new MyEventsUtil.ParticipatorRetrievalCallback(this, myEvents.get(i), badge));
-        task.execute();
+        task.execute();*/
     }
 
 
@@ -180,14 +181,15 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
     }
 
     @Override
-    public int getLoggedInUSerId() {
-        return userModel.id;
-    }
-
-    @Override
     public Drawable getDrawableById(int id) {
         return getResources().getDrawable(id);
     }
+
+    @Override
+    public String getApiPrefix() { return apiPrefix; }
+
+    @Override
+    public MainActivity.FbGoogleUserModel getUserModel() { return userModel; }
 
     private void removeUserOnSuccess(
             boolean success,
