@@ -42,27 +42,17 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
 
-        //getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-
-        int width_px = Resources.getSystem().getDisplayMetrics().widthPixels;
-
-        int height_px =Resources.getSystem().getDisplayMetrics().heightPixels;
-
-        int pixeldpi = Resources.getSystem().getDisplayMetrics().densityDpi;
-
-
-        int width_dp = (width_px/pixeldpi)*255;
-        int height_dp = (height_px/pixeldpi)*255;
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        int dpHeight = (int) Math.floor(displayMetrics.heightPixels / displayMetrics.density * 1.4);
+        int dpWidth = (int) Math.floor(displayMetrics.widthPixels / 2.1);
 
         View itemView =
                 LayoutInflater
                         .from(parent.getContext())
                         .inflate(R.layout.card, parent,false);
-        int height = parent.getMeasuredHeight();
-        int width = parent.getMeasuredWidth() / 2;
-        itemView.setLayoutParams(new RecyclerView.LayoutParams(width_dp, height_dp));
+
+        itemView.setLayoutParams(new RecyclerView.LayoutParams(dpWidth, dpHeight));
         return new ViewHolder(itemView);
     }
 
