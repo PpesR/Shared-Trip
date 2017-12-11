@@ -168,7 +168,9 @@
                     android:layout_centerHorizontal="true"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="20dp"
+                    android:paddingTop="10dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
                     android:layout_below="@+id/event_detail_new_admin_label">
                 </android.support.v7.widget.RecyclerView>
 
@@ -211,7 +213,7 @@
         android:id="@+id/enter_chat_fbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/add_event_fbutton_margin"
+        android:layout_marginBottom="@dimen/add_event_fbutton_marginbottom"
         android:layout_marginEnd="@dimen/add_event_fbutton_margin"
         android:layout_marginRight="@dimen/add_event_fbutton_margin"
         android:src="@drawable/ic_chat_black_24dp"

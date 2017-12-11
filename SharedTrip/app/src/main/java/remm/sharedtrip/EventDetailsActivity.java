@@ -37,6 +37,7 @@ import utils.EventDetailsUtil.ApprovalStatusTask;
 import utils.EventDetailsUtil.GetImageTask;
 import utils.EventDetailsUtil.JoinRequestTask;
 import utils.UserAccountUtil;
+import utils.UserAccountUtil.UserDataTask;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -91,6 +92,8 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         participators = getParticipators();
 
 
+
+
         setContentView(R.layout.activity_event_details);
 
         recyclerView = findViewById(R.id.my_event_participators);
@@ -99,8 +102,14 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         pleaseSelect = findViewById(R.id.event_detail_new_admin_label);
         mainScrollView = findViewById(R.id.eventViewScrollView);
 
-        adapter = new NewAdminChoiceAdapter(self, participators, self);
-        recyclerView.setAdapter(adapter);
+        if (participators.size() > 0) {
+            adapter = new NewAdminChoiceAdapter(self, participators, self);
+            recyclerView.setAdapter(adapter);
+        }
+        else {
+            pleaseSelect.setVisibility(VISIBLE);
+            pleaseSelect.setText("Looks like there's nobody here...");
+        }
 
         joinButton = findViewById(R.id.eventViewRequestButton);
         joinButton.setVisibility(GONE);
@@ -157,8 +166,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
             try {
                 String base64 = task.execute().get();
                 model.setBitmap(base64);
-//                eventPic.setImageBitmap(model.getBitmap());
-                return;
+                eventPic.setImageBitmap(model.getBitmap());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
@@ -171,7 +179,6 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
     }
 
     private List<PotentialAdminModel> getParticipators() {
-        // tegelt peaks selle listi requestiga saama
         ParticipatorsTask<Void> task = new ParticipatorsTask<>(model.getId(), apiPrefix);
         List<PotentialAdminModel> list = new ArrayList<>();
         try {
@@ -192,6 +199,16 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         example.firstName = userModel.firstName;
         participators.add(example);
         adapter.notifyDataSetChanged();
+    }
+
+    private void removeSelfFromParticipators() {
+        for (int i = 0; i < participators.size(); i++) {
+            if (participators.get(i).id == userModel.id) {
+                participators.remove(i);
+                adapter.notifyDataSetChanged();
+                break;
+            }
+        }
     }
 
     private void joinEvent() {
@@ -233,6 +250,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
                         joinEvent();
                     }
                 });
+                removeSelfFromParticipators();
             }
         });
     }
@@ -274,45 +292,47 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         status.setTextColor(statusColor);
         status.setText("  admin");
 
-        joinButton.setText("GIVE AWAY ADMIN RIGHTS");
-        joinButton.setVisibility(View.VISIBLE);
-        joinButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                joinButton.setVisibility(GONE);
-                joinButton.setText("CONFIRM");
-                cancelButton.setVisibility(VISIBLE);
-                pleaseSelect.setVisibility(VISIBLE);
-                adapter.isChoosing();
-                joinButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        adapter.notChoosing();
-                        cancelButton.setVisibility(GONE);
-                        pleaseSelect.setVisibility(GONE);
-                        adapter.restoreLayout();
-                        addSelfToParticipators();
+        if (participators.size() > 0) {
+            joinButton.setText("GIVE AWAY ADMIN RIGHTS");
+            joinButton.setVisibility(View.VISIBLE);
+            joinButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    joinButton.setVisibility(GONE);
+                    joinButton.setText("CONFIRM");
+                    cancelButton.setVisibility(VISIBLE);
+                    pleaseSelect.setVisibility(VISIBLE);
+                    adapter.isChoosing();
+                    joinButton.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
 
-                        // To callback
-                        AdminRightsTask<Void> task = new AdminRightsTask<>(model.getId(), adapter.selected.userModel.id, userModel.id, apiPrefix);
-                        try {
-                            boolean success = task.execute().get();
-                            if (success) {
-                                onNewAdminSelectedDone(adapter.selected.userModel);
-                                onApproved();
-                                return;
+                            // To callback
+                            AdminRightsTask<Void> task = new AdminRightsTask<>(model.getId(), adapter.selected.userModel.id, userModel.id, apiPrefix);
+                            try {
+                                boolean success = task.execute().get();
+                                if (success) {
+                                    adapter.notChoosing();
+                                    cancelButton.setVisibility(GONE);
+                                    pleaseSelect.setVisibility(GONE);
+                                    adapter.restoreLayout();
+                                    addSelfToParticipators();
+                                    onNewAdminSelectedDone(adapter.selected.userModel);
+                                    onApproved();
+                                    return;
+                                }
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
                             }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } catch (ExecutionException e) {
-                            e.printStackTrace();
-                        }
-                        cancelButton.callOnClick();
+                            cancelButton.callOnClick();
 
-                    }
-                });
-            }
-        });
+                        }
+                    });
+                }
+            });
+        }
 
         fab.setVisibility(VISIBLE);
     }
@@ -394,7 +414,6 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
     @Override
     public void onNewAdminSelectedDone(PotentialAdminModel newAdmin) {
         mainScrollView.fullScroll(ScrollView.FOCUS_UP);
-        // send admin change request
     }
 
     public void showConfirm() {
@@ -403,13 +422,21 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
 
     @Override
     public void openUserProfile(int id) {
-        UserAccountUtil.UserDataTask<Void> task = new UserAccountUtil.UserDataTask<>(apiPrefix, id);
+        UserDataTask<Void> task = new UserDataTask<>(apiPrefix, id);
         try {
-            FbGoogleUserModel selectedUser = task.execute().get();
-            Intent profileIntent = new Intent(this, ProfileActivity.class);
-            profileIntent.putExtra("user", new Gson().toJson(selectedUser));
-            profileIntent.putExtra("notMine", selectedUser.id!=userModel.id);
-            startActivity(profileIntent);
+            final FbGoogleUserModel selectedUser = task.execute().get();
+            if (selectedUser != null) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent profileIntent = new Intent(self, ProfileActivity.class);
+                        profileIntent.putExtra("user", new Gson().toJson(selectedUser));
+                        profileIntent.putExtra("notMine", selectedUser.id != userModel.id);
+                        startActivity(profileIntent);
+                    }
+                });
+
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {

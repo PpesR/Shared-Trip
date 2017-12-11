@@ -206,8 +206,10 @@ public class EventDetailsUtil {
             try {
                 Response response = client.newCall(request).execute();
                 String bodyString = response.body().string();
-                if (bodyString.length()==0) return true;
+                if (bodyString.length()==0 || !new JSONObject(bodyString).has("error")) return true;
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
             return false;

@@ -33,6 +33,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
+import utils.ValueUtil;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -64,7 +65,9 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
         hi_text = (TextView) findViewById(R.id.profile_hi);
-        hi_text.append("  "+userModel.firstName == null ? userModel.name : userModel.firstName);
+        if (userModel.firstName != null)
+            hi_text.append("  "+userModel.firstName);
+        else hi_text.append("  "+userModel.name);
         ImageView prof_pic = (ImageView) findViewById(R.id.profile_image);
 
         if (userModel.imageUriString == null) {
