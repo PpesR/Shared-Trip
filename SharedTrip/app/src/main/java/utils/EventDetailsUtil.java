@@ -31,7 +31,6 @@ public class EventDetailsUtil {
     public static class LeaveRequestTask<Void> extends AsyncTask<Void, Void, Void> {
         private int eventId;
         private int participatorId;
-        private JoinCallback callback;
         private LeaveCallback leaveCallBack;
         private String apiPrefix;
 
@@ -46,11 +45,6 @@ public class EventDetailsUtil {
         @Override
         protected final Void doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
-
-            FormBody.Builder formBuilder = null;
-            formBuilder = new FormBody.Builder();
-
-
             final Request request = new Request.Builder()
                     .url(apiPrefix + "/event/" + eventId + "/participator/" + participatorId)
                     .delete()
@@ -74,8 +68,6 @@ public class EventDetailsUtil {
                 if(bodystring.length() == 0){
                     eda.onLeaveSuccess();
                 }
-
-
             } catch (IOException e) { e.printStackTrace(); }
         }
     }
