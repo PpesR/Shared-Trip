@@ -1,8 +1,10 @@
 package remm.sharedtrip;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.StrictMode;
@@ -17,6 +19,8 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 
+import org.w3c.dom.Text;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,6 +28,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -32,6 +37,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
+import utils.RatingUtil;
+import utils.RatingUtil.MyRatingsTask;
+import utils.RatingUtil.Ratings;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -44,6 +52,13 @@ public class ProfileActivity extends AppCompatActivity {
     private Gson gson = new Gson();
     static ProfileActivity self;
     private boolean isOwnProfile;
+    private Ratings ratings;
+    private int baseColor;
+
+    TextView thumbsUp;
+    TextView thumbsDown;
+    TextView heart;
+    TextView smile;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -61,6 +76,13 @@ public class ProfileActivity extends AppCompatActivity {
         ownIntent = getIntent();
         userModel = gson.fromJson(ownIntent.getStringExtra("user"), FbGoogleUserModel.class);
         setContentView(R.layout.activity_profile);
+
+        baseColor = getResources().getColor(R.color.orangered);
+
+        thumbsUp = findViewById(R.id.profile_thumbs_up);
+        thumbsDown = findViewById(R.id.profile_thumbs_down);
+        heart = findViewById(R.id.profile_heart);
+        smile = findViewById(R.id.profile_smile);
 
         hiText = findViewById(R.id.profile_hi);
         isOwnProfile = !getIntent().getBooleanExtra("notMine", false);
@@ -155,7 +177,41 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        displayRatings();
+    }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void displayRatings() {
+        MyRatingsTask<Void> task = new MyRatingsTask<>(
+                getResources().getString(R.string.api_address_with_prefix), userModel.id);
+        try {
+            ratings = task.execute().get();
+            if (ratings.thumbsUp>0) {
+                thumbsUp.setText(" "+ratings.thumbsUp);
+                thumbsUp.setTextColor(baseColor);
+                thumbsUp.getCompoundDrawables()[0].setColorFilter(baseColor, PorterDuff.Mode.SRC_ATOP);
+            }
+            if (ratings.thumbsDown>0) {
+                thumbsDown.setText(" "+ratings.thumbsDown);
+                thumbsDown.setTextColor(baseColor);
+                thumbsDown.getCompoundDrawables()[0].setColorFilter(baseColor, PorterDuff.Mode.SRC_ATOP);
+            }
+            if (ratings.hearts>0) {
+                heart.setText(" "+ratings.hearts);
+                heart.setTextColor(baseColor);
+                heart.getCompoundDrawables()[0].setColorFilter(baseColor, PorterDuff.Mode.SRC_ATOP);
+            }
+            if (ratings.smileys>0) {
+                smile.setText(" "+ratings.smileys);
+                smile.setTextColor(baseColor);
+                smile.getCompoundDrawables()[0].setColorFilter(baseColor, PorterDuff.Mode.SRC_ATOP);
+            }
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateDescription(String text) {

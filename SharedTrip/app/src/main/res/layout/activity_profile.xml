@@ -37,6 +37,59 @@
                     android:textColor="@color/white_text"
                     android:textSize="25sp" />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:paddingRight="15dp"
+                    android:paddingLeft="15dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/profile_thumbs_up"
+                        android:textColor="@color/light_gray"
+                        android:drawableTint="@color/light_gray"
+                        android:drawableLeft="@drawable/ic_thumb_up_black_24dp"
+                        android:paddingRight="20dp"
+                        android:paddingLeft="25dp"
+                        android:textSize="16dp"
+                        android:text=" 0"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/profile_thumbs_down"
+                        android:textColor="@color/light_gray"
+                        android:drawableTint="@color/light_gray"
+                        android:drawableLeft="@drawable/ic_thumb_down_black_24dp"
+                        android:paddingRight="20dp"
+                        android:paddingLeft="25dp"
+                        android:textSize="16dp"
+                        android:text=" 0"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/profile_heart"
+                        android:textColor="@color/light_gray"
+                        android:drawableTint="@color/light_gray"
+                        android:drawableLeft="@drawable/ic_favorite_black_24dp"
+                        android:paddingRight="20dp"
+                        android:paddingLeft="25dp"
+                        android:textSize="16dp"
+                        android:text=" 0"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/profile_smile"
+                        android:textColor="@color/light_gray"
+                        android:drawableTint="@color/light_gray"
+                        android:drawableLeft="@drawable/ic_sentiment_very_satisfied_black_24dp"
+                        android:paddingRight="20dp"
+                        android:paddingLeft="20dp"
+                        android:textSize="16dp"
+                        android:text=" 0"/>
+                </LinearLayout>
+
                 <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:layout_gravity="center_horizontal"
                     android:id="@+id/profile_image"

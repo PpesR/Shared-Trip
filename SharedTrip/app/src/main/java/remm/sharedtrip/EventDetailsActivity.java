@@ -44,6 +44,11 @@ import utils.UserAccountUtil.UserDataTask;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static remm.sharedtrip.EventDetailsActivity.ParticipatorStatus.ADMIN;
+import static remm.sharedtrip.EventDetailsActivity.ParticipatorStatus.BANNED;
+import static remm.sharedtrip.EventDetailsActivity.ParticipatorStatus.JOINED;
+import static remm.sharedtrip.EventDetailsActivity.ParticipatorStatus.PENDING;
+import static remm.sharedtrip.EventDetailsActivity.ParticipatorStatus.VIEWING;
 import static utils.EventDetailsUtil.*;
 import static utils.ValueUtil.notNull;
 
@@ -83,6 +88,17 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
     private GridLayoutManager manager;
     private Button cancelButton;
     private ScrollView mainScrollView;
+    private ParticipatorStatus myStatus = VIEWING;
+
+    public static final int OPEN_PROFILE = 777;
+
+    public enum ParticipatorStatus {
+        VIEWING,
+        PENDING,
+        JOINED,
+        ADMIN,
+        BANNED
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -273,6 +289,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
                 else {
                     onEventFull();
                 }
+                myStatus = VIEWING;
                 removeSelfFromParticipators();
             }
         });
@@ -346,6 +363,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void onAdmin() {
+        myStatus = ADMIN;
         statusColor = resources.getColor(R.color.golden);
         icon = resources.getDrawable(R.drawable.ic_star_black_24dp);
         icon.setTint(statusColor);
@@ -401,6 +419,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     void onPendingApproval() {
+        myStatus = PENDING;
         statusColor = resources.getColor(R.color.light_gray);
         icon = resources.getDrawable(R.drawable.ic_mail_outline_black_24dp);
         icon.setTint(statusColor);
@@ -437,6 +456,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     void onApproved() {
+        myStatus = JOINED;
         statusColor = resources.getColor(R.color.light_gray);
         icon = resources.getDrawable(R.drawable.ic_check_black_24dp);
         icon.setTint(statusColor);
@@ -462,6 +482,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     void onBanned() {
+        myStatus = BANNED;
         statusColor = resources.getColor(R.color.calm_red);
         icon = resources.getDrawable(R.drawable.ic_close_black_24px);
         icon.setTint(statusColor);
@@ -492,6 +513,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
 
     @Override
     public void onNewAdminSelectedDone(MiniUserModel newAdmin) {
+        myStatus = JOINED;
         mainScrollView.smoothScrollTo(0,0);
         removeFromParticipators(newAdmin);
     }
@@ -512,15 +534,23 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
                         Intent profileIntent = new Intent(self, ProfileActivity.class);
                         profileIntent.putExtra("user", new Gson().toJson(selectedUser));
                         profileIntent.putExtra("notMine", selectedUser.id != userModel.id);
-                        startActivity(profileIntent);
+                        startActivityForResult(profileIntent, OPEN_PROFILE);
                     }
                 });
-
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent();
+        intent.putExtra("status", myStatus.name());
+        intent.putExtra("event", model.getId());
+        setResult(RESULT_OK, intent);
     }
 }

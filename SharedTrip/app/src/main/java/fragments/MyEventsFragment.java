@@ -25,6 +25,7 @@ import adapters.JoinRequestsAdapter.RequestUserModel;
 import adapters.MyEventsAdapter;
 import adapters.MyEventsAdapter.MyEventsManager;
 import models.MyEventModel;
+import remm.sharedtrip.EventDetailsActivity;
 import remm.sharedtrip.ExplorationActivity;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import remm.sharedtrip.R;
@@ -32,6 +33,7 @@ import remm.sharedtrip.RequestManagementActivity;
 import utils.MyEventsUtil;
 
 import static android.app.Activity.RESULT_OK;
+import static remm.sharedtrip.EventDetailsActivity.OPEN_PROFILE;
 import static utils.ValueUtil.notNull;
 
 /**
@@ -163,6 +165,25 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
                     }
                 }
             }
+
+        }
+        else if (requestCode == OPEN_PROFILE && resultCode == RESULT_OK) {
+            int id = data.getIntExtra("id",-1);
+            String status = data.getStringExtra("status");
+            MyEventModel rightOne = null;
+            for(MyEventModel model : myEvents) {
+                if (model.getId()==id) {
+                    rightOne = model;
+                    break;
+                }
+            }
+            switch (status) {
+                case "JOINED":
+                    break;
+                case "VIEWING":
+                    break;
+            }
+
 
         }
     }

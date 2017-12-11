@@ -77,6 +77,7 @@ public class FriendsUtil {
         public String friendFullName;
         public String friendFirstName;
         public Uri friendProfilePicture;
+        public String eventPictureUriString;
     }
 
     // A Callback is something that's supposed to react after we get a response from the server
@@ -124,6 +125,8 @@ public class FriendsUtil {
                         // so you don't need to worry about it
                         String pictureString = rawEventData.getString("event_picture");
                         model.eventPicture = bitmapFromString(pictureString);
+                        if (pictureString.matches("^https?://.*"))
+                            model.eventPictureUriString = pictureString;
                        /*
                         *  allFriendsEvents is an array of JSONObjects like this:
                         *

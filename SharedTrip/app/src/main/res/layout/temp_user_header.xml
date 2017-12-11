@@ -7,22 +7,34 @@
     android:elevation="3dp"
     android:orientation="horizontal"
     android:padding="10dp"
-    android:weightSum="2">
+    android:weightSum="7">
 
     <TextView
         android:id="@+id/user_header_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="3"
         android:clickable="true"
         android:focusable="true"
         android:layout_gravity="center_vertical"/>
+    <Button
+        android:id="@+id/header_rate_button"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:drawableTop="@drawable/ic_star_black_24dp"
+        android:background="@android:color/transparent"
+        android:drawableTint="@color/orangered"
+        android:textColor="@color/orangered"
+        android:textSize="10sp"
+        android:text="Rate"
+        android:layout_weight="1"
+        android:gravity="center_horizontal|bottom"
+        android:foregroundGravity="center_horizontal|bottom"/>
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_gravity="end">
+        android:layout_weight="3">
         <com.facebook.login.widget.LoginButton
             android:id="@+id/header_logoff_button"
             style="@style/FacebookLoginButton"

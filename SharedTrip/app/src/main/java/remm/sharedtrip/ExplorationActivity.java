@@ -2,6 +2,8 @@ package remm.sharedtrip;
 
 import android.annotation.SuppressLint;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -9,10 +11,13 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,14 +40,17 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import adapters.EventAdapter;
+import adapters.RateUserAdapter;
 import fragments.*;
 import fragments.BrowseEventsFragment;
 import models.UserEventModel;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import services.SharedTripFirebaseMessagingService;
 import utils.BottomNavigationViewHelper;
+import utils.RatingUtil;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -50,23 +58,24 @@ import static utils.ValueUtil.isNull;
 
 public class ExplorationActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
-    private List<UserEventModel> events;
-    private RecyclerView recyclerView;
-    private RecyclerView searchRecyclerView;
-    private GridLayoutManager searchGridLayout;
-    private GridLayoutManager gridLayout;
-    private EventAdapter adapter;
+
     private TextView headerUsername;
     private Intent ownIntent;
     private FbGoogleUserModel userModel;
     private Gson gson = new Gson();
-    private SearchView searchView;
     private BottomNavigationView bottomNavigationView;
     private AccessTokenTracker accessTokenTracker;
-    private FirebaseUser currentFirebaseUser;
     private Intent messagingService;
     private LoginButton fbLoginButton;
     private String apiPrefix;
+
+
+    private Button rateButton;
+    List<RateUserAdapter.RateablePerson> people;
+    RecyclerView recyclerView;
+    LinearLayoutManager ratingManager;
+    AlertDialog ratingDialog;
+    RateUserAdapter rateUserAdapter;
 
     private static ExplorationActivity self;
 
@@ -114,6 +123,40 @@ public class ExplorationActivity extends AppCompatActivity implements SearchView
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
+
+        rateButton = findViewById(R.id.header_rate_button);
+        rateButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(self);
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog_rate_users, null);
+                builder.setView(dialogView);
+                recyclerView = dialogView.findViewById(R.id.rating_recycler);
+                builder.setTitle("Rate other travellers");
+                builder.setPositiveButton("confirm", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        RatingUtil.RatingTask<Void> task;
+                        for (RateUserAdapter.RateablePerson p : people) {
+                            if (p.rating > -1) {
+                                task = new RatingUtil.RatingTask<>(apiPrefix, p.id, p.eventId, userModel.id, p.rating);
+                                task.execute();
+                            }
+                        }
+                        ratingDialog.hide();
+                    }
+                });
+                builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ratingDialog.hide();
+                    }
+                });
+                ratingDialog = builder.create();
+                getRateables();
+            }
+        });
 
         MenuItem profileItem = bottomNavigationView.getMenu().findItem(R.id.bottombaritem_profile);
         profileItem.setTitle(userModel.firstName);
@@ -174,9 +217,26 @@ public class ExplorationActivity extends AppCompatActivity implements SearchView
             startService(messagingService);
         }
 
-
         if (Profile.getCurrentProfile() == null && GoogleSignIn.getLastSignedInAccount(this) == null) {
             finish();
+        }
+    }
+
+    public void getRateables() {
+        RatingUtil.RateablesTask<Void> task = new RatingUtil.RateablesTask<>(apiPrefix, userModel.id);
+        try {
+            people = task.execute().get();
+            if (!people.isEmpty()) {
+                rateUserAdapter = new RateUserAdapter(this, people);
+                ratingManager = new LinearLayoutManager(this);
+                recyclerView.setLayoutManager(ratingManager);
+                recyclerView.setAdapter(rateUserAdapter);
+                ratingDialog.show();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
     }
 
