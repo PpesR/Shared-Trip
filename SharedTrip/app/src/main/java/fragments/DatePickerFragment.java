@@ -37,7 +37,7 @@ public class DatePickerFragment extends DialogFragment
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
-        
+
         // Create a new instance of DatePickerDialog and return it
         DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), this, year, month, day);
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
@@ -47,7 +47,7 @@ public class DatePickerFragment extends DialogFragment
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onDateSet(DatePicker view, int year, int month, int day) {
         myday = (day < 10 ? "0" : "") + day;
-        mymonth = (month < 10 ? "0" : "") + month+1;
+        mymonth = (month < 10 ? "0" : "") + (month + 1);
         myyear = year + "";
         date = myyear + "-" + mymonth + "-" + myday;
         if (whichDate == 's') {
