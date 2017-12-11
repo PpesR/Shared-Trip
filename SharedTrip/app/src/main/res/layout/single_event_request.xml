@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:orientation="vertical">
+        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/profile_image_event_join"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp" />
+        <TextView
+            android:id="@+id/event_join_text"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="10dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/admin_event_participator_yes"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="left"
+            android:drawableLeft="@drawable/ic_done_black_24px"
+            android:drawableStart="@drawable/ic_done_black_24px"
+            android:drawableTint="@color/white_text"
+            android:text="Accept"
+            tools:targetApi="m"
+            android:background="@android:color/transparent"
+            android:textColor="@color/button_grey"></Button>
+        <Button
+            android:id="@+id/admin_event_participator_no"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="25dp"
+            android:drawableLeft="@drawable/ic_close_black_24px"
+            android:drawableStart="@drawable/ic_close_black_24px"
+            android:drawableTint="@color/white_text"
+            android:text="Decline"
+            tools:targetApi="m"
+            android:background="@android:color/transparent"
+            android:textColor="@color/button_grey"></Button>
+    </LinearLayout>
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

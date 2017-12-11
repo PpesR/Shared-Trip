@@ -17,7 +17,6 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.util.List;
 
-import fragments.BrowseEventsFragment;
 import models.UserEventModel;
 import okhttp3.Call;
 import okhttp3.FormBody;
