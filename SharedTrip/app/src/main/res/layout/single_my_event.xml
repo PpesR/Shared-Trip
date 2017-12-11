@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -8,86 +9,107 @@
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="120dp"
+        android:background="@drawable/event_item_background"
         android:orientation="horizontal"
-        android:padding="20dp"
-        android:background="@drawable/event_item_background">
+        android:padding="20dp">
 
         <ImageView
             android:id="@+id/admin_event_pic"
             android:layout_width="80dp"
             android:layout_height="80dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="false"
-            android:scaleType="centerCrop"
             android:contentDescription="@string/todo"
             android:focusable="true"
-            android:layout_marginRight="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:scaleType="centerCrop" />
 
         <LinearLayout
+            android:id="@+id/event_xtra_info"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_toEndOf="@id/admin_event_pic"
+            android:layout_toRightOf="@id/admin_event_pic"
             android:orientation="vertical"
-            android:paddingTop="10dp"
+            android:paddingEnd="20dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:layout_toRightOf="@id/admin_event_pic"
-            android:layout_toEndOf="@id/admin_event_pic"
-            app:layout_constraintLeft_toRightOf="@id/admin_event_pic"
-            app:layout_constraintRight_toRightOf="parent"
             android:paddingStart="20dp"
-            android:paddingEnd="20dp">
+            android:paddingTop="10dp"
+            app:layout_constraintLeft_toRightOf="@id/admin_event_pic"
+            app:layout_constraintRight_toRightOf="parent">
 
-        <TextView
-            android:id="@+id/admin_event_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="10dp"
-            android:textSize="16sp"
-            android:typeface="sans"
-            android:text="@string/todo" />
+            <TextView
+                android:id="@+id/admin_event_name"
+                android:layout_width="193dp"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:text="@string/todo"
+                android:textSize="16sp"
+                android:typeface="sans" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/admin_event_badge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:background="@drawable/badge"
-                    android:minWidth="20dp"
-                    android:minHeight="20dp"
-                    android:gravity="center"
-                    android:text="@string/numeric_zero"
-                    android:textColor="#ffffffff"
-                    android:textStyle="bold"
-                    android:textSize="14sp" />
+
+
 
                 <TextView
+                    android:id="@+id/my_event_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/my_event_status"
-                    android:textStyle="italic"
-                    android:textSize="14sp"
+                    android:paddingLeft="5dp"
+                    android:paddingStart="5dp"
                     android:textAlignment="center"
                     android:textColor="@color/light_gray"
-                    android:paddingLeft="5dp"
-                    android:paddingStart="5dp" />
+                    android:textSize="14sp"
+                    android:textStyle="italic" />
 
             </LinearLayout>
 
-    </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="52dp"
+            android:layout_height="49dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_toEndOf="@id/admin_event_pic"
+            android:layout_toRightOf="@id/admin_event_pic"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/admin_event_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginStart="10dp"
+
+                android:layout_toRightof="@+id/event_xtra_info"
+                android:background="@drawable/badge"
+                android:gravity="center"
+                android:minHeight="20dp"
+                android:minWidth="20dp"
+                android:text="@string/numeric_zero"
+                android:textColor="#ffffffff"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
 
 
     </android.support.constraint.ConstraintLayout>
