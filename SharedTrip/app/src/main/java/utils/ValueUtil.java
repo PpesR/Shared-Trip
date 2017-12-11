@@ -52,7 +52,7 @@ public class ValueUtil {
         return obj1 == null && obj2 == null;
     }
 
-    public static String valueOrNull(String str) { return str.equals("null") || str.equals("") ? null : str; }
+    public static String valueOrNull(String str) { return str==null || str.equals("null") || str.equals("") ? null : str; }
 
     public static String toNullSafe(String str) { return str == null ? "null" : str; }
 

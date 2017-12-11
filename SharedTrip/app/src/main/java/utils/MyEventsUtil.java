@@ -1,5 +1,6 @@
 package utils;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.widget.TextView;
 
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import adapters.MyEventsAdapter.MyEventsManager;
+import adapters.NewAdminChoiceAdapter;
+import adapters.NewAdminChoiceAdapter.MiniUserModel;
 import models.MyEventModel;
 import models.ParticipatorModel;
 import okhttp3.Call;
@@ -20,8 +23,11 @@ import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import remm.sharedtrip.MainActivity;
+import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 
 import static utils.ValueUtil.isNull;
+import static utils.ValueUtil.valueOrNull;
 
 /**
  * Created by Mark on 12.11.2017.
@@ -86,65 +92,54 @@ public class MyEventsUtil {
         }
     }
 
-    public static class ParticipatorRetrievalTask<Void> extends AsyncTask<Void, Void, Void>{
+    public static class PendingRequestsTask<Void> extends AsyncTask<Void, Void, List<FbGoogleUserModel>> {
 
         private int eventId;
-        private ParticipatorRetrievalCallback callback;
+        private String apiPrefix;
+        private MyEventsManager manager;
 
-        public ParticipatorRetrievalTask(int eventId, ParticipatorRetrievalCallback callback) {
+        public PendingRequestsTask(int eventId, String apiPrefix, MyEventsManager manager) {
             this.eventId = eventId;
-            this.callback = callback;
+            this.apiPrefix = apiPrefix;
+            this.manager = manager;
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected List<FbGoogleUserModel> doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
             final Request request = new Request.Builder()
-                    .url("http://146.185.135.219/requestrouter.php?hdl=admin&act=pnd&event="+eventId)
+                    .url(apiPrefix + "/admin/" + manager.getUserModel().id + "/pending?event=" + eventId)
                     .build();
-            Call call = client.newCall(request);
-            call.enqueue(callback);
-            return null;
-        }
-    }
 
-    public static class ParticipatorRetrievalCallback implements Callback {
-
-        private MyEventsManager manager;
-        private MyEventModel model;
-        private TextView badge;
-
-        public ParticipatorRetrievalCallback(MyEventsManager manager, MyEventModel model, TextView badge) {
-            this.manager = manager;
-            this.model = model;
-            this.badge = badge;
-        }
-
-        @Override
-        public void onFailure(Call call, IOException e) { }
-
-        @Override
-        public void onResponse(Call call, Response response)  {
+            List<FbGoogleUserModel> models = new ArrayList<>();
             try {
-                JSONArray array = new JSONArray(response.body().string());
-                if(array.getString(0).equals("SUCCESS")) {
-                    List<ParticipatorModel> models = new ArrayList<>();
-                    JSONArray actualResults = array.getJSONArray(2);
+                Response response = client.newCall(request).execute();
+                String bodyString = response.body().string();
+                JSONArray array = new JSONArray(bodyString);
+                if (bodyString.length() > 0 && bodyString.charAt(0) != '}') {
 
-                    for (int i = 0; i<actualResults.length(); i++) {
-                        JSONObject obj = actualResults.getJSONObject(i);
-                        ParticipatorModel model = new ParticipatorModel();
-                        model.setFbId(obj.getString("fb_id"));
-                        model.setId(obj.getInt("id"));
-                        model.setName(obj.getString("name"));
-                        model.setImageUri(obj.getString("user_pic"));
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject obj = array.getJSONObject(i);
+                        FbGoogleUserModel model = new FbGoogleUserModel();
+                        model.id = obj.getInt("id");
+                        model.name = obj.getString("name");
+                        model.firstName = valueOrNull(obj.getString("first_name"));
+                        model.imageUriString = obj.getString("user_pic");
+                        model.facebookId = valueOrNull(obj.getString("fb_id"));
+                        model.googleId = valueOrNull(obj.getString("google_id"));
+                        model.gender = valueOrNull(obj.getString("gender"));
+                        model.description = valueOrNull(obj.getString("user_desc"));
+                        model.birthDate = valueOrNull(obj.getString("birthdate"));
                         models.add(model);
                     }
-                    manager.provideParticipators(models, model, badge);
-                }
 
-            } catch (JSONException e) { e.printStackTrace();
-            } catch (IOException e) { e.printStackTrace(); }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return models;
         }
     }
 
@@ -191,10 +186,14 @@ public class MyEventsUtil {
 
         private int eventId;
         private int userId;
+        private int adminId;
+        String apiPerfix;
 
-        public DenialTask(int eventId, int userId) {
+        public DenialTask(int eventId, int userId, int adminId, String apiPrefix) {
             this.eventId = eventId;
             this.userId = userId;
+            this.adminId = adminId;
+            this.apiPerfix = apiPrefix;
         }
 
         @Override
@@ -203,19 +202,17 @@ public class MyEventsUtil {
 
             FormBody.Builder formBuilder = null;
             formBuilder = new FormBody.Builder()
-                    .add("hdl", "admin")
-                    .add("act","rej")
                     .add("event", eventId+"")
-                    .add("participator", userId+"");
+                    .add("user", userId+"");
 
             final Request request = new Request.Builder()
-                    .url("http://146.185.135.219/requestrouter.php")
-                    .post(formBuilder.build())
+                    .url(apiPerfix+"/admin/"+adminId+"/reject")
+                    .put(formBuilder.build())
                     .build();
             try {
                 Response response = client.newCall(request).execute();
-                JSONArray array = new JSONArray(response.body().string());
-                if(array.getString(0).equals("SUCCESS"))
+                String bodyString = response.body().string();
+                if (bodyString.length()==0 || !new JSONObject(bodyString).has("error"))
                     return true;
             } catch (IOException e) {
                 e.printStackTrace();

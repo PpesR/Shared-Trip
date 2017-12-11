@@ -16,8 +16,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import adapters.NewAdminChoiceAdapter;
-import adapters.NewAdminChoiceAdapter.PotentialAdminModel;
+import adapters.NewAdminChoiceAdapter.MiniUserModel;
 import models.UserEventModel;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -134,7 +133,7 @@ public class EventDetailsUtil {
         }
     }
 
-    public static class ParticipatorsTask<Void> extends AsyncTask<Void, Void, List<PotentialAdminModel>> {
+    public static class ParticipatorsTask<Void> extends AsyncTask<Void, Void, List<MiniUserModel>> {
         private int eventId;
         private String apiPrefix;
 
@@ -145,13 +144,13 @@ public class EventDetailsUtil {
 
         @SafeVarargs
         @Override
-        protected final List<PotentialAdminModel> doInBackground(Void... voids) {
+        protected final List<MiniUserModel> doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
 
             final Request request = new Request.Builder()
                     .url(apiPrefix+"/event/"+eventId+"/participators")
                     .build();
-            List<PotentialAdminModel> models = new ArrayList<>();
+            List<MiniUserModel> models = new ArrayList<>();
             try {
                 Response response = client.newCall(request).execute();
                 String bodyString = response.body().string();
@@ -160,7 +159,7 @@ public class EventDetailsUtil {
                     JSONArray array = new JSONArray(bodyString);
                     for(int i = 0; i < array.length(); i++) {
                         JSONObject obj = array.getJSONObject(i);
-                        PotentialAdminModel model = new PotentialAdminModel();
+                        MiniUserModel model = new MiniUserModel();
                         model.firstName = valueOrNull(obj.getString("first_name"));
                         model.fullName = obj.getString("full_name");
                         model.id = obj.getInt("user_id");

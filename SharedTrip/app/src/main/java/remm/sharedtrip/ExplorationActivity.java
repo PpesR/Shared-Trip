@@ -269,4 +269,12 @@ public class ExplorationActivity extends AppCompatActivity implements SearchView
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.container, new FriendsFragment()).commit();
     }
+
+    public void showNavBar() {
+        bottomNavigationView.setVisibility(VISIBLE);
+    }
+
+    public void hideNavbar() {
+        bottomNavigationView.setVisibility(GONE);
+    }
 }

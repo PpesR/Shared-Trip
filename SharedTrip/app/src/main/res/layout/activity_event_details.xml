@@ -43,38 +43,19 @@
                     android:id="@+id/event_detail_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/eventViewDescriptionTitle"
-                    android:layout_alignStart="@+id/eventViewDescriptionTitle"
+                    android:layout_alignLeft="@+id/event_detail_description_label"
                     android:layout_below="@+id/eventViewPicture"
                     android:layout_marginTop="22dp"
                     android:text="Location name"
                     android:textSize="22sp" />
 
                 <TextView
-                    android:id="@+id/eventViewCostPerNight"
+                    android:id="@+id/event_detail_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignBaseline="@+id/eventViewLocationGPS"
-                    android:layout_alignBottom="@+id/eventViewLocationGPS"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginRight="20dp"
-                    android:gravity="end"
-                    android:lineSpacingExtra="6sp"
-                    android:text="per night"
-                    android:textColor="#8b000000"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/eventViewLocationGPS"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/event_detail_name"
-                    android:layout_alignStart="@+id/event_detail_name"
+                    android:layout_alignLeft="@+id/event_detail_description_label"
+                    android:layout_alignStart="@+id/event_detail_description_label"
                     android:layout_below="@+id/event_detail_name"
-                    android:layout_marginLeft="14dp"
-                    android:layout_marginStart="14dp"
                     android:layout_marginTop="6dp"
                     android:lineSpacingExtra="6sp"
                     android:text="Location"
@@ -82,12 +63,28 @@
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/eventViewFreeSpots"
+                    android:id="@+id/event_detail_cost"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/eventViewCostPerNight"
-                    android:layout_alignEnd="@+id/eventViewCostPerNight"
-                    android:layout_alignRight="@+id/eventViewCostPerNight"
+                    android:layout_alignBaseline="@+id/event_detail_location"
+                    android:layout_alignBottom="@+id/event_detail_location"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginRight="20dp"
+                    android:gravity="end"
+                    android:lineSpacingExtra="6sp"
+                    android:text="per night"
+                    android:textColor="#8b000000"
+                    android:textSize="14sp"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+
+                <TextView
+                    android:id="@+id/event_detail_spots"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/event_detail_cost"
+                    android:layout_alignEnd="@+id/event_detail_cost"
+                    android:layout_alignRight="@+id/event_detail_cost"
                     android:lineSpacingExtra="8sp"
                     android:text="Free spots"
                     android:textColor="#ff5722"
@@ -95,24 +92,24 @@
                     android:layout_marginTop="5dp"/>
 
                 <View
-                    android:id="@+id/eventViewUpperDivider"
+                    android:id="@+id/event_details_divider"
                     style="@style/Divider"
-                    android:layout_alignEnd="@+id/eventViewFreeSpots"
-                    android:layout_alignLeft="@+id/eventViewDescriptionTitle"
-                    android:layout_alignRight="@+id/eventViewFreeSpots"
-                    android:layout_alignStart="@+id/eventViewDescriptionTitle"
-                    android:layout_below="@+id/eventViewLocationGPS"
+                    android:layout_alignEnd="@+id/event_detail_spots"
+                    android:layout_alignLeft="@+id/event_detail_description_label"
+                    android:layout_alignRight="@+id/event_detail_spots"
+                    android:layout_alignStart="@+id/event_detail_description_label"
+                    android:layout_below="@+id/event_detail_cost"
                     android:layout_marginEnd="10dp"
                     android:layout_marginRight="10dp"
                     android:layout_marginTop="30dp" />
 
                 <TextView
-                    android:id="@+id/eventViewDescriptionTitle"
+                    android:id="@+id/event_detail_description_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:layout_below="@+id/eventViewUpperDivider"
+                    android:layout_below="@+id/event_details_divider"
                     android:layout_marginLeft="20dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="20dp"
@@ -121,14 +118,14 @@
                     android:textSize="16sp" />
 
                 <TextView
-                    android:id="@+id/eventViewDescription"
+                    android:id="@+id/event_detail_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/eventViewFreeSpots"
-                    android:layout_alignLeft="@+id/eventViewDescriptionTitle"
-                    android:layout_alignRight="@+id/eventViewFreeSpots"
-                    android:layout_alignStart="@+id/eventViewDescriptionTitle"
-                    android:layout_below="@+id/eventViewDescriptionTitle"
+                    android:layout_alignEnd="@+id/event_detail_spots"
+                    android:layout_alignLeft="@+id/event_detail_description_label"
+                    android:layout_alignRight="@+id/event_detail_spots"
+                    android:layout_alignStart="@+id/event_detail_description_label"
+                    android:layout_below="@+id/event_detail_description_label"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
                     android:lineSpacingExtra="6sp"
@@ -148,7 +145,7 @@
                     android:textAlignment="center"
                     android:textSize="18sp"
                     android:text="Participators"
-                    android:layout_below="@+id/eventViewDescription"/>
+                    android:layout_below="@+id/event_detail_description"/>
 
                 <TextView
                     android:id="@+id/event_detail_new_admin_label"
@@ -171,29 +168,30 @@
                     android:paddingTop="10dp"
                     android:paddingLeft="20dp"
                     android:paddingRight="20dp"
+                    android:paddingBottom="10dp"
                     android:layout_below="@+id/event_detail_new_admin_label">
                 </android.support.v7.widget.RecyclerView>
 
                 <Button
-                    android:id="@+id/eventViewRequestButton"
+                    android:id="@+id/event_detail_main_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/eventViewFreeSpots"
-                    android:layout_alignLeft="@+id/eventViewDescriptionTitle"
-                    android:layout_alignRight="@+id/eventViewFreeSpots"
-                    android:layout_alignStart="@+id/eventViewDescriptionTitle"
+                    android:layout_alignEnd="@+id/event_details_divider"
+                    android:layout_alignRight="@+id/event_details_divider"
+                    android:layout_alignLeft="@+id/event_details_divider"
                     android:layout_below="@+id/my_event_participators"
                     android:layout_centerHorizontal="true"
                     android:background="@color/orangered"
                     android:text="REQUEST TO JOIN"
                     android:textSize="14sp"
                     android:textColor="@color/white_text"
-                    android:layout_marginBottom="20dp"/>
+                    android:layout_marginBottom="20dp"
+                    android:layout_alignStart="@+id/event_details_divider" />
                 <Button
-                    android:id="@+id/event_detail_cancel_admin"
+                    android:id="@+id/event_detail_cancel_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/eventViewRequestButton"
+                    android:layout_below="@+id/event_detail_main_button"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="20dp"
                     android:background="@android:color/transparent"

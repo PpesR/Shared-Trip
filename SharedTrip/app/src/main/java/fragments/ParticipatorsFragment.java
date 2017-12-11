@@ -31,7 +31,7 @@ public class ParticipatorsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View me = inflater.inflate(R.layout.fragment_participators, container, false);
-        manager.setSubAdapter((RecyclerView) me.findViewById(R.id.admin_event_participators_results), eventModel, pendingBadge);
+//        manager.setSubAdapter((RecyclerView) me.findViewById(R.id.admin_event_participators_results), eventModel, pendingBadge);
         return me;
     }
 

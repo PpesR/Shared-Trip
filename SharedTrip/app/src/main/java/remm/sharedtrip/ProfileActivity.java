@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.StrictMode;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -33,19 +32,18 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
-import utils.ValueUtil;
 
 public class ProfileActivity extends AppCompatActivity {
 
     private Intent ownIntent;
-    private TextView hi_text;
-    private Button edit;
-    private Button save;
-    private EditText desc_field;
-    private BottomNavigationView bottomNavigationView;
+    private TextView hiText;
+    private Button editButton;
+    private Button saveButton;
+    private EditText decription;
     private FbGoogleUserModel userModel;
     private Gson gson = new Gson();
     static ProfileActivity self;
+    private boolean isOwnProfile;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -64,20 +62,19 @@ public class ProfileActivity extends AppCompatActivity {
         userModel = gson.fromJson(ownIntent.getStringExtra("user"), FbGoogleUserModel.class);
         setContentView(R.layout.activity_profile);
 
-        hi_text = (TextView) findViewById(R.id.profile_hi);
-        if (userModel.firstName != null)
-            hi_text.append("  "+userModel.firstName);
-        else hi_text.append("  "+userModel.name);
-        ImageView prof_pic = (ImageView) findViewById(R.id.profile_image);
+        hiText = findViewById(R.id.profile_hi);
+        isOwnProfile = !getIntent().getBooleanExtra("notMine", false);
+
+        ImageView profilePicture = findViewById(R.id.profile_image);
 
         if (userModel.imageUriString == null) {
-            prof_pic.setImageDrawable(getDrawable(R.mipmap.ic_default_user));
+            profilePicture.setImageDrawable(getDrawable(R.mipmap.ic_default_user));
         }
         else {
             try {
                 URL imageURL = new URL(userModel.imageUriString);
                 Bitmap bitmap = BitmapFactory.decodeStream(imageURL.openStream());
-                prof_pic.setImageBitmap(bitmap);
+                profilePicture.setImageBitmap(bitmap);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -117,33 +114,43 @@ public class ProfileActivity extends AppCompatActivity {
         }
         else
             bd.setText(bd.getText() + "   " + "hidden");
-        desc_field = (EditText) findViewById(R.id.description_info);
+        decription = findViewById(R.id.description_info);
 
         if (userModel.description!=null && !userModel.description.equals("null"))
-            desc_field.setText(userModel.description);
+            decription.setText(userModel.description);
         else
-            desc_field.setText("Another amazing traveller");
+            decription.setText("Another amazing traveller");
 
-        save = (Button) findViewById(R.id.prof_save);
-        edit = (Button) findViewById(R.id.prof_edit);
-        if (!getIntent().getBooleanExtra("notMine", false)) {
-            edit.setOnClickListener(new View.OnClickListener() {
+        saveButton = findViewById(R.id.prof_save);
+        editButton = findViewById(R.id.prof_edit);
+
+        if (isOwnProfile) {
+            editButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    desc_field.setEnabled(true);
-                    save.setVisibility(View.VISIBLE);
-                    edit.setVisibility(View.GONE);
+                    decription.setEnabled(true);
+                    saveButton.setVisibility(View.VISIBLE);
+                    editButton.setVisibility(View.GONE);
                 }
             });
+
+            if (userModel.firstName != null)
+                hiText.append("  "+userModel.firstName);
+            else hiText.append("  "+userModel.name);
         }
-        else edit.setVisibility(View.GONE);
-        save.setOnClickListener(new View.OnClickListener(){
+
+        else {
+            editButton.setVisibility(View.GONE);
+            hiText.setText(userModel.name);
+        }
+
+        saveButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                String desc_text = desc_field.getText().toString();
-                desc_field.setEnabled(false);
-                save.setVisibility(View.GONE);
-                edit.setVisibility(View.VISIBLE);
+                String desc_text = decription.getText().toString();
+                decription.setEnabled(false);
+                saveButton.setVisibility(View.GONE);
+                editButton.setVisibility(View.VISIBLE);
                 updateDescription(desc_text);
             }
         });

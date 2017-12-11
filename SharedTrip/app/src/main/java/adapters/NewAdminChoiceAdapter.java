@@ -23,7 +23,7 @@ import remm.sharedtrip.R;
 
 public class NewAdminChoiceAdapter extends RecyclerView.Adapter<NewAdminChoiceAdapter.NewAdminViewHolder> {
 
-    private List<PotentialAdminModel> participators;
+    private List<MiniUserModel> participators;
     private DetailsManager detailsManager;
     private Context context;
     private boolean isChoosing = false;
@@ -31,7 +31,7 @@ public class NewAdminChoiceAdapter extends RecyclerView.Adapter<NewAdminChoiceAd
     public NewAdminViewHolder selected = null;
 
 
-    public NewAdminChoiceAdapter(Context context, List<PotentialAdminModel> participators, DetailsManager manager) {
+    public NewAdminChoiceAdapter(Context context, List<MiniUserModel> participators, DetailsManager manager) {
         this.participators = participators;
         this.context = context;
         this.detailsManager = manager;
@@ -48,7 +48,7 @@ public class NewAdminChoiceAdapter extends RecyclerView.Adapter<NewAdminChoiceAd
 
     @Override
     public void onBindViewHolder(NewAdminViewHolder holder, int position) {
-        PotentialAdminModel model = participators.get(position);
+        MiniUserModel model = participators.get(position);
 
         holder.userModel = model;
         holder.name.setText(model.firstName == null ? model.fullName : model.firstName);
@@ -72,13 +72,13 @@ public class NewAdminChoiceAdapter extends RecyclerView.Adapter<NewAdminChoiceAd
     }
 
     public interface DetailsManager {
-        void onNewAdminSelectedDone(PotentialAdminModel newAdmin);
+        void onNewAdminSelectedDone(MiniUserModel newAdmin);
         void showConfirm();
 
         void openUserProfile(int id);
     }
 
-    public static class PotentialAdminModel {
+    public static class MiniUserModel {
         public int id;
         public String fullName;
         public String firstName;
@@ -89,7 +89,7 @@ public class NewAdminChoiceAdapter extends RecyclerView.Adapter<NewAdminChoiceAd
 
         public TextView name;
         public CircleImageView profilePicture;
-        public PotentialAdminModel userModel;
+        public MiniUserModel userModel;
 
 
         public NewAdminViewHolder(View itemView) {

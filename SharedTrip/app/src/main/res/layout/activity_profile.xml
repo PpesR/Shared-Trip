@@ -13,18 +13,6 @@
         android:weightSum="10">
 
         <!-- Height is 0 because of weightSum -->
-        <TextView
-            android:id="@+id/profile_view_title"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.6"
-            android:background="@color/button_grey"
-            android:gravity="top|center"
-            android:text="@string/profile_view_title"
-            android:textColor="@color/white_text"
-            android:textSize="25sp" />
-
-        <!-- Height is 0 because of weightSum -->
         <ScrollView
             android:id="@+id/scroller"
             android:layout_width="match_parent"
@@ -41,9 +29,12 @@
                     android:id="@+id/profile_hi"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/orangered"
                     android:gravity="top|center"
+                    android:padding="10dp"
+                    android:layout_marginBottom="10dp"
                     android:text="@string/profile_hi"
-                    android:textColor="@color/blue_grey_900"
+                    android:textColor="@color/white_text"
                     android:textSize="25sp" />
 
                 <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"

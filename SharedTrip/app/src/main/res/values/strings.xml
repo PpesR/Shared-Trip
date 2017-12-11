@@ -58,7 +58,7 @@
     <string name="browse_events_happening_near_you">NEAR YOU</string>
     <string name="todo">TODO</string>
     <string name="search_title">search_title</string>
-    <string name="numeric_zero">0</string>
+    <string name="numeric_zero">10</string>
 
     <!-- Stats view string -->
     <string name="coming_soon">COMING SOON</string>
@@ -73,4 +73,16 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="search_results">Search Results</string>
     <string name="description_placeholder">Every year middle class American families put off traveling because they’re too busy or too tired or they just don’t have enough money. And, in some ways, they’re right. Traveling can be… expensive. But by taking the time to learn about discounts readily available to everyone through the internet, newspapers, and even the yellow pages, more families can venture off on vacations that will recharge their batteries, stimulate their minds, and create memories to last a lifetime. Airfare can be one of the most costly and unavoidable aspects of travel. Air travelers are constantly in search of a good deal. Numerous methods exist to get discounts on your next ticket. First, leave or return in the middle of the week</string>
+    <string name="join_request_sent">join request sent</string>
+    <string name="just_viewing">just viewing</string>
+    <string name="button_cancel_request">CANCEL REQUEST</string>
+    <string name="status_participating">participating</string>
+    <string name="button_leave_event">LEAVE EVENT</string>
+    <string name="status_banned">BANNED</string>
+    <string name="button_give_admin_rights">GIVE UP ADMIN RIGHTS</string>
+    <string name="button_confirm">CONFIRM</string>
+    <string name="status_admin">admin</string>
+    <string name="status_just_viewing">just viewing</string>
+    <string name="button_request_to_join">REQUEST TO JOIN</string>
+    <string name="placeholder_no_participants">Looks like there\'s nobody here...</string>
 </resources>
