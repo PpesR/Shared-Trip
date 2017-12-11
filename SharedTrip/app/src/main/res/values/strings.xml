@@ -85,4 +85,6 @@
     <string name="status_just_viewing">just viewing</string>
     <string name="button_request_to_join">REQUEST TO JOIN</string>
     <string name="placeholder_no_participants">Looks like there\'s nobody here...</string>
+    <string name="title_activity_request_management">RequestManagementActivity</string>
+    <string name="name_placeholder">Name Placeholder</string>
 </resources>

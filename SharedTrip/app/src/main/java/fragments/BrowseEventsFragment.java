@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,12 +25,14 @@ import remm.sharedtrip.R;
 import remm.sharedtrip.SearchActivity;
 import utils.BrowseUtil;
 
+import static android.support.v7.widget.LinearLayoutManager.HORIZONTAL;
+
 
 public class BrowseEventsFragment extends Fragment {
 
     private List<UserEventModel> events;
     private RecyclerView recyclerView;
-    private GridLayoutManager gridLayout;
+    private LinearLayoutManager layoutManager;
     private EventAdapter adapter;
     private FbGoogleUserModel userModel;
     private SearchView searchView;
@@ -49,8 +52,9 @@ public class BrowseEventsFragment extends Fragment {
 
         recyclerView = myView.findViewById(R.id.eventResults);
         events = getEventsfromDB();
-        gridLayout = new GridLayoutManager(myActivity, events.size());
-        recyclerView.setLayoutManager(gridLayout);
+        layoutManager = new LinearLayoutManager(myActivity);
+        layoutManager.setOrientation(HORIZONTAL);
+        recyclerView.setLayoutManager(layoutManager);
 
         adapter = new EventAdapter(myActivity, events);
         adapter.browseActivity = myActivity;

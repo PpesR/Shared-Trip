@@ -102,6 +102,7 @@ public class NewAdminChoiceAdapter extends RecyclerView.Adapter<NewAdminChoiceAd
         @Override
         public void onClick(View v) {
             if (isChoosing) {
+                restoreLayout();
                 detailsManager.showConfirm();
                 selected = this;
                 profilePicture.setBorderWidth(10);

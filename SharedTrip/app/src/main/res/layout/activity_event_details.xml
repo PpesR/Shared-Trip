@@ -86,8 +86,8 @@
                     android:layout_alignEnd="@+id/event_detail_cost"
                     android:layout_alignRight="@+id/event_detail_cost"
                     android:lineSpacingExtra="8sp"
-                    android:text="Free spots"
-                    android:textColor="#ff5722"
+                    android:text="Spots taken"
+                    android:textColor="@color/button_grey"
                     android:textSize="12sp"
                     android:layout_marginTop="5dp"/>
 

@@ -5,86 +5,66 @@
     android:layout_height="match_parent"
     tools:context="fragments.BrowseEventsFragment">
 
-    <include
-        android:id="@+id/user_header_part"
-        layout="@layout/temp_user_header"
-        android:layout_width="match_parent"
-        android:layout_height="53dp" />
-
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:card_view="http://schemas.android.com/tools"
             android:id="@+id/result_content"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
             <SearchView
                 android:id="@+id/searchView"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_marginTop="61dp" />
+                android:layout_height="50dp" />
 
             <TextView
                 android:id="@+id/nearYouText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/horizontalScrollViewNearYou"
-                android:layout_alignRight="@+id/horizontalScrollViewNearYou"
                 android:layout_below="@+id/searchView"
-                android:layout_marginEnd="182dp"
-                android:layout_marginRight="182dp"
-                android:layout_marginTop="6dp"
-                android:ems="10"
-                android:paddingLeft="6dp"
-                android:paddingRight="6dp"
-                android:paddingStart="6dp"
-                android:text="@string/browse_events_happening_near_you" />
+                android:text="@string/browse_events_happening_near_you"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:textSize="14sp"
+                android:drawableLeft="@drawable/ic_place_black_24dp"
+                android:drawableTint="@color/button_grey"/>
 
-            <HorizontalScrollView
-                android:id="@+id/horizontalScrollViewNearYou"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/nearYouText"
-                android:layout_marginEnd="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="6dp">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/eventResults"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        android:layout_marginTop="6dp"
-                        card_view:cardCornerRadius="4dp"
-                        card_view:cardElevation="4dp"
-                        card_view:cardUseCompatPadding="true" />
-
-                </LinearLayout>
-            </HorizontalScrollView>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/eventResults"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:padding="2dp"
+                card_view:cardCornerRadius="4dp"
+                card_view:cardUseCompatPadding="true"
+                android:layout_below="@id/nearYouText"
+                android:gravity="center_vertical"/>
 
             <TextView
                 android:id="@+id/notNearYou"
+                android:gravity="center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/horizontalScrollViewNearYou"
-                android:layout_marginEnd="182dp"
-                android:layout_marginRight="182dp"
-                android:layout_marginTop="6dp"
-                android:ems="10"
-                android:paddingLeft="6dp"
-                android:paddingRight="6dp"
-                android:paddingStart="6dp"
-                android:text="@string/todo" />
+                android:layout_below="@+id/eventResults"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:padding="2dp"
+                android:textSize="14sp"
+                android:drawableLeft="@drawable/ic_whatshot_black_24dp"
+                android:drawableTint="@color/button_grey"
+                android:text="NEW" />
 
             <HorizontalScrollView
                 android:id="@+id/horizontalScrollViewOther"
@@ -104,7 +84,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="@dimen/add_event_fbutton_marginbottom"
+        android:layout_marginBottom="@dimen/add_event_fbutton_margin"
         android:layout_marginEnd="@dimen/add_event_fbutton_margin"
         android:layout_marginRight="@dimen/add_event_fbutton_margin"
         android:src="@drawable/ic_add_white_24px"

@@ -1,8 +1,6 @@
 package utils;
 
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,18 +10,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import adapters.JoinRequestsAdapter;
 import adapters.MyEventsAdapter.MyEventsManager;
-import adapters.NewAdminChoiceAdapter;
-import adapters.NewAdminChoiceAdapter.MiniUserModel;
 import models.MyEventModel;
-import models.ParticipatorModel;
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import remm.sharedtrip.MainActivity;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 
 import static utils.ValueUtil.isNull;
@@ -92,7 +85,7 @@ public class MyEventsUtil {
         }
     }
 
-    public static class PendingRequestsTask<Void> extends AsyncTask<Void, Void, List<FbGoogleUserModel>> {
+    public static class PendingRequestsTask<Void> extends AsyncTask<Void, Void, List<JoinRequestsAdapter.RequestUserModel>> {
 
         private int eventId;
         private String apiPrefix;
@@ -105,13 +98,13 @@ public class MyEventsUtil {
         }
 
         @Override
-        protected List<FbGoogleUserModel> doInBackground(Void... voids) {
+        protected List<JoinRequestsAdapter.RequestUserModel> doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
             final Request request = new Request.Builder()
                     .url(apiPrefix + "/admin/" + manager.getUserModel().id + "/pending?event=" + eventId)
                     .build();
 
-            List<FbGoogleUserModel> models = new ArrayList<>();
+            List<JoinRequestsAdapter.RequestUserModel> models = new ArrayList<>();
             try {
                 Response response = client.newCall(request).execute();
                 String bodyString = response.body().string();
@@ -120,7 +113,7 @@ public class MyEventsUtil {
 
                     for (int i = 0; i < array.length(); i++) {
                         JSONObject obj = array.getJSONObject(i);
-                        FbGoogleUserModel model = new FbGoogleUserModel();
+                        JoinRequestsAdapter.RequestUserModel model = new JoinRequestsAdapter.RequestUserModel();
                         model.id = obj.getInt("id");
                         model.name = obj.getString("name");
                         model.firstName = valueOrNull(obj.getString("first_name"));
@@ -147,10 +140,14 @@ public class MyEventsUtil {
 
         private int eventId;
         private int userId;
+        private int adminId;
+        String apiPerfix;
 
-        public ApprovalTask(int eventId, int userId) {
+        public ApprovalTask(int eventId, int userId, int adminId, String apiPrefix) {
             this.eventId = eventId;
             this.userId = userId;
+            this.adminId = adminId;
+            this.apiPerfix = apiPrefix;
         }
 
         @Override
@@ -159,19 +156,17 @@ public class MyEventsUtil {
 
             FormBody.Builder formBuilder = null;
             formBuilder = new FormBody.Builder()
-                    .add("hdl", "admin")
-                    .add("act","apr")
                     .add("event", eventId+"")
-                    .add("participator", userId+"");
+                    .add("user", userId+"");
 
             final Request request = new Request.Builder()
-                    .url("http://146.185.135.219/requestrouter.php")
-                    .post(formBuilder.build())
+                    .url(apiPerfix+"/admin/"+adminId+"/approve")
+                    .put(formBuilder.build())
                     .build();
             try {
                 Response response = client.newCall(request).execute();
-                JSONArray array = new JSONArray(response.body().string());
-                if(array.getString(0).equals("SUCCESS"))
+                String bodyString = response.body().string();
+                if (bodyString.length()==0 || !new JSONObject(bodyString).has("error"))
                     return true;
             } catch (IOException e) {
                 e.printStackTrace();

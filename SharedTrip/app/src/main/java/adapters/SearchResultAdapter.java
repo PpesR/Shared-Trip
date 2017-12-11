@@ -6,7 +6,6 @@ package adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -24,20 +23,27 @@ import java.util.List;
 
 import models.UserEventModel;
 import remm.sharedtrip.EventDetailsActivity;
-import remm.sharedtrip.ExplorationActivity;
+import remm.sharedtrip.MainActivity;
+import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import remm.sharedtrip.R;
 import remm.sharedtrip.SearchActivity;
 
 
 public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapter.ViewHolder> {
 
+    public interface SearchListener {
+        FbGoogleUserModel getUserModel();
+        String getApiPrefix();
+    }
+
     private Context context;
     private List<UserEventModel> events;
-    public AppCompatActivity browseActivity;
+    public SearchListener activity;
 
-    public SearchResultAdapter(Context context, List<UserEventModel> events) {
+    public SearchResultAdapter(Context context, List<UserEventModel> events, SearchListener activity) {
         this.context = context;
         this.events = events;
+        this.activity = activity;
     }
 
     @Override
@@ -100,14 +106,14 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
             int position = getAdapterPosition();
             Gson gson = new Gson();
 
-            Intent detailViewIntent = new Intent(browseActivity, EventDetailsActivity.class);
+            Intent detailViewIntent = new Intent(context, EventDetailsActivity.class);
 
             String gsonString = gson.toJson(eventModel.copyWithoutBitmap());
             detailViewIntent.putExtra("event", gsonString);
-            detailViewIntent.putExtra("prefix", ((SearchActivity) browseActivity).getApiPrefix());
-            detailViewIntent.putExtra("user", gson.toJson(((SearchActivity) browseActivity).getUserModel()));
+            detailViewIntent.putExtra("prefix", activity.getApiPrefix());
+            detailViewIntent.putExtra("user", gson.toJson(activity.getUserModel()));
 
-            browseActivity.startActivity(detailViewIntent);
+            context.startActivity(detailViewIntent);
         }
 
 

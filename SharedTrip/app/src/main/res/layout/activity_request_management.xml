@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="remm.sharedtrip.RequestManagementActivity">
+    <TextView
+        android:id="@+id/multi_requests_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="JOIN REQUESTS"
+        android:alpha="0.3"
+        android:background="@color/light_gray"
+        android:textColor="@color/white_text"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:textAlignment="center"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/request_management_results"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:padding="5dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/multi_requests_header">
+
+    </android.support.v7.widget.RecyclerView>
+
+</android.support.constraint.ConstraintLayout>

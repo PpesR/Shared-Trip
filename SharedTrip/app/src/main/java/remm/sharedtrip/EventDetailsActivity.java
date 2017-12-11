@@ -25,8 +25,12 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
 import adapters.NewAdminChoiceAdapter;
@@ -58,6 +62,9 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
     private TextView status;
     private TextView pleaseSelect;
 
+    private SimpleDateFormat dateFormatUTC;
+    private SimpleDateFormat dateFormat;
+
     private Button joinButton;
     private FloatingActionButton fab;
 
@@ -87,11 +94,11 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         apiPrefix = getIntent().getStringExtra("prefix");
         broadcaster = LocalBroadcastManager.getInstance(this);
         resources = getResources();
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+        dateFormatUTC = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+        dateFormatUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         participators = getParticipators();
-
-
-
 
         setContentView(R.layout.activity_event_details);
 
@@ -100,7 +107,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         recyclerView.setLayoutManager(manager);
         pleaseSelect = findViewById(R.id.event_detail_new_admin_label);
         mainScrollView = findViewById(R.id.eventViewScrollView);
-
+        mainScrollView.smoothScrollTo(0,0);
         if (participators.size() > 0) {
             adapter = new NewAdminChoiceAdapter(self, participators, self);
             recyclerView.setAdapter(adapter);
@@ -145,13 +152,22 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         eventCost = findViewById(R.id.event_detail_cost);
         eventFreeSpots = findViewById(R.id.event_detail_spots);
         eventDescription = findViewById(R.id.event_detail_description);
-        eventLocation = findViewById(R.id.event_detail_cost);
+        eventLocation = findViewById(R.id.event_detail_location);
         status = findViewById(R.id.events_details_status);
 
         eventName.setText(model.getName());
         eventDescription.setText(model.getDescription());
         eventCost.setText(model.getCost()+"€ "+eventCost.getText());
-        eventFreeSpots.setText(eventFreeSpots.getText()+": "+model.getSpots());
+
+        int numberOfParticipants = participators.size();
+        eventFreeSpots.append(": "+numberOfParticipants+"/"+model.getSpots());
+        if (numberOfParticipants > model.getSpots()/3) {
+            eventFreeSpots.setTextColor(resources.getColor(R.color.orange));
+            if (numberOfParticipants > 2*model.getSpots()/3) {
+                eventFreeSpots.setTextColor(resources.getColor(R.color.orangered));
+            }
+        }
+
         eventLocation.setText(eventLocation.getText()+": "+model.getLoc());
 
         if (notNull(model.getImageLink())){
@@ -245,13 +261,18 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
                 joinButton.setVisibility(VISIBLE);
                 fab.setVisibility(GONE);
                 status.setText(R.string.status_just_viewing);
-                joinButton.setText(R.string.button_request_to_join);
-                joinButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        joinEvent();
-                    }
-                });
+                if (participators.size() <= model.getSpots()) {
+                    joinButton.setText(R.string.button_request_to_join);
+                    joinButton.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            joinEvent();
+                        }
+                    });
+                }
+                else {
+                    onEventFull();
+                }
                 removeSelfFromParticipators();
             }
         });
@@ -272,16 +293,55 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
                 } else if (model.isUserBanned()) {
                     onBanned();
                 } else {
-                    joinButton.setVisibility(VISIBLE);
-                    joinButton.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            joinEvent();
-                        }
-                    });
+                    if (participators.size() < model.getSpots()) {
+                        joinButton.setVisibility(VISIBLE);
+                        joinButton.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                joinEvent();
+                            }
+                        });
+                    }
+                    else onEventFull();
+                }
+
+                try {
+                    Date
+                        endDate = dateFormatUTC.parse(model.getEndDate()),
+                        startDate = dateFormatUTC.parse(model.getStartDate()),
+                        now = new Date();
+                    if (endDate.before(now)){
+                        onEventEnded();
+                    }
+                    else if (startDate.after(now)) {
+                        onEventStarted();
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
             }
         });
+    }
+
+    private void onEventFull() {
+        joinButton.setVisibility(GONE);
+        status.setText("the event is full");
+        status.setTextColor(resources.getColor(R.color.orangered));
+        status.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+    }
+
+    private void onEventEnded() {
+        joinButton.setVisibility(GONE);
+        status.setText("the event has ended");
+        status.setTextColor(resources.getColor(R.color.orangered));
+        status.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+    }
+
+    private void onEventStarted() {
+        joinButton.setVisibility(GONE);
+        status.setText("the event has already started");
+        status.setTextColor(resources.getColor(R.color.orange));
+        status.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -345,9 +405,15 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         icon = resources.getDrawable(R.drawable.ic_mail_outline_black_24dp);
         icon.setTint(statusColor);
 
-        status.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
-        status.setText(R.string.join_request_sent);
-        status.setTextColor(statusColor);
+        if (participators.size()<model.getSpots()) {
+            status.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
+            status.setText(R.string.join_request_sent);
+            status.setTextColor(statusColor);
+        }
+        else {
+            status.setText("the event is full");
+            status.setTextColor(resources.getColor(R.color.orangered));
+        }
 
         joinButton.setText(R.string.button_cancel_request);
         joinButton.setVisibility(VISIBLE);
@@ -419,9 +485,15 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         requestTask.execute();
     }
 
+    private void removeFromParticipators(MiniUserModel user) {
+        participators.remove(user);
+        adapter.notifyDataSetChanged();
+    }
+
     @Override
     public void onNewAdminSelectedDone(MiniUserModel newAdmin) {
-        mainScrollView.fullScroll(ScrollView.FOCUS_UP);
+        mainScrollView.smoothScrollTo(0,0);
+        removeFromParticipators(newAdmin);
     }
 
     public void showConfirm() {

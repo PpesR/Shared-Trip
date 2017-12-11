@@ -25,11 +25,10 @@ import com.google.gson.Gson;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import adapters.NewAdminChoiceAdapter.MiniUserModel;
+import adapters.JoinRequestsAdapter.RequestUserModel;
 import de.hdodenhof.circleimageview.CircleImageView;
 import models.MyEventModel;
 import remm.sharedtrip.EventDetailsActivity;
-import remm.sharedtrip.ExplorationActivity;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import remm.sharedtrip.ProfileActivity;
 import remm.sharedtrip.R;
@@ -44,13 +43,9 @@ import static utils.ValueUtil.valueOrNull;
  * Created by Mark on 12.11.2017.
  */
 
-public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.AdminEventViewHolder>  {
+public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEventViewHolder>  {
 
     public interface MyEventsManager {
-        void provideEvents(final List<MyEventModel> events);
-        void eventClicked(int i, TextView badge);
-        void onUserApproved(int participatorPosition, MyEventModel eventModel, TextView badge);
-        void onUserBanned(int participatorPosition, MyEventModel eventModel, TextView badge);
 
         int getUserModelId();
 
@@ -59,7 +54,9 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.AdminE
         String getApiPrefix();
         FbGoogleUserModel getUserModel();
 
-        void startActivity(Intent detailViewIntent);
+        void startDetailsActivity(Intent detailViewIntent);
+        void provideEvents(final List<MyEventModel> events);
+        void startRequestManagementActivity(int id, List<RequestUserModel> pending, MyEventsAdapter.MyEventViewHolder holder);
 
         LayoutInflater getLayoutInflater();
     }
@@ -75,7 +72,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.AdminE
         this.manager = manager;
     }
 
-    public class AdminEventViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class MyEventViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         public TextView name;
         public TextView amount;
@@ -85,7 +82,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.AdminE
         public LinearLayout badge;
 
 
-        public AdminEventViewHolder(View itemView) {
+        public MyEventViewHolder(View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.my_event_name);
             imageView = itemView.findViewById(R.id.my_event_pic);
@@ -97,30 +94,28 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.AdminE
 
         @Override
         public void onClick(View v) {
-            int position = getAdapterPosition();
-            /*manager.eventClicked(position, amount);*/
             Intent detailViewIntent = new Intent(context, EventDetailsActivity.class);
 
             String gsonString = gson.toJson(eventModel.toDetailsWithoutBitmap());
             detailViewIntent.putExtra("event", gsonString);
             detailViewIntent.putExtra("prefix", manager.getApiPrefix());
             detailViewIntent.putExtra("user", gson.toJson(manager.getUserModel()));
-            manager.startActivity(detailViewIntent);
+            manager.startDetailsActivity(detailViewIntent);
         }
     }
 
     @Override
-    public AdminEventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MyEventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater
                         .from(parent.getContext())
                         .inflate(R.layout.single_my_event, parent,false);
-        return new AdminEventViewHolder(itemView);
+        return new MyEventViewHolder(itemView);
     }
 
     @SuppressLint("ResourceAsColor")
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
-    public void onBindViewHolder(final AdminEventViewHolder holder, int position) {
+    public void onBindViewHolder(final MyEventViewHolder holder, int position) {
         final MyEventModel event = myAdminEvents.get(position);
 
         holder.eventModel = event;
@@ -165,7 +160,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.AdminE
             public void onClick(View view) {
                 PendingRequestsTask<Void> task = new PendingRequestsTask<>(event.getId(), manager.getApiPrefix(), manager);
                 try {
-                    List<FbGoogleUserModel> pending = task.execute().get();
+                    List<RequestUserModel> pending = task.execute().get();
                     if (pending.size() == 1) {
                         final FbGoogleUserModel model = pending.get(0);
                         LayoutInflater inflater = manager.getLayoutInflater();
@@ -193,7 +188,11 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.AdminE
                                 .setView(dialogView)
                                 .setPositiveButton("APPROVE", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        ApprovalTask<Void> approvalTask = new ApprovalTask<>(event.getId(), model.id);
+                                        ApprovalTask<Void> approvalTask = new ApprovalTask<>(
+                                                event.getId(),
+                                                model.id,
+                                                manager.getUserModelId(),
+                                                manager.getApiPrefix());
                                         try {
                                             boolean result = approvalTask.execute().get();
                                             if (result) {
@@ -230,6 +229,9 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.AdminE
                                     }
                                 });
                         dialogBuilder.create().show();
+                    }
+                    else {
+                        manager.startRequestManagementActivity(event.getId(), pending, holder);
                     }
 
 

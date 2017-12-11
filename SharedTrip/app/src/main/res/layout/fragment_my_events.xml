@@ -1,48 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_grey">
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background_grey"
+        android:orientation="vertical"
         tools:context="remm.sharedtrip.AdminActivity">
 
         <LinearLayout
+            android:id="@+id/my_events_header"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="60dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/orangered"
+            android:gravity="center_vertical|center_horizontal">
 
-            <LinearLayout
-                android:id="@+id/admin_events_header"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginBottom="10dp"
-                android:background="@color/orangered"
-                android:gravity="center_vertical|center_horizontal">
+            <TextView
+                android:id="@+id/my_events_header_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MY EVENTS"
+                android:textColor="@color/white_text"
+                android:textSize="26sp" />
 
-                <TextView
-                    android:id="@+id/admin_events_header_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="EVENT ADMIN"
-                    android:textColor="@color/white_text"
-                    android:textSize="26sp" />
-
-            </LinearLayout>
+        </LinearLayout>
 
             <android.support.v7.widget.RecyclerView
+                android:padding="5dp"
                 android:id="@+id/my_event_results"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginTop="6dp"
-                android:elevation="3dp"
                 android:orientation="vertical"
-                android:scrollbars="vertical"
-                tools:targetApi="o" />
-        </LinearLayout>
-
-    </android.support.constraint.ConstraintLayout>
+                android:scrollbars="vertical"/>
+    </LinearLayout>
 </FrameLayout>

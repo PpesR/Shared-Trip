@@ -1,7 +1,6 @@
 package utils;
 
 import android.os.AsyncTask;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,12 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import adapters.MyEventsAdapter.MyEventsManager;
 import models.MyEventModel;
-import models.ParticipatorModel;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;

@@ -1,35 +1,37 @@
 package fragments;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import adapters.JoinRequestsAdapter.RequestUserModel;
 import adapters.MyEventsAdapter;
 import adapters.MyEventsAdapter.MyEventsManager;
-import adapters.ParticipatorsAdapter;
 import models.MyEventModel;
-import models.ParticipatorModel;
 import remm.sharedtrip.ExplorationActivity;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import remm.sharedtrip.R;
+import remm.sharedtrip.RequestManagementActivity;
 import utils.MyEventsUtil;
 
+import static android.app.Activity.RESULT_OK;
 import static utils.ValueUtil.notNull;
 
 /**
@@ -42,14 +44,15 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
     private String apiPrefix;
     private View myView;
     private MyEventsFragment self;
-    private MyEventsManager selfManager;
     private RecyclerView recyclerView;
     private List<MyEventModel> myEvents;
     private MyEventsAdapter adapter;
-    private ParticipatorsFragment frag;
-    private MyEventModel lastClicked;
     private DisplayMetrics displayMetrics;
     private int dpHeight;
+    private MyEventsAdapter.MyEventViewHolder lastClicked = null;
+
+    private static final int JOIN_REQUEST_MANAGEMENT = 530;
+    private LinearLayoutManager manager;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -86,7 +89,7 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
     public void provideEvents(final List<MyEventModel> events) {
         myEvents = events;
 
-        final LayoutManager manager = new LinearLayoutManager(myActivity);
+        manager = new LinearLayoutManager(myActivity);
         adapter = new MyEventsAdapter(myActivity, myEvents, this);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
@@ -100,52 +103,6 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
             }
         };
         recyclerView.addOnScrollListener(mScrollListener);
-    }
-
-    public void provideParticipators(List<ParticipatorModel> models, final MyEventModel ownerEventModel, final TextView badge) {
-//        participators = models;
-        myActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                FragmentManager fm = myActivity.getSupportFragmentManager();
-                if (notNull(frag)) {
-                    frag.setManager(self);
-                    frag.eventModel = ownerEventModel;
-                    frag.pendingBadge = badge;
-                    fm.beginTransaction()
-                            .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                            .hide(frag)
-                            .commit();
-                }
-                if (lastClicked != null && lastClicked.equals(ownerEventModel)) {
-                    lastClicked = null;
-                }
-                else {
-                    lastClicked = ownerEventModel;
-                    frag = new ParticipatorsFragment();
-                    frag.setManager(self);
-                    frag.eventModel = ownerEventModel;
-                    frag.pendingBadge = badge;
-                    recyclerView.getLayoutManager().scrollToPosition(0);
-                    /*fm.beginTransaction()
-                            .add(R.id.fragment_container, frag)
-                            .commit();*/
-                }
-            }
-        });
-    }
-
-    public void eventClicked(int i, TextView badge) {
-
-    }
-
-
-    public void onUserApproved(final int participatorPosition, final MyEventModel eventModel, final TextView badge) {
-
-    }
-
-    public void onUserBanned(int participatorPosition, MyEventModel eventModel, TextView badge) {
-
     }
 
     @Override
@@ -162,12 +119,51 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
     @Override
     public FbGoogleUserModel getUserModel() { return userModel; }
 
-    private void removeUserOnSuccess(
-            boolean success,
-            final int participatorPosition,
-            final MyEventModel eventModel,
-            final TextView badge
-    ) {
+    @Override
+    public void startDetailsActivity(Intent detailViewIntent) {
+        startActivity(detailViewIntent);
+    }
 
+    @Override
+    public void startRequestManagementActivity(int eventId, List<RequestUserModel> pending, MyEventsAdapter.MyEventViewHolder holder) {
+        lastClicked = holder;
+        Intent requestManagement = new Intent(myActivity, RequestManagementActivity.class);
+        requestManagement.putExtra("prefix", apiPrefix);
+        requestManagement.putExtra("event", eventId);
+        requestManagement.putExtra("user", myActivity.getIntent().getStringExtra("user"));
+        ArrayList<String> serialized = new ArrayList<>();
+        Gson gson = new Gson();
+        for (RequestUserModel model : pending) {
+            serialized.add(gson.toJson(model));
+        }
+        requestManagement.putExtra("requesters", serialized);
+        startActivityForResult(requestManagement, JOIN_REQUEST_MANAGEMENT);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode==JOIN_REQUEST_MANAGEMENT && resultCode == RESULT_OK) {
+            int count = data.getIntExtra("handled", 0);
+            if (count > 0 && notNull(lastClicked)) {
+                int id = data.getIntExtra("event", -1);
+                for (int i = 0; i < myEvents.size(); i++) {
+                    MyEventModel model = myEvents.get(i);
+                    if (model.getId() == id) {
+                        model.setUsersPending(model.getUsersPending() - count);
+
+                        if (model.getUsersPending() < 0)
+                            model.setUsersPending(0);
+
+                        lastClicked.amount.setText(model.getUsersPending()+"");
+
+                        if (model.getUsersPending() == 0)
+                            lastClicked.badge.setVisibility(View.GONE);
+                        break;
+                    }
+                }
+            }
+
+        }
     }
 }
