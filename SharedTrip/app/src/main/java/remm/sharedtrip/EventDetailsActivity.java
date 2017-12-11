@@ -1,9 +1,11 @@
 package remm.sharedtrip;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,6 +14,11 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.LayoutManager;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -22,8 +29,12 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import adapters.NewAdminChoiceAdapter;
+import adapters.NewAdminChoiceAdapter.PotentialAdminModel;
 import models.UserEventModel;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import utils.EventDetailsUtil.ApprovalStatusTask;
@@ -39,7 +50,7 @@ import static utils.ValueUtil.notNull;
  * Created by Mark on 12.11.2017.
  */
 
-public class EventDetailsActivity extends FragmentActivity {
+public class EventDetailsActivity extends FragmentActivity implements NewAdminChoiceAdapter.DetailsManager {
 
     private ImageView eventPic;
     private TextView eventName;
@@ -62,6 +73,9 @@ public class EventDetailsActivity extends FragmentActivity {
     private Resources resources;
     private Drawable icon;
     private int statusColor;
+    private AlertDialog newAdminDialog;
+    private List<PotentialAdminModel> participators;
+    private View dialogView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,7 +88,24 @@ public class EventDetailsActivity extends FragmentActivity {
         broadcaster = LocalBroadcastManager.getInstance(this);
         resources = getResources();
 
+        participators = getParticipators();
+
         setContentView(R.layout.activity_event_details);
+
+        LayoutInflater inflater = getLayoutInflater();
+        LayoutManager manager = new GridLayoutManager(self, 3);
+        NewAdminChoiceAdapter adapter = new NewAdminChoiceAdapter(this, participators, this);
+
+        dialogView = inflater.inflate(R.layout.dialog_choose_admin, null);
+
+        RecyclerView recyclerView = dialogView.findViewById(R.id.choose_admin_grid);
+        recyclerView.setLayoutManager(manager);
+        recyclerView.setAdapter(adapter);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(self);
+        builder.setTitle("Choose new admin:");
+        builder.setView(dialogView);
+        newAdminDialog = builder.create();
 
         joinButton = findViewById(R.id.eventViewRequestButton);
         joinButton.setVisibility(GONE);
@@ -130,6 +161,16 @@ public class EventDetailsActivity extends FragmentActivity {
             }
             Toast.makeText(this, "Image download failed", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private List<PotentialAdminModel> getParticipators() {
+        // tegelt peaks selle listi requestiga saama
+        List<PotentialAdminModel> list = new ArrayList<>();
+        PotentialAdminModel example = new PotentialAdminModel();
+        example.profilePicture = Uri.parse(userModel.imageUriString);
+        example.fullName = userModel.name;
+        list.add(example);
+        return list;
     }
 
     private void joinEvent() {
@@ -213,10 +254,19 @@ public class EventDetailsActivity extends FragmentActivity {
 
         joinButton.setText("GIVE AWAY ADMIN RIGHTS");
         joinButton.setVisibility(View.VISIBLE);
-        joinButton.setOnClickListener(null);
+        joinButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        newAdminDialog.show();
+                    }
+                });
+            }
+        });
 
         fab.setVisibility(VISIBLE);
-        joinButton.setVisibility(GONE);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -289,5 +339,11 @@ public class EventDetailsActivity extends FragmentActivity {
                         apiPrefix);
         requestTask.execute();
         joinButton.setText("REQUEST TO JOIN");
+    }
+
+    @Override
+    public void onNewAdminSelected(PotentialAdminModel newAdmin) {
+        newAdminDialog.cancel();
+        // send admin change request
     }
 }
