@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.util.List;
 
+import fragments.BrowseEventsFragment;
 import models.UserEventModel;
 import okhttp3.Call;
 import okhttp3.FormBody;
@@ -35,7 +36,7 @@ import static org.junit.Assert.*;
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
 
-//    private static MainActivity.FbUserModel userModel;
+    // private static MainActivity.FbUserModel userModel;
     static String titleString, descriptionString, destinationString, spotsString, costString;
     static String creator_id;
     private List<UserEventModel> events;
@@ -50,12 +51,7 @@ public class ExampleInstrumentedTest {
         assertEquals("remm.sharedtrip", appContext.getPackageName());
     }
 
-    @Rule
-    public ActivityTestRule<BrowseEvents> browseEventsActivityTestRuleRule
-            = new ActivityTestRule<>(
-            BrowseEvents.class,
-            true,     // initialTouchMode
-            false);   // launchActivity. False to customize the intent
+
     @Rule
     public ActivityTestRule<CreateEventActivity> createEventsActivityRule
             = new ActivityTestRule<>(
@@ -96,7 +92,7 @@ public class ExampleInstrumentedTest {
         }
 
         final Request getRequest = new Request.Builder()
-                .url("http://146.185.135.219/requestrouter.php?hdl=event&act=u&event="+createdId)
+                .url("http://146.185.135.219/requestrouter.php?hdl=event&act=u&event=" + createdId)
                 .build();
         call = client.newCall(getRequest);
         response = call.execute();
@@ -127,7 +123,7 @@ public class ExampleInstrumentedTest {
         FormBody.Builder formBuilder = null;
         formBuilder = new FormBody.Builder()
                 .add("hdl", "event")
-                .add("act","join")
+                .add("act", "join")
                 .add("event", "120")
                 .add("participator", "0");
 
@@ -149,7 +145,7 @@ public class ExampleInstrumentedTest {
         }
 
         final Request getRequest = new Request.Builder()
-                .url("http://146.185.135.219/requestrouter.php?hdl=admin&act=pnd&event="+120)
+                .url("http://146.185.135.219/requestrouter.php?hdl=admin&act=pnd&event=" + 120)
                 .build();
         call = client.newCall(getRequest);
 
