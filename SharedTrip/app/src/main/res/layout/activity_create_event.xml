@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="remm.sharedtrip.CreateEventActivity"
-    android:background="#fafafa">
+    android:background="#fafafa"
+    tools:context="remm.sharedtrip.CreateEventActivity">
+
     <TextView
         android:id="@+id/share_trip_title"
         android:layout_width="match_parent"
@@ -18,18 +18,18 @@
         android:textSize="25sp" />
 
     <ScrollView
-        android:paddingTop="40dp"
-        android:gravity="top|center"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:gravity="top|center"
+        android:paddingTop="40dp">
 
         <RelativeLayout
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingBottom="20dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/share_trip_title">
@@ -50,15 +50,16 @@
                     android:maxHeight="400dp"
                     android:textAlignment="center" />
             </LinearLayout>
+
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/picture_preview_wrapper"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:textColor="@color/grey_question"
+                android:layout_below="@id/picture_preview_wrapper"
                 android:text="@string/create_event_where_is_happening_question"
+                android:textColor="@color/grey_question"
                 android:textSize="16sp" />
 
             <TextView
@@ -69,8 +70,8 @@
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/destination"
                 android:layout_marginTop="7dp"
-                android:textColor="@color/grey_question"
                 android:text="@string/event_create_when_is_happening_question"
+                android:textColor="@color/grey_question"
                 android:textSize="16sp" />
 
             <TextView
@@ -80,8 +81,8 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/title"
-                android:textColor="@color/grey_question"
                 android:text="@string/create_event_how"
+                android:textColor="@color/grey_question"
                 android:textSize="16sp" />
 
             <TextView
@@ -91,8 +92,8 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/start_date"
-                android:textColor="@color/grey_question"
                 android:text="@string/create_event_what_is_happening"
+                android:textColor="@color/grey_question"
                 android:textSize="16sp" />
 
             <TextView
@@ -103,8 +104,8 @@
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/description"
                 android:layout_marginTop="7dp"
-                android:textColor="@color/grey_question"
                 android:text="@string/event_create_total_cost"
+                android:textColor="@color/grey_question"
                 android:textSize="16sp" />
 
             <TextView
@@ -114,8 +115,8 @@
                 android:layout_below="@+id/description"
                 android:layout_toEndOf="@+id/cost"
                 android:layout_toRightOf="@+id/cost"
-                android:textColor="@color/grey_question"
                 android:text="@string/event_create_spots"
+                android:textColor="@color/grey_question"
                 android:textSize="16sp" />
 
             <EditText
@@ -140,14 +141,14 @@
                 android:onClick="showStartDatePickerDialog" />
 
             <TextView
+                android:id="@+id/event_dates_dash"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:paddingTop="12dp"
-                android:id="@+id/event_dates_dash"
-                android:text=" -- "
                 android:layout_below="@+id/textView31"
                 android:layout_toEndOf="@+id/start_date"
-                android:layout_toRightOf="@+id/start_date"/>
+                android:layout_toRightOf="@+id/start_date"
+                android:paddingTop="12dp"
+                android:text=" -- " />
 
             <Button
                 android:id="@+id/end_date"
@@ -204,7 +205,6 @@
                 android:textSize="16sp" />
 
 
-
             <LinearLayout
                 android:id="@+id/privacy_section"
                 android:layout_width="350dp"
@@ -226,7 +226,7 @@
                     android:layout_weight="0.52"
                     android:enabled="true"
                     android:text="@string/create_event_private_event"
-                    android:textSize="16sp"/>
+                    android:textSize="16sp" />
                 <!--android:textColor="@color/grey_question"-->
 
 
@@ -244,10 +244,11 @@
             </LinearLayout>
 
             <RelativeLayout
-                android:layout_alignParentBottom="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
                 android:layout_below="@+id/privacy_section">
+
                 <LinearLayout
                     android:id="@+id/picture_button_wrapper"
                     android:layout_width="match_parent"
@@ -260,22 +261,23 @@
                         android:id="@+id/add_picture_button"
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
                         android:layout_marginBottom="12dp"
                         android:layout_marginTop="12dp"
                         android:background="@color/orangered"
                         android:text="@string/create_event_adding_picture"
                         android:textColor="@color/white_text"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:visibility="invisible" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/action_buttons"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:layout_below="@id/picture_button_wrapper"
-                    android:gravity="center_horizontal">
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+
                     <Button
                         android:id="@+id/button3"
                         android:layout_width="100dp"
@@ -287,6 +289,7 @@
                         android:text="@string/button_cancel"
                         android:textColor="@color/white_text"
                         android:textSize="16sp" />
+
                     <Button
                         android:id="@+id/button4"
                         android:layout_width="100dp"
