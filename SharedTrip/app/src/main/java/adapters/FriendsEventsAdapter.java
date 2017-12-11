@@ -14,8 +14,14 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+import remm.sharedtrip.R;
 import utils.FriendsUtil.FriendEvent;
 import utils.FriendsUtil.FriendEventListener;
+import utils.ValueUtil;
+
+import static utils.ValueUtil.isNull;
+import static utils.ValueUtil.valueOrNull;
 
 /**
  * Created by Mark on 8.12.2017.
@@ -26,7 +32,7 @@ public class FriendsEventsAdapter extends Adapter<FriendsEventsAdapter.FriendEve
     private Context context; // needed for displaying images
 
     private FriendEventListener listenerActivity;
-    private List<FriendEvent> friendEvents;
+    public List<FriendEvent> friendEvents;
 
     public FriendsEventsAdapter(Context context, FriendEventListener listenerActivity, List<FriendEvent> friendEvents) {
         this.context = context;
@@ -38,9 +44,11 @@ public class FriendsEventsAdapter extends Adapter<FriendsEventsAdapter.FriendEve
     public void onBindViewHolder(FriendEventViewHolder holder, int position) {
         FriendEvent model = friendEvents.get(position);
         holder.ownModel = model;
-
-        // TODO: set other layout elements' values just like this:
         holder.eventName.setText(model.eventName);
+        holder.location.setText(model.location);
+        holder.friendName.setText(
+                isNull(valueOrNull(model.friendFirstName))
+                        ? model.friendFullName : model.friendFirstName);
 
         // The two ImageViews are different.
         // Event picture is a bitmap:
@@ -62,9 +70,7 @@ public class FriendsEventsAdapter extends Adapter<FriendsEventsAdapter.FriendEve
     public FriendEventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater
                 .from(parent.getContext())
-
-                // TODO: replace 0 with an actual layout name
-                .inflate(0 /* R.layout.single_friend_event_layout*/, parent,false);
+                .inflate(R.layout.single_friends_event, parent,false);
         return new FriendEventViewHolder(itemView);
     }
 
@@ -72,19 +78,23 @@ public class FriendsEventsAdapter extends Adapter<FriendsEventsAdapter.FriendEve
 
         FriendEvent ownModel;
 
-        // TODO: list the rest of relevant layout elements
         ImageView eventPicHolder;
         TextView eventName;
+        TextView location;
 
-        ImageView friendProfPicHolder;
+        TextView friendName;
+        CircleImageView friendProfPicHolder;
 
         FriendEventViewHolder(View itemView) {
             super(itemView);
 
-            // TODO: replace 0 with an actual layout element id
-            eventName = itemView.findViewById(0 /* R.id.friend_event_name_or_sth*/);
+            eventPicHolder = itemView.findViewById(R.id.friend_event_picture);
+            eventName = itemView.findViewById(R.id.friend_event_trip_name);
+            location = itemView.findViewById(R.id.friend_event_location);
+            friendName = itemView.findViewById(R.id.friend_event_user_name);
+            friendProfPicHolder = itemView.findViewById(R.id.friend_event_profile_picture);
 
-            // TODO: initialize other layout elements like friend's profile pic holder etc
+            itemView.setOnClickListener(this);
         }
 
         @Override

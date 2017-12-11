@@ -23,18 +23,18 @@
             android:layout_height="wrap_content">
 
             <SearchView
-                android:id="@+id/searchView"
+                android:id="@+id/browse_search_view"
                 android:layout_width="match_parent"
                 android:layout_height="18dp"
                 android:layout_marginTop="61dp" />
 
             <TextView
-                android:id="@+id/nearYouText"
+                android:id="@+id/browse_near_you_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignEnd="@+id/horizontalScrollViewNearYou"
                 android:layout_alignRight="@+id/horizontalScrollViewNearYou"
-                android:layout_below="@+id/searchView"
+                android:layout_below="@+id/browse_search_view"
                 android:layout_marginEnd="182dp"
                 android:layout_marginRight="182dp"
                 android:layout_marginTop="6dp"
@@ -48,7 +48,7 @@
                 android:id="@+id/horizontalScrollViewNearYou"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/nearYouText"
+                android:layout_below="@+id/browse_near_you_label"
                 android:layout_marginEnd="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="6dp">
@@ -81,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignEnd="@+id/horizontalScrollViewNearYou"
                 android:layout_alignRight="@+id/horizontalScrollViewNearYou"
-                android:layout_below="@+id/searchView"
+                android:layout_below="@+id/browse_search_view"
                 android:text="x" />
         </RelativeLayout>
     </ScrollView>

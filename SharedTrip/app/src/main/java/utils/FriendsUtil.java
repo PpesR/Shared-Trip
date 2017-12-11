@@ -19,8 +19,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static utils.DebugUtil.doNothing;
 import static utils.EventDetailsUtil.bitmapFromString;
+import static utils.ValueUtil.valueOrNull;
 
 /**
  * Deals with getting user's friends' events from the server.
@@ -60,6 +60,7 @@ public class FriendsUtil {
 
     // The fragment that uses friends' events must implement this interface
     public interface FriendsEventsReceiver {
+        void onErrorOccurred();
         void provideFriendsEvents(List<FriendEvent> friendEvents);
     }
 
@@ -69,7 +70,7 @@ public class FriendsUtil {
         public int eventId;
         public String eventName;
         public String location;
-        public Bitmap eventPicture; // is tricky
+        public Bitmap eventPicture;
 
         public int friendId;
         public String friendFacebookId;
@@ -90,7 +91,7 @@ public class FriendsUtil {
 
         @Override
         public void onFailure(Call call, IOException e) {
-            // should show an error or sth
+            receiverFragment.onErrorOccurred();// should show an error or sth
         }
 
         @Override
@@ -99,60 +100,93 @@ public class FriendsUtil {
                 String responseBodyString = response.body().string();
                 JSONArray allFriendsEvents = new JSONArray(responseBodyString);
 
-                // TODO: Need to populate this list with FriendEvents. Create them from allFriendsEvents' data below
                 List<FriendEvent> output = new ArrayList<>();
 
                 if (allFriendsEvents.length() > 0) { // this is important, keep it around everything you do.
 
-                    // TODO: instead of index 0, use for-loop to get all FriendsEvents
-                    JSONObject firstRawEventData = allFriendsEvents.getJSONObject(0);
+                    for(int i = 0; i < allFriendsEvents.length(); i++) {
+                        JSONObject rawEventData = allFriendsEvents.getJSONObject(i);
+                        FriendEvent model = new FriendEvent();
 
-                    // TODO: see some examples on how to get the data
-                    int exampleId = firstRawEventData.getInt("user_id");
-                    String exampleName = firstRawEventData.getString("event_name");
+                        model.friendId = rawEventData.getInt("user_id");
+                        model.friendFullName = rawEventData.getString("full_name");
+                        model.friendFirstName = valueOrNull(rawEventData.getString("first_name"));
+                        model.friendFacebookId = valueOrNull(rawEventData.getString("fb_id"));
 
-                   /*
-                    *  allFriendsEvents is an array of JSONObjects like this:
-                    *
-                    *  {
-                    *      "fb_id": string,
-                           "user_id": string (must be cast to int for actual usage),
-                           "full_name": string,
-                           "first_name": string or null,
-                           "user_picture": string (always a URI),
-                           "event_id": string (must be cast to int for actual usage),
-                           "event_name": string,
-                           "location": string,
-                           "event_picture": string - a URI if starts with "http" | otherwise base64 encoded file and need to decode
-                    *   }
-                    */
+                        // This one is always a URI, so we use built-in methods
+                        model.friendProfilePicture = Uri.parse(rawEventData.getString("user_picture"));
 
-                   // Using my own helper method to decode both URIs and base64's when applicable, so you don't need to worry about it
-                    String pictureString = firstRawEventData.getString("event_picture");
-                    Bitmap exampleEventPicture = bitmapFromString(pictureString);
+                        model.eventId = rawEventData.getInt("event_id");
+                        model.eventName = rawEventData.getString("event_name");
+                        model.location = rawEventData.getString("location");
 
-                    // This one is always a URI, so we use built-in methods
-                    Uri exampleProfilePicture = Uri.parse(firstRawEventData.getString("user_picture"));
-
-                   // TODO: make a model for every for-loop iteration, set all its values (ids, names...), and then add it to list.
-                    FriendEvent exampleEventModel = new FriendEvent();
-                    output.add(exampleEventModel);
-
-                    doNothing(); // use as a breakpoint to see what the examples or actual response values are
+                        // Using my own helper method to decode both URIs and base64's when applicable,
+                        // so you don't need to worry about it
+                        String pictureString = rawEventData.getString("event_picture");
+                        model.eventPicture = bitmapFromString(pictureString);
+                       /*
+                        *  allFriendsEvents is an array of JSONObjects like this:
+                        *
+                        *  {
+                        *      "fb_id": string,
+                               "user_id": string (must be cast to int for actual usage),
+                               "full_name": string,
+                               "first_name": string or null,
+                               "user_picture": string (always a URI),
+                               "event_id": string (must be cast to int for actual usage),
+                               "event_name": string,
+                               "location": string,
+                               "event_picture": string - a URI if starts with "http" | otherwise base64 encoded file and need to decode
+                        *   }
+                        */
+                        output.add(model);
+                    }
                 }
 
-                // TODO: After everything is done, pass the output (might be empty and it's OK!) back to fragment:
+                // After everything is done, pass the output (might be empty and it's OK!) back to fragment:
                 receiverFragment.provideFriendsEvents(output);
 
             } catch (JSONException e) {
+                receiverFragment.onErrorOccurred();
                 e.printStackTrace(); // should show an error or sth
             } catch (IOException e) {
+                receiverFragment.onErrorOccurred();
                 e.printStackTrace(); //should show an error or sth
             }
         }
     }
 
+    public static class ExtraDetailsTask<Void> extends AsyncTask<Void, Void, JSONObject> {
+        private String apiPrefix;
+        private int userId;
+        private int eventId;
+
+        public ExtraDetailsTask(String apiPrefix, int userId, int eventId) {
+            this.apiPrefix = apiPrefix;
+            this.userId = userId;
+            this.eventId = eventId;
+        }
+
+        @Override
+        protected JSONObject doInBackground(Void... voids) {
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder().url(apiPrefix+"/user/"+userId+"/event/"+eventId+"/extra-details").build();
+            try {
+                Response response = client.newCall(request).execute();
+                String bodyString = response.body().string();
+                if (bodyString.length() > 0)
+                    return new JSONObject(bodyString);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+
     public interface FriendEventListener {
         void onEventClicked(FriendEvent clickedEvent);
+        void onErrorOccurred();
     }
 }

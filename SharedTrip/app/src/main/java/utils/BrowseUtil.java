@@ -26,11 +26,14 @@ public class BrowseUtil {
         private int userId;
         private String apiPrefix;
         private String searchText;
+        private boolean areNew;
 
-        public EventRetrievalTask(int userId, String apiPrefix) {
+        public EventRetrievalTask(int userId, String apiPrefix, boolean areNew) {
             this.userId = userId;
             this.apiPrefix = apiPrefix;
+            this.areNew = areNew;
         }
+
         public EventRetrievalTask(int userId, String searchText, String apiPrefix) {
             this.userId = userId;
             this.searchText = searchText;
@@ -42,11 +45,16 @@ public class BrowseUtil {
         protected final List<UserEventModel> doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
             Request request;
-            if(searchText != null){
-                 request = new Request.Builder()
-                        .url(apiPrefix+ "/user/" + userId + "/search?name=" + searchText)
+            if(searchText != null) {
+                request = new Request.Builder()
+                        .url(apiPrefix + "/user/" + userId + "/search?name=" + searchText)
                         .build();
-            }else {
+            } else if (areNew) {
+                request = new Request.Builder()
+                        .url(apiPrefix + "/user/" + userId + "/browse-new")
+                        .build();
+
+            } else {
                 request = new Request.Builder()
                         .url(apiPrefix + "/user/" + userId + "/browse")
                         .build();

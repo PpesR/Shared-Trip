@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -24,6 +23,7 @@ import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import remm.sharedtrip.R;
 import remm.sharedtrip.SearchActivity;
 import utils.BrowseUtil;
+import utils.BrowseUtil.EventRetrievalTask;
 
 import static android.support.v7.widget.LinearLayoutManager.HORIZONTAL;
 
@@ -38,6 +38,12 @@ public class BrowseEventsFragment extends Fragment {
     private SearchView searchView;
     private String apiPrefix;
     private ExplorationActivity myActivity;
+
+    private List<UserEventModel> eventsNew;
+    private RecyclerView recyclerViewNew;
+    private LinearLayoutManager layoutManagerNew;
+    private EventAdapter adapterNew;
+
     private View myView;
 
     @Override
@@ -50,7 +56,8 @@ public class BrowseEventsFragment extends Fragment {
 
         myView =  inflater.inflate(R.layout.fragment_browse_events, container, false);
 
-        recyclerView = myView.findViewById(R.id.eventResults);
+        /* Events near you */
+        recyclerView = myView.findViewById(R.id.browse_near_you_events);
         events = getEventsfromDB();
         layoutManager = new LinearLayoutManager(myActivity);
         layoutManager.setOrientation(HORIZONTAL);
@@ -59,7 +66,19 @@ public class BrowseEventsFragment extends Fragment {
         adapter = new EventAdapter(myActivity, events);
         adapter.browseActivity = myActivity;
         recyclerView.setAdapter(adapter);
-        searchView = myView.findViewById(R.id.searchView);
+
+        /* New events */
+        recyclerViewNew = myView.findViewById(R.id.browse_new_events);
+        eventsNew = getNewEventsfromDB();
+        layoutManagerNew = new LinearLayoutManager(myActivity);
+        layoutManagerNew.setOrientation(HORIZONTAL);
+        recyclerViewNew.setLayoutManager(layoutManagerNew);
+
+        adapterNew = new EventAdapter(myActivity, events);
+        adapterNew.browseActivity = myActivity;
+        recyclerViewNew.setAdapter(adapterNew);
+
+        searchView = myView.findViewById(R.id.browse_search_view);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()  {
             @Override
             public boolean onQueryTextSubmit(String filter) {
@@ -94,9 +113,22 @@ public class BrowseEventsFragment extends Fragment {
         return myView;
     }
 
+    private List<UserEventModel> getNewEventsfromDB() {
+        EventRetrievalTask<Void> asyncTask = new EventRetrievalTask<>(userModel.id, apiPrefix, true);
+
+        try {
+            return asyncTask.execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     private List<UserEventModel> getEventsfromDB() {
-        BrowseUtil.EventRetrievalTask<Void> asyncTask = new BrowseUtil.EventRetrievalTask<>(userModel.id, apiPrefix);
+        EventRetrievalTask<Void> asyncTask = new EventRetrievalTask<>(userModel.id, apiPrefix, false);
 
         try {
             return asyncTask.execute().get();

@@ -26,5 +26,6 @@
     <color name="see_through_white">#99ffffff</color>
     <color name="golden">#d9bd7e</color>
     <color name="light_gray">#bdbdbd</color>
+    <color name="lighter_gray">#e2e2e2</color>
 
 </resources>
