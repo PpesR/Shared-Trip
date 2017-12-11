@@ -28,6 +28,58 @@ import remm.sharedtrip.EventDetailsActivity;
 
 public class EventDetailsUtil {
 
+    public static class LeaveRequestTask<Void> extends AsyncTask<Void, Void, Void> {
+        private int eventId;
+        private int participatorId;
+        private JoinCallback callback;
+        private LeaveCallback leaveCallBack;
+        private String apiPrefix;
+
+        public LeaveRequestTask(int eventId, int participatorId, LeaveCallback callback, String apiPrefix) {
+            this.eventId = eventId;
+            this.participatorId = participatorId;
+            this.leaveCallBack = callback;
+            this.apiPrefix = apiPrefix;
+        }
+
+        @SafeVarargs
+        @Override
+        protected final Void doInBackground(Void... voids) {
+            OkHttpClient client = new OkHttpClient();
+
+            FormBody.Builder formBuilder = null;
+            formBuilder = new FormBody.Builder();
+
+
+            final Request request = new Request.Builder()
+                    .url(apiPrefix + "/event/" + eventId + "/participator/" + participatorId)
+                    .delete()
+                    .build();
+            Call call = client.newCall(request);
+            call.enqueue(leaveCallBack);
+            return null;
+        }
+    }
+
+    public static class LeaveCallback implements Callback {
+
+        private EventDetailsActivity eda;
+        public LeaveCallback(EventDetailsActivity eda) { this.eda = eda; }
+        @Override
+        public void onFailure(Call call, IOException e) { }
+        @Override
+        public void onResponse(Call call, Response response) {
+            try {
+                String bodystring = response.body().string();
+                if(bodystring.length() == 0){
+                    eda.onLeaveSuccess();
+                }
+
+
+            } catch (IOException e) { e.printStackTrace(); }
+        }
+    }
+
     public static class JoinRequestTask<Void> extends AsyncTask<Void, Void, Void> {
         private int eventId;
         private int participatorId;

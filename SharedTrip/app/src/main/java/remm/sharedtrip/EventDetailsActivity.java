@@ -159,6 +159,23 @@ public class EventDetailsActivity extends FragmentActivity {
         });
     }
 
+    public void onLeaveSuccess(){
+        runOnUiThread(new Runnable(){
+            @Override
+            public void run(){
+                joinButton.setVisibility(VISIBLE);
+                joinButton.setText("REQUEST TO JOIN");
+                fab.setVisibility(GONE);
+                joinButton.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        joinEvent();
+                    }
+                });
+            }
+        });
+    }
+
     public void onApprovalStatusReady() {
         runOnUiThread(new Runnable() {
             @Override
@@ -211,11 +228,18 @@ public class EventDetailsActivity extends FragmentActivity {
         status.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
         status.setText("  join request sent");
 
-        joinButton.setText("LEAVE EVENT");
-        joinButton.setOnClickListener(null);
+        joinButton.setText("CANCEL REQUEST");
         joinButton.setVisibility(VISIBLE);
+        joinButton.setOnClickListener(new OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onClick(View view) {
+                leaveEvent();
+            }
+        });
 
         fab.setVisibility(GONE);
+        
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -227,10 +251,19 @@ public class EventDetailsActivity extends FragmentActivity {
         status.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
         status.setText("  participating");
 
-        joinButton.setVisibility(GONE);
+        joinButton.setText("LEAVE EVENT");
+        joinButton.setVisibility(VISIBLE);
+        joinButton.setOnClickListener(new OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onClick(View view) {
+                leaveEvent();
+            }
+        });
 
         fab.setVisibility(VISIBLE);
     }
+
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     void onBanned() {
@@ -245,5 +278,16 @@ public class EventDetailsActivity extends FragmentActivity {
         joinButton.setVisibility(GONE);
 
         fab.setVisibility(GONE);
+    }
+
+    private void leaveEvent(){
+        LeaveRequestTask requestTask =
+                new LeaveRequestTask<>(
+                        model.getId(),
+                        userModel.id,
+                        new LeaveCallback(this),
+                        apiPrefix);
+        requestTask.execute();
+        joinButton.setText("REQUEST TO JOIN");
     }
 }
