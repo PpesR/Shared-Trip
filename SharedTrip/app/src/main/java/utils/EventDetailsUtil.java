@@ -2,6 +2,7 @@ package utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Base64;
 
@@ -12,7 +13,11 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
+import adapters.NewAdminChoiceAdapter;
+import adapters.NewAdminChoiceAdapter.PotentialAdminModel;
 import models.UserEventModel;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -21,6 +26,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import remm.sharedtrip.EventDetailsActivity;
+
+import static utils.ValueUtil.valueOrNull;
 
 /**
  * Created by Mark on 12.11.2017.
@@ -65,10 +72,13 @@ public class EventDetailsUtil {
         public void onResponse(Call call, Response response) {
             try {
                 String bodystring = response.body().string();
-                if(bodystring.length() == 0){
+                JSONObject obj = new JSONObject(bodystring);
+                if(!obj.has("error")){
                     eda.onLeaveSuccess();
                 }
-            } catch (IOException e) { e.printStackTrace(); }
+            } catch (IOException e) { e.printStackTrace(); } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -124,15 +134,97 @@ public class EventDetailsUtil {
         }
     }
 
+    public static class ParticipatorsTask<Void> extends AsyncTask<Void, Void, List<PotentialAdminModel>> {
+        private int eventId;
+        private String apiPrefix;
+
+        public ParticipatorsTask(int eventId, String apiPrefix) {
+            this.eventId = eventId;
+            this.apiPrefix = apiPrefix;
+        }
+
+        @SafeVarargs
+        @Override
+        protected final List<PotentialAdminModel> doInBackground(Void... voids) {
+            OkHttpClient client = new OkHttpClient();
+
+            final Request request = new Request.Builder()
+                    .url(apiPrefix+"/event/"+eventId+"/participators")
+                    .build();
+            List<PotentialAdminModel> models = new ArrayList<>();
+            try {
+                Response response = client.newCall(request).execute();
+                String bodyString = response.body().string();
+
+                if (bodyString.length()>0 && !bodyString.substring(0,1).equals("{")) {
+                    JSONArray array = new JSONArray(bodyString);
+                    for(int i = 0; i < array.length(); i++) {
+                        JSONObject obj = array.getJSONObject(i);
+                        PotentialAdminModel model = new PotentialAdminModel();
+                        model.firstName = valueOrNull(obj.getString("first_name"));
+                        model.fullName = obj.getString("full_name");
+                        model.id = obj.getInt("user_id");
+                        model.profilePicture = Uri.parse(obj.getString("picture_uri"));
+                        models.add(model);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return models;
+        }
+    }
+
+    public static class AdminRightsTask<Void> extends AsyncTask<Void, Void, Boolean> {
+        private int adminId;
+        private int eventId;
+        private int participatorId;
+        private String apiPrefix;
+
+        public AdminRightsTask(int eventId, int participatorId, int adminId, String apiPrefix) {
+            this.eventId = eventId;
+            this.participatorId = participatorId;
+            this.adminId = adminId;
+            this.apiPrefix = apiPrefix;
+        }
+
+        @SafeVarargs
+        @Override
+        protected final Boolean doInBackground(Void... voids) {
+            OkHttpClient client = new OkHttpClient();
+
+            FormBody.Builder formBuilder = new FormBody.Builder()
+                    .add("event", eventId+"")
+                    .add("user", participatorId +"");
+
+            final Request request = new Request.Builder()
+                    .url(apiPrefix+"/admin/"+adminId+"/pass-rights")
+                    .put(formBuilder.build())
+                    .build();
+            try {
+                Response response = client.newCall(request).execute();
+                String bodyString = response.body().string();
+                if (bodyString.length()==0) return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+    }
+
     public static class ApprovalStatusTask<Void> extends AsyncTask<Void, Void, Void> {
         private int eventId;
         private int participatorId;
         private ApprovalCallback callback;
+        private String apiPrefix;
 
-        public ApprovalStatusTask(int eventId, int participatorId, ApprovalCallback callback) {
+        public ApprovalStatusTask(int eventId, int participatorId, ApprovalCallback callback, String apiPrefix) {
             this.eventId = eventId;
             this.participatorId = participatorId;
             this.callback = callback;
+            this.apiPrefix = apiPrefix;
         }
 
         @SafeVarargs
@@ -141,7 +233,7 @@ public class EventDetailsUtil {
             OkHttpClient client = new OkHttpClient();
 
             final Request request = new Request.Builder()
-                    .url("http://146.185.135.219/requestrouter.php?hdl=event&act=apst&event="+eventId+"&user="+participatorId)
+                    .url(apiPrefix+"/user/"+participatorId+"/event/"+eventId+"/status")
                     .build();
             Call call = client.newCall(request);
             call.enqueue(callback);
@@ -159,11 +251,9 @@ public class EventDetailsUtil {
         @Override
         public void onResponse(Call call, Response response) {
             try {
-                JSONArray array = new JSONArray(response.body().string());
-                if(array.getString(0).equals("SUCCESS")) {
-                    JSONArray actualResult = array.getJSONArray(2);
-                    if(actualResult.length()==1) {
-                        JSONObject obj = actualResult.getJSONObject(0);
+                String bodyString = response.body().string();
+                JSONObject obj = new JSONObject(bodyString);
+                if(!obj.has("error")) {
                         if (obj.getInt("is_admin")==1)
                             model.setAdmin(true);
                         else if (obj.getInt("approved")==1)
@@ -173,7 +263,6 @@ public class EventDetailsUtil {
                         }
                     }
                     eda.onApprovalStatusReady();
-                }
 
             } catch (JSONException e) { e.printStackTrace();
             } catch (IOException e) { e.printStackTrace(); }

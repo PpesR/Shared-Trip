@@ -5,7 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:gravity="center_horizontal">
-    <android.support.v4.widget.CircleImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/user_detail_picture"
         android:layout_width="72dp"
         android:layout_height="72dp"
@@ -17,5 +17,4 @@
         android:text="Username"
         android:layout_marginBottom="5dp"
         />
-
 </LinearLayout>

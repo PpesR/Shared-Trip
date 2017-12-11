@@ -7,11 +7,13 @@ import android.support.annotation.RequiresApi;
 
 import com.facebook.Profile;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 
+import adapters.NewAdminChoiceAdapter;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -35,6 +37,51 @@ public class UserAccountUtil {
     public interface UserActivityHandle {
         void onUserCheckReady(FbGoogleUserModel model);
         void fillModelFromJson(JSONObject obj);
+    }
+
+    public static class UserDataTask<Void> extends AsyncTask<Void, Void, FbGoogleUserModel> {
+
+        private String apiPrefix;
+        private int userId;
+
+        public UserDataTask(String apiPrefix, int userId) {
+            this.apiPrefix = apiPrefix;
+            this.userId = userId;
+        }
+
+        @SafeVarargs
+        @Override
+        protected final FbGoogleUserModel doInBackground(Void... voids) {
+            OkHttpClient client = new OkHttpClient();
+
+            final Request request = new Request.Builder()
+                    .url(apiPrefix+"/user/"+userId)
+                    .get()
+                    .build();
+
+            FbGoogleUserModel model = new FbGoogleUserModel();
+            try {
+                Response response = client.newCall(request).execute();
+                String bodyString = response.body().string();
+                JSONObject obj = new JSONObject(bodyString);
+
+                if (!obj.has("error")) {
+                    model.id = userId;
+                    model.facebookId = valueOrNull(obj.getString("fb_id"));
+                    model.googleId = valueOrNull(obj.getString("google_id"));
+                    model.name = valueOrNull(obj.getString("name"));
+                    model.firstName = valueOrNull(obj.getString("first_name"));
+                    model.description = valueOrNull(obj.getString("user_desc"));
+                    model.imageUriString = valueOrNull(obj.getString("user_pic"));
+                    model.gender = valueOrNull(obj.getString("gender"));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return model;
+        }
     }
 
     public static class UserCheckingTask<Void> extends AsyncTask<Void, Void, Void> {

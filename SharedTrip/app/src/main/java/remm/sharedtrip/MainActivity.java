@@ -258,8 +258,8 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
         final public Set<String> facebookFriends = new HashSet<>();
 
-        String firstName;
-        String birthDate;
+        public String firstName;
+        public String birthDate;
 
         public boolean hasGoogle() { return googleId != null; }
         public boolean hasFacebook() { return facebookId != null; }

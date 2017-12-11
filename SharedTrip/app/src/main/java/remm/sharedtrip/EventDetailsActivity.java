@@ -1,7 +1,6 @@
 package remm.sharedtrip;
 
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -10,19 +9,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.LayoutManager;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +36,7 @@ import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import utils.EventDetailsUtil.ApprovalStatusTask;
 import utils.EventDetailsUtil.GetImageTask;
 import utils.EventDetailsUtil.JoinRequestTask;
+import utils.UserAccountUtil;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -59,9 +56,9 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
     private TextView eventFreeSpots;
     private TextView eventDescription;
     private TextView status;
+    private TextView pleaseSelect;
 
     private Button joinButton;
-    private BottomNavigationView bottomNavigationView;
     private FloatingActionButton fab;
 
     private EventDetailsActivity self;
@@ -73,9 +70,12 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
     private Resources resources;
     private Drawable icon;
     private int statusColor;
-    private AlertDialog newAdminDialog;
     private List<PotentialAdminModel> participators;
-    private View dialogView;
+    private NewAdminChoiceAdapter adapter;
+    private RecyclerView recyclerView;
+    private GridLayoutManager manager;
+    private Button cancelButton;
+    private ScrollView mainScrollView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,25 +90,32 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
 
         participators = getParticipators();
 
+
         setContentView(R.layout.activity_event_details);
 
-        LayoutInflater inflater = getLayoutInflater();
-        LayoutManager manager = new GridLayoutManager(self, 3);
-        NewAdminChoiceAdapter adapter = new NewAdminChoiceAdapter(this, participators, this);
-
-        dialogView = inflater.inflate(R.layout.dialog_choose_admin, null);
-
-        RecyclerView recyclerView = dialogView.findViewById(R.id.choose_admin_grid);
+        recyclerView = findViewById(R.id.my_event_participators);
+        manager = new GridLayoutManager(self, 3);
         recyclerView.setLayoutManager(manager);
-        recyclerView.setAdapter(adapter);
+        pleaseSelect = findViewById(R.id.event_detail_new_admin_label);
+        mainScrollView = findViewById(R.id.eventViewScrollView);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(self);
-        builder.setTitle("Choose new admin:");
-        builder.setView(dialogView);
-        newAdminDialog = builder.create();
+        adapter = new NewAdminChoiceAdapter(self, participators, self);
+        recyclerView.setAdapter(adapter);
 
         joinButton = findViewById(R.id.eventViewRequestButton);
         joinButton.setVisibility(GONE);
+
+        cancelButton = findViewById(R.id.event_detail_cancel_admin);
+        cancelButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                adapter.notChoosing();
+                cancelButton.setVisibility(GONE);
+                pleaseSelect.setVisibility(GONE);
+                adapter.restoreLayout();
+                onAdmin();
+            }
+        });
 
         fab = findViewById(R.id.enter_chat_fbutton);
         fab.setVisibility(GONE);
@@ -124,8 +131,6 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
                 startActivity(chatIntent);
             }
         });
-
-        checkApprovalStatus();
 
         eventPic = findViewById(R.id.eventViewPicture);
         eventName = findViewById(R.id.event_detail_name);
@@ -152,7 +157,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
             try {
                 String base64 = task.execute().get();
                 model.setBitmap(base64);
-                eventPic.setImageBitmap(model.getBitmap());
+//                eventPic.setImageBitmap(model.getBitmap());
                 return;
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -161,16 +166,32 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
             }
             Toast.makeText(this, "Image download failed", Toast.LENGTH_SHORT).show();
         }
+
+        checkApprovalStatus();
     }
 
     private List<PotentialAdminModel> getParticipators() {
         // tegelt peaks selle listi requestiga saama
+        ParticipatorsTask<Void> task = new ParticipatorsTask<>(model.getId(), apiPrefix);
         List<PotentialAdminModel> list = new ArrayList<>();
+        try {
+            list = task.execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    private void addSelfToParticipators() {
         PotentialAdminModel example = new PotentialAdminModel();
         example.profilePicture = Uri.parse(userModel.imageUriString);
         example.fullName = userModel.name;
-        list.add(example);
-        return list;
+        example.id = userModel.id;
+        example.firstName = userModel.firstName;
+        participators.add(example);
+        adapter.notifyDataSetChanged();
     }
 
     private void joinEvent() {
@@ -187,7 +208,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
                 new ApprovalStatusTask(
                         model.getId(),
                         userModel.id,
-                        new ApprovalCallback(this, model));
+                        new ApprovalCallback(this, model), apiPrefix);
         task.execute();
     }
 
@@ -206,7 +227,6 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
             public void run(){
                 joinButton.setVisibility(VISIBLE);
                 joinButton.setText("REQUEST TO JOIN");
-                fab.setVisibility(GONE);
                 joinButton.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -218,9 +238,11 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
     }
 
     public void onApprovalStatusReady() {
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
                 if (model.isAdmin()) {
                     onAdmin();
                 } else if (model.isUserApproved()) {
@@ -257,10 +279,36 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         joinButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                runOnUiThread(new Runnable() {
+                joinButton.setVisibility(GONE);
+                joinButton.setText("CONFIRM");
+                cancelButton.setVisibility(VISIBLE);
+                pleaseSelect.setVisibility(VISIBLE);
+                adapter.isChoosing();
+                joinButton.setOnClickListener(new OnClickListener() {
                     @Override
-                    public void run() {
-                        newAdminDialog.show();
+                    public void onClick(View view) {
+                        adapter.notChoosing();
+                        cancelButton.setVisibility(GONE);
+                        pleaseSelect.setVisibility(GONE);
+                        adapter.restoreLayout();
+                        addSelfToParticipators();
+
+                        // To callback
+                        AdminRightsTask<Void> task = new AdminRightsTask<>(model.getId(), adapter.selected.userModel.id, userModel.id, apiPrefix);
+                        try {
+                            boolean success = task.execute().get();
+                            if (success) {
+                                onNewAdminSelectedDone(adapter.selected.userModel);
+                                onApproved();
+                                return;
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        }
+                        cancelButton.callOnClick();
+
                     }
                 });
             }
@@ -277,6 +325,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
 
         status.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
         status.setText("  join request sent");
+        status.setTextColor(statusColor);
 
         joinButton.setText("CANCEL REQUEST");
         joinButton.setVisibility(VISIBLE);
@@ -300,8 +349,10 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
 
         status.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
         status.setText("  participating");
+        status.setTextColor(statusColor);
 
         joinButton.setText("LEAVE EVENT");
+        joinButton.setTextColor(resources.getColor(R.color.white_text));
         joinButton.setVisibility(VISIBLE);
         joinButton.setOnClickListener(new OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
@@ -338,12 +389,31 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
                         new LeaveCallback(this),
                         apiPrefix);
         requestTask.execute();
-        joinButton.setText("REQUEST TO JOIN");
     }
 
     @Override
-    public void onNewAdminSelected(PotentialAdminModel newAdmin) {
-        newAdminDialog.cancel();
+    public void onNewAdminSelectedDone(PotentialAdminModel newAdmin) {
+        mainScrollView.fullScroll(ScrollView.FOCUS_UP);
         // send admin change request
+    }
+
+    public void showConfirm() {
+        joinButton.setVisibility(VISIBLE);
+    }
+
+    @Override
+    public void openUserProfile(int id) {
+        UserAccountUtil.UserDataTask<Void> task = new UserAccountUtil.UserDataTask<>(apiPrefix, id);
+        try {
+            FbGoogleUserModel selectedUser = task.execute().get();
+            Intent profileIntent = new Intent(this, ProfileActivity.class);
+            profileIntent.putExtra("user", new Gson().toJson(selectedUser));
+            profileIntent.putExtra("notMine", selectedUser.id!=userModel.id);
+            startActivity(profileIntent);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 }

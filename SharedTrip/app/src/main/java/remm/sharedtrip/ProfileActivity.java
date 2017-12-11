@@ -64,7 +64,7 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
         hi_text = (TextView) findViewById(R.id.profile_hi);
-        hi_text.append("  "+userModel.firstName);
+        hi_text.append("  "+userModel.firstName == null ? userModel.name : userModel.firstName);
         ImageView prof_pic = (ImageView) findViewById(R.id.profile_image);
 
         if (userModel.imageUriString == null) {
@@ -123,14 +123,17 @@ public class ProfileActivity extends AppCompatActivity {
 
         save = (Button) findViewById(R.id.prof_save);
         edit = (Button) findViewById(R.id.prof_edit);
-        edit.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                desc_field.setEnabled(true);
-                save.setVisibility(View.VISIBLE);
-                edit.setVisibility(View.GONE);
-            }
-        });
+        if (!getIntent().getBooleanExtra("notMine", false)) {
+            edit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    desc_field.setEnabled(true);
+                    save.setVisibility(View.VISIBLE);
+                    edit.setVisibility(View.GONE);
+                }
+            });
+        }
+        else edit.setVisibility(View.GONE);
         save.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {

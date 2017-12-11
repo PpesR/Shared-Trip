@@ -137,6 +137,41 @@
                     android:textColor="#8b000000"
                     android:textSize="14sp" />
 
+                <TextView
+                    android:id="@+id/event_detail_participators_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingBottom="10dp"
+                    android:textAlignment="center"
+                    android:textSize="18sp"
+                    android:text="Participators"
+                    android:layout_below="@+id/eventViewDescription"/>
+
+                <TextView
+                    android:id="@+id/event_detail_new_admin_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingBottom="20dp"
+                    android:textAlignment="center"
+                    android:text="Please select new admin:"
+                    android:textStyle="italic"
+                    android:visibility="gone"
+                    android:layout_below="@+id/event_detail_participators_label"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/my_event_participators"
+                    android:layout_centerHorizontal="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp"
+                    android:layout_below="@+id/event_detail_new_admin_label">
+                </android.support.v7.widget.RecyclerView>
+
                 <Button
                     android:id="@+id/eventViewRequestButton"
                     android:layout_width="match_parent"
@@ -145,14 +180,28 @@
                     android:layout_alignLeft="@+id/eventViewDescriptionTitle"
                     android:layout_alignRight="@+id/eventViewFreeSpots"
                     android:layout_alignStart="@+id/eventViewDescriptionTitle"
-                    android:layout_below="@+id/eventViewDescription"
+                    android:layout_below="@+id/my_event_participators"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="50dp"
                     android:background="@color/orangered"
                     android:text="REQUEST TO JOIN"
                     android:textSize="14sp"
-                    android:textColor="@color/white_text"/>
+                    android:textColor="@color/white_text"
+                    android:layout_marginBottom="20dp"/>
+                <Button
+                    android:id="@+id/event_detail_cancel_admin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/eventViewRequestButton"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="20dp"
+                    android:background="@android:color/transparent"
+                    android:text="CANCEL"
+                    android:visibility="gone"
+                    android:textSize="14sp"
+                    android:textColor="@color/button_grey"/>
             </RelativeLayout>
+
+
 
         </ScrollView>
     </android.support.constraint.ConstraintLayout>
