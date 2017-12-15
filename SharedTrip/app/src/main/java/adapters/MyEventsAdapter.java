@@ -36,8 +36,8 @@ import utils.MyEventsUtil.ApprovalTask;
 import utils.MyEventsUtil.DenialTask;
 import utils.MyEventsUtil.PendingRequestsTask;
 
-import static utils.ValueUtil.notNull;
-import static utils.ValueUtil.valueOrNull;
+import static utils.UtilBase.notNull;
+import static utils.UtilBase.valueOrNull;
 
 /**
  * Created by Mark on 12.11.2017.

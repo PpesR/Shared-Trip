@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/bottombaritem_events"
+        android:id="@+id/bottombaritem_browse"
         android:icon="@drawable/ic_lens_black_24px"
         android:title="Events"
         app:showAsAction="withText|ifRoom"/>
@@ -21,7 +21,7 @@
         app:showAsAction="withText|ifRoom"/>
 
     <item
-        android:id="@+id/bottombaritem_profile"
+        android:id="@+id/bottombaritem_my_events"
         android:icon="@drawable/ic_lens_black_24px"
         app:showAsAction="withText|ifRoom"
         android:title="" />

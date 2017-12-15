@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
@@ -19,13 +20,17 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.TimeZone;
 
 import remm.sharedtrip.R;
+import utils.MessageUtil;
+import utils.MessageUtil.ChatMessage;
 
-import static utils.ValueUtil.notNull;
+import static utils.UtilBase.notNull;
 
 /**
  * Created by Mark on 28.11.2017.
@@ -40,13 +45,12 @@ public class SharedTripFirebaseMessagingService extends FirebaseMessagingService
     public static final int IMMEDIATE = 1;
     private LocalBroadcastManager broadcaster;
 
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         // ...
 
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-
-        // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
             String channelId = "my_channel_01";
             Map<String, String> messageData = remoteMessage.getData();
@@ -60,8 +64,6 @@ public class SharedTripFirebaseMessagingService extends FirebaseMessagingService
                 }
 
                 if (mode == IMMEDIATE) {
-                    long t = remoteMessage.getSentTime();
-                    String s = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss").format(new Date(t));
                     Intent intent = new Intent("Message received");
                     intent.putExtra(
                             "messageData",
@@ -69,6 +71,7 @@ public class SharedTripFirebaseMessagingService extends FirebaseMessagingService
                     );
                     broadcaster.sendBroadcast(intent);
                 }
+
                 else {
                     int mNotificationId = Integer.parseInt(messageData.get("message_id"));
                     NotificationCompat.Builder mBuilder = null;

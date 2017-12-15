@@ -18,22 +18,26 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
 import models.CreatorEventModel;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
-import utils.CreateEventUtil;
 import utils.CreateEventUtil.EventCreationTask;
 import utils.CreateEventUtil.EventCreator;
 import fragments.DatePickerFragment;
 
 import static utils.DebugUtil.doNothing;
-import static utils.ValueUtil.notNullOrWhitespace;
+import static utils.UtilBase.notNullOrWhitespace;
 
 public class CreateEventActivity extends AppCompatActivity implements EventCreator {
 
@@ -41,21 +45,24 @@ public class CreateEventActivity extends AppCompatActivity implements EventCreat
     private static final int IMAGE_REQUEST = 700;
     private static final int PIC_CROP = 868;
 
+    private TextView startDateInput;
+    private TextView endDateInput;
+
     EditText title, description, destination, cost, spots;
     Button create;
     Button cancel;
     Button addPicture;
     ImageView imageView;
-    CheckBox private_event_state;
-    static Boolean private_event;
+    CheckBox privateEvent;
     static CreatorEventModel model;
     CreateEventActivity self;
     private FbGoogleUserModel userModel;
-    private String apiPrefix;
 
+    SimpleDateFormat dateFormatUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    SimpleDateFormat displayFormat = new SimpleDateFormat("d MMM HH:mm");
 
     private void postEventsToDb() {
-        EventCreationTask<String> asyncTask = new EventCreationTask<>(model, apiPrefix, this);
+        EventCreationTask<String> asyncTask = new EventCreationTask<>(model, this);
         try {
             String s = asyncTask.execute().get();
         } catch (InterruptedException e) {
@@ -69,13 +76,29 @@ public class CreateEventActivity extends AppCompatActivity implements EventCreat
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         self = this;
+        dateFormatUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+        displayFormat.setTimeZone(TimeZone.getDefault());
         userModel = new Gson().fromJson(getIntent().getStringExtra("user"), FbGoogleUserModel.class);
-        apiPrefix = getIntent().getStringExtra("prefix");
 
         model = new CreatorEventModel("","","", userModel.id);
         setContentView(R.layout.activity_create_event);
 
         getIntent().setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        startDateInput = findViewById(R.id.start_date_input);
+        startDateInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (b) showStartDatePickerDialog(view);
+            }
+        });
+        endDateInput = findViewById(R.id.end_date_input);
+        endDateInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (b) showEndDatePickerDialog(view);
+            }
+        });
 
         imageView = findViewById(R.id.add_picture_preview);
         title = findViewById(R.id.title);
@@ -83,10 +106,7 @@ public class CreateEventActivity extends AppCompatActivity implements EventCreat
         description = findViewById(R.id.description);
         cost = findViewById(R.id.cost);
         spots = findViewById(R.id.spots);
-        private_event_state = findViewById(R.id.checkBox3);
-        private_event =  private_event_state.isChecked();
-
-
+        privateEvent = findViewById(R.id.checkBox3);
 
         cancel = findViewById(R.id.button3);
         cancel.setOnClickListener(new View.OnClickListener(){
@@ -110,16 +130,51 @@ public class CreateEventActivity extends AppCompatActivity implements EventCreat
         create.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                String costString = cost.getText().toString();
-                String spotsString = spots.getText().toString();
+                String
+                    titleString = title.getText().toString().trim(),
+                    costString = cost.getText().toString().trim(),
+                    spotsString = spots.getText().toString().trim(),
+                    descString = description.getText().toString().trim(),
+                    locString = destination.getText().toString().trim();
 
-                model.setName(title.getText().toString());
-                model.setDescription(description.getText().toString());
-                model.setLoc(destination.getText().toString());
-                model.setCost(notNullOrWhitespace(costString) ? Integer.parseInt(costString) : 0);
-                model.setSpots(notNullOrWhitespace(spotsString) ? Integer.parseInt(spotsString) : 0);
-                model.setPrivate(private_event_state.isChecked());
-                postEventsToDb();
+                if (!notNullOrWhitespace(locString)) {
+                    destination.setError("Location is required!");
+                }
+
+                else if (!notNullOrWhitespace(model.getStartDate())) {
+                    Toast.makeText(self, "Start time is required!", Toast.LENGTH_SHORT).show();
+                }
+                else if (!notNullOrWhitespace(model.getEndDate())) {
+                    Toast.makeText(self, "End time is required!", Toast.LENGTH_SHORT).show();
+                }
+                else try {
+                        if (dateFormatUTC.parse(model.getEndDate()).before(dateFormatUTC.parse(model.getStartDate()))){
+                            Toast.makeText(self, "End time must be after start time!", Toast.LENGTH_SHORT).show();
+                        }
+                        else if (!notNullOrWhitespace(titleString)) {
+                            title.setError("Trip Title is required!");
+                        }
+                        else if (!notNullOrWhitespace(descString)) {
+                            description.setError("Trip description is required!");
+                        }
+                        else if (!notNullOrWhitespace(costString)) {
+                            cost.setError("Total cost is required!");
+                        }
+                        else if (!notNullOrWhitespace(spotsString) || Integer.parseInt(spotsString) < 1) {
+                            spots.setError("The amount of free spots is required!");
+                        }
+                        else {
+                            model.setName(titleString);
+                            model.setDescription(descString);
+                            model.setLoc(locString);
+                            model.setCost(Integer.parseInt(costString));
+                            model.setSpots(Integer.parseInt(spotsString));
+                            model.setPrivate(privateEvent.isChecked());
+                            postEventsToDb();
+                        }
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
             }
         });
     }
@@ -141,6 +196,10 @@ public class CreateEventActivity extends AppCompatActivity implements EventCreat
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(
                                 self.getContentResolver(),
                                 selectedImgUri);
+                        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            imageView.setImageTintList(null);
+                        }
                         imageView.setImageBitmap(bitmap);
                         if (bitmap.getHeight() > 600) {
                             imageView.setOnClickListener(new View.OnClickListener() {
@@ -149,7 +208,7 @@ public class CreateEventActivity extends AppCompatActivity implements EventCreat
                                     performCrop(selectedImgUri);
                                 }
                             });
-                            displayMessage("Click on picture to crop (scroll up)");
+                            displayMessage("Your image is quite large. You can click on it to crop!");
                         }
 
                     } catch (IOException e) {
@@ -177,11 +236,11 @@ public class CreateEventActivity extends AppCompatActivity implements EventCreat
             // set crop properties here
             cropIntent.putExtra("crop", true);
             // indicate aspect of desired crop
-            cropIntent.putExtra("aspectX", 1);
-            cropIntent.putExtra("aspectY", 1);
+            cropIntent.putExtra("aspectX", 3);
+            cropIntent.putExtra("aspectY", 2);
             // indicate output X and Y
-            cropIntent.putExtra("outputX", 1600);
-            cropIntent.putExtra("outputY", 1600);
+            cropIntent.putExtra("outputX", 900);
+            cropIntent.putExtra("outputY", 900);
             // retrieve data on return
 //            cropIntent.putExtra("return-data", true);
             // start the activity - we handle returning in onActivityResult
@@ -208,13 +267,26 @@ public class CreateEventActivity extends AppCompatActivity implements EventCreat
         newFragment.show(getFragmentManager(), "datePicker");
     }
 
-    public void onModelChanged () {
-        if (model.getStartDate()!=null) {
-            ((Button) findViewById(R.id.start_date)).setHint(model.getStartDate());
-        }
-        if (model.getEndDate()!=null) {
-            ((Button) findViewById(R.id.end_date)).setHint(model.getEndDate());
-        }
+    public void onModeDatelChanged(final char whichDate) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (whichDate=='s' && model.getStartDate() != null) {
+                        Date actualDate = dateFormatUTC.parse(model.getStartDate());
+                        startDateInput.setText(displayFormat.format(actualDate));
+                        startDateInput.clearFocus();
+                    }
+                    if (whichDate=='e' && model.getEndDate() != null) {
+                        Date actualDate = dateFormatUTC.parse(model.getEndDate());
+                        endDateInput.setText(displayFormat.format(actualDate));
+                        endDateInput.clearFocus();
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -267,7 +339,7 @@ public class CreateEventActivity extends AppCompatActivity implements EventCreat
                         CreateEventActivity.this,
                         message,
                         Toast.LENGTH_SHORT
-                ).show();;
+                ).show();
             }
         });
     }
@@ -280,13 +352,16 @@ public class CreateEventActivity extends AppCompatActivity implements EventCreat
                         CreateEventActivity.this,
                         message,
                         Toast.LENGTH_LONG
-                ).show();;
+                ).show();
             }
         });
     }
 
     @Override
     public void onEventCreated() {
+        Intent data = new Intent();
+        data.putExtra("success", true);
+        setResult(RESULT_OK, data);
         finish();
     }
 }

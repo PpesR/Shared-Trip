@@ -15,7 +15,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static utils.ValueUtil.isNull;
+import static utils.UtilBase.isNull;
 
 /**
  * Created by Mark on 12.11.2017.

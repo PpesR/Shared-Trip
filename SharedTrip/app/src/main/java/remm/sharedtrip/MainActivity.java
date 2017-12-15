@@ -3,6 +3,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentActivity;
@@ -45,7 +46,7 @@ import java.util.Set;
 
 import utils.UserAccountUtil.*;
 
-import static utils.ValueUtil.*;
+import static utils.UtilBase.*;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -56,17 +57,15 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
     CallbackManager callbackManager;
     private static MainActivity self;
     private static FbGoogleUserModel model;
-    private Intent browseEvents;
+    private Intent explorationActivity;
     private static GoogleSignInClient mGoogleSignInClient;
     private SignInButton googleButton;
     private LoginButton loginButton;
     private ProgressBar progressBar;
-    private GoogleSignInAccount account;
-    private String apiPrefix;
-    private FirebaseAuth mAuth;
-    private FirebaseUser currentFirebaseUser;
+    private GoogleSignInAccount googleAccount;
+    private AccessToken facebookToken;
 
-    public static GoogleSignInClient getGoogleSignInClient() { return mGoogleSignInClient; }
+    public static Task<Void> signOutOfGoogle() { return mGoogleSignInClient.signOut(); }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -74,8 +73,12 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
         super.onCreate(savedInstanceState);
         self = this;
 
-        mAuth = FirebaseAuth.getInstance();
-        apiPrefix = getResources().getString(R.string.api_address_with_prefix);
+        //IMPORTANT FOR DISPLAYING IMAGES! DO NOT REMOVE!
+        StrictMode.setThreadPolicy(
+                new StrictMode
+                        .ThreadPolicy.Builder()
+                        .permitAll()
+                        .build());
 
         setContentView(R.layout.activity_main);
 
@@ -112,29 +115,11 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
                 startActivityForResult(signInIntent, RC_SIGN_IN);
             }
         });
-
-
-        /* Handling existing users*/
-        if (notNull(AccessToken.getCurrentAccessToken())) { // Facebook
-            GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
-                new GraphRequest.GraphJSONObjectCallback() {
-
-                @Override
-                public void onCompleted(JSONObject user, GraphResponse graphResponse) {
-                    tryLogInExistingUser(null, user.optString("id"));
-                }
-
-            }).executeAsync();
-        }
-        else { // Google
-            account = GoogleSignIn.getLastSignedInAccount(this);
-            if (notNull(account)) { tryLogInExistingUser(account.getId(), null); }
-        }
     }
 
     private void tryLogInExistingUser(String googleId, String facebookId) {
         UserCheckingTask<Void> task = new UserCheckingTask<>(
-                apiPrefix,
+                API_PREFIX,
                 new UserCheckCallback(this),
                 googleId,
                 facebookId);
@@ -143,7 +128,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
     private void postUserToDb() {
         UserRegistrationTask<Void> asyncTask = new UserRegistrationTask<>(
-                apiPrefix,
+                API_PREFIX,
                 model,
                 new UserRegistrationCallback(this));
         asyncTask.execute();
@@ -183,13 +168,13 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
-            account = completedTask.getResult(ApiException.class);
-            Uri photoUri = account.getPhotoUrl();
+            googleAccount = completedTask.getResult(ApiException.class);
+            Uri photoUri = googleAccount.getPhotoUrl();
 
-            if (modelIsSet()) model = new FbGoogleUserModel();
+            if (userModelIsSet()) model = new FbGoogleUserModel();
 
-            model.name = account.getDisplayName();
-            model.googleId = account.getId();
+            model.name = googleAccount.getDisplayName();
+            model.googleId = googleAccount.getId();
             model.imageUriString = toStringNullSafe(photoUri);
 
             postUserToDb();
@@ -200,7 +185,6 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
     @Override
     public void onUserCheckReady(FbGoogleUserModel checkedModel) {
         if (isNull(checkedModel)) { // Logged in user is no longer in database -> force log out
-
 
             if (model.hasFacebook()) {
                 LoginManager.getInstance().logOut();
@@ -220,26 +204,34 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
         } else { // Signed in user is present in database
             model = checkedModel;
             hideLogInButtons();
-            updateFacebookFriendsAndRedirect();
+            updateFriendsAndRedirect();
         }
     }
 
     private void redirect() {
-        if (!model.hasFacebook() && !model.hasGoogle()
-                || bothAreNull(Profile.getCurrentProfile(), account)) {
+        Profile currentFbProfile = Profile.getCurrentProfile();
+
+        if (!model.hasFacebook() && !model.hasGoogle() || bothAreNull(currentFbProfile, googleAccount)) {
             showLogInButtons();
             return;
         }
 
-        if (isNull(browseEvents)) browseEvents = new Intent(self, ExplorationActivity.class);
+        if (isNull(explorationActivity)) {
+            explorationActivity = new Intent(self, ExplorationActivity.class);
+        }
 
-        model.firstName = model.hasFacebook()
-                ? Profile.getCurrentProfile().getFirstName()
-                : (notNull(account) ? account.getGivenName() : "You");
+        if (model.hasFacebook() && notNull(currentFbProfile)) {
+            model.firstName = currentFbProfile.getFirstName();
 
-        browseEvents.putExtra("user", new Gson().toJson(model));
-        browseEvents.putExtra("prefix", apiPrefix);
-        startActivity(browseEvents);
+        } else if (model.hasGoogle() && notNull(googleAccount)) {
+            model.firstName = googleAccount.getGivenName();
+
+        } else {
+            model.firstName = "You";
+        }
+
+        explorationActivity.putExtra("user", new Gson().toJson(model));
+        startActivity(explorationActivity);
     }
 
     public static class FbGoogleUserModel implements Serializable {
@@ -322,6 +314,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        displayFacebookFriendsError();
                     }
 
                 }
@@ -341,6 +334,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        displayFacebookFriendsError();
                     }
 
                 }
@@ -371,29 +365,45 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
     @Override
     protected void onResume() {
         super.onResume();
+        hideLogInButtons();
 
-        GoogleSignInAccount googleAccount = GoogleSignIn.getLastSignedInAccount(this);
-        AccessToken facebookToken = AccessToken.getCurrentAccessToken();
+        facebookToken = AccessToken.getCurrentAccessToken();
+        googleAccount = GoogleSignIn.getLastSignedInAccount(this);
 
-        if (notNull(model)) {
-            hideLogInButtons();
+        if (userModelIsSet()) { // app instance brought to front and user data is present
 
-            if (bothAreNull(googleAccount, facebookToken)){
+            if (bothAreNull(googleAccount, facebookToken)){ // user had been logged out for some reason
                 model.facebookId = null;
                 model.googleId = null;
                 showLogInButtons();
+                return;
             }
-            else {
-                updateFacebookFriendsAndRedirect();
+            else { // user is already logged in, redirect
+                updateFriendsAndRedirect();
             }
         }
 
-        else {
-            if (notNull(googleAccount))
+        else { // new app instance started, no user data yet
+
+            if (notNull(googleAccount)) { // User logged in with Google during last usage
                 tryLogInExistingUser(googleAccount.getId(), null);
-            else if (notNull(facebookToken))
-                tryLogInExistingUser(null, facebookToken.getUserId());
-            else {
+            }
+
+            else if (notNull(facebookToken)) // User logged in with FB during last udage
+                GraphRequest.newMeRequest(facebookToken,
+                        new GraphRequest.GraphJSONObjectCallback() {
+
+                            @Override
+                            public void onCompleted(JSONObject user, GraphResponse graphResponse) {
+                                if (notNull(user))
+                                    tryLogInExistingUser(null, user.optString("id"));
+                                else {
+                                    LoginManager.getInstance().logOut();
+                                    showLogInButtons();
+                                }
+                            }
+                        }).executeAsync();
+            else { // User hasn't logged in before
                 showLogInButtons();
             }
         }
@@ -413,7 +423,7 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
             public void run() {
                 Toast.makeText(
                         MainActivity.this,
-                        "Authentication failed.",
+                        "Authentication failed",
                         Toast.LENGTH_SHORT
                 ).show();
                 showLogInButtons();
@@ -421,12 +431,27 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
         });
     }
 
-    private boolean modelNotSet() { return model == null; }
-    private boolean modelIsSet() { return model != null; }
+    private void displayFacebookFriendsError() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(
+                        MainActivity.this,
+                        "Failed to get Facebook friends",
+                        Toast.LENGTH_SHORT
+                ).show();
+                showLogInButtons();
+            }
+        });
+    }
 
-    private void updateFacebookFriendsAndRedirect () {
-        AccessToken facebookToken = AccessToken.getCurrentAccessToken();
-        if (notNull(facebookToken) && model.hasFacebook() && model.facebookFriends.isEmpty()) {
+    private boolean userModelIsSet() { return model != null; }
+
+    private void updateFriendsAndRedirect() {
+        facebookToken = AccessToken.getCurrentAccessToken();
+        if (model.hasFacebook() && notNull(facebookToken) &&  model.facebookFriends.isEmpty()) {
+
+            // FB user doesn't have friends data yet, get it separately
             GraphRequest request = GraphRequest.newMyFriendsRequest(
                             facebookToken,
                             onResumeFriendsResponse);

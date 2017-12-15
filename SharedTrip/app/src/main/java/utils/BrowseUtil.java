@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import models.UserEventModel;
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -19,49 +21,77 @@ import okhttp3.Response;
  * Created by Mark on 9.12.2017.
  */
 
-public class BrowseUtil {
+public class BrowseUtil extends UtilBase {
 
-    public static class EventRetrievalTask<Void> extends AsyncTask<Void, Void, List<UserEventModel>> {
+    public interface EventExplorer {
+        void DisplayNearbyEvents(List<UserEventModel> events);
+        void DisplayNewEvents(List<UserEventModel> events);
+        void DisplaySearchResults(List<UserEventModel> events);
+    }
+
+    public static class EventRetrievalTask<Void> extends AsyncTask<Void, Void, Void> {
 
         private int userId;
-        private String apiPrefix;
         private String searchText;
         private boolean areNew;
+        private EventRetrievalCallback callback;
 
-        public EventRetrievalTask(int userId, String apiPrefix, boolean areNew) {
+        public EventRetrievalTask(int userId, boolean areNew, EventRetrievalCallback callback) {
             this.userId = userId;
-            this.apiPrefix = apiPrefix;
             this.areNew = areNew;
+            this.callback = callback;
         }
 
-        public EventRetrievalTask(int userId, String searchText, String apiPrefix) {
+        public EventRetrievalTask(int userId, String searchText, EventRetrievalCallback callback) {
             this.userId = userId;
             this.searchText = searchText;
-            this.apiPrefix = apiPrefix;
+            this.callback = callback;
         }
 
         @SafeVarargs
         @Override
-        protected final List<UserEventModel> doInBackground(Void... voids) {
+        protected final Void doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
             Request request;
             if(searchText != null) {
                 request = new Request.Builder()
-                        .url(apiPrefix + "/user/" + userId + "/search?name=" + searchText)
+                        .url(API_PREFIX + "/user/" + userId + "/search?name=" + searchText)
                         .build();
             } else if (areNew) {
                 request = new Request.Builder()
-                        .url(apiPrefix + "/user/" + userId + "/browse-new")
+                        .url(API_PREFIX + "/user/" + userId + "/browse-new")
                         .build();
 
             } else {
                 request = new Request.Builder()
-                        .url(apiPrefix + "/user/" + userId + "/browse")
+                        .url(API_PREFIX + "/user/" + userId + "/browse")
                         .build();
             }
+            Call call = client.newCall(request);
+            call.enqueue(callback);
+            return null;
+        }
+    }
+
+    public static class EventRetrievalCallback implements Callback {
+
+        private EventExplorer explorer;
+        private EventsPurpose purpose;
+
+        public EventRetrievalCallback(EventExplorer explorer, EventsPurpose purpose) {
+            this.explorer = explorer;
+            this.purpose = purpose;
+        }
+
+        @Override
+        public void onFailure(Call call, IOException e) {
+
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
             List<UserEventModel> events = new ArrayList<>();
             try {
-                Response response = client.newCall(request).execute();
                 String bodyString = response.body().string();
 
                 if (bodyString.length() > 0) {
@@ -101,7 +131,25 @@ public class BrowseUtil {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            return events;
+
+            switch (purpose) {
+
+                case NEAR:
+                    explorer.DisplayNearbyEvents(events);
+                    break;
+                case NEW:
+                    explorer.DisplayNewEvents(events);
+                    break;
+                case SEARCH:
+                    explorer.DisplaySearchResults(events);
+                    break;
+            }
         }
+    }
+
+    public enum EventsPurpose {
+        NEAR,
+        NEW,
+        SEARCH
     }
 }

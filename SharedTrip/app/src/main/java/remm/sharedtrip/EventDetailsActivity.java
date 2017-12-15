@@ -50,7 +50,7 @@ import static remm.sharedtrip.EventDetailsActivity.ParticipatorStatus.JOINED;
 import static remm.sharedtrip.EventDetailsActivity.ParticipatorStatus.PENDING;
 import static remm.sharedtrip.EventDetailsActivity.ParticipatorStatus.VIEWING;
 import static utils.EventDetailsUtil.*;
-import static utils.ValueUtil.notNull;
+import static utils.UtilBase.notNull;
 
 /**
  * Created by Mark on 12.11.2017.
@@ -110,8 +110,8 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         apiPrefix = getIntent().getStringExtra("prefix");
         broadcaster = LocalBroadcastManager.getInstance(this);
         resources = getResources();
-        dateFormat = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
-        dateFormatUTC = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        dateFormatUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         dateFormatUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         participators = getParticipators();
@@ -193,7 +193,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
                     .into(eventPic);
         }
         else {
-            GetImageTask<Void> task = new GetImageTask<>(model.getId(), apiPrefix);
+            GetImageTask<Void> task = new GetImageTask<>(model.getId());
             try {
                 String base64 = task.execute().get();
                 model.setBitmap(base64);
@@ -211,7 +211,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
     }
 
     private List<MiniUserModel> getParticipators() {
-        ParticipatorsTask<Void> task = new ParticipatorsTask<>(model.getId(), apiPrefix);
+        ParticipatorsTask<Void> task = new ParticipatorsTask<>(model.getId());
         List<MiniUserModel> list = new ArrayList<>();
         try {
             list = task.execute().get();
@@ -257,7 +257,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
                 new ApprovalStatusTask(
                         model.getId(),
                         userModel.id,
-                        new ApprovalCallback(this, model), apiPrefix);
+                        new ApprovalCallback(this, model));
         task.execute();
     }
 
@@ -322,20 +322,22 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
                     else onEventFull();
                 }
 
-                try {
-                    Date
-                        endDate = dateFormatUTC.parse(model.getEndDate()),
-                        startDate = dateFormatUTC.parse(model.getStartDate()),
-                        now = new Date();
-                    if (endDate.before(now)){
-                        onEventEnded();
+                if (notNull(model.getStartDate()) && notNull(model.getEndDate())) {
+                    try {
+                        Date
+                                endDate = dateFormatUTC.parse(model.getEndDate()),
+                                startDate = dateFormatUTC.parse(model.getStartDate()),
+                                now = new Date();
+                        if (endDate.before(now)) {
+                            onEventEnded();
+                        } else if (startDate.before(now)) {
+                            onEventStarted();
+                        }
+                    } catch (ParseException e) {
+                        e.printStackTrace();
                     }
-                    else if (startDate.after(now)) {
-                        onEventStarted();
-                    }
-                } catch (ParseException e) {
-                    e.printStackTrace();
                 }
+                else onEventEnded();
             }
         });
     }
@@ -388,7 +390,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
                         public void onClick(View view) {
 
                             // To callback
-                            AdminRightsTask<Void> task = new AdminRightsTask<>(model.getId(), adapter.selected.userModel.id, userModel.id, apiPrefix);
+                            AdminRightsTask<Void> task = new AdminRightsTask<>(model.getId(), adapter.selected.userModel.id, userModel.id);
                             try {
                                 boolean success = task.execute().get();
                                 if (success) {
@@ -501,8 +503,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
                 new LeaveRequestTask<>(
                         model.getId(),
                         userModel.id,
-                        new LeaveCallback(this),
-                        apiPrefix);
+                        new LeaveCallback(this));
         requestTask.execute();
     }
 

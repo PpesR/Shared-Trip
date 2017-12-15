@@ -7,13 +7,11 @@ import android.support.annotation.RequiresApi;
 
 import com.facebook.Profile;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 
-import adapters.NewAdminChoiceAdapter;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -22,11 +20,11 @@ import okhttp3.Request;
 import okhttp3.Response;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 
-import static utils.ValueUtil.notNull;
-import static utils.ValueUtil.notNullOrEmpty;
-import static utils.ValueUtil.toNullSafe;
-import static utils.ValueUtil.toStringOrNull;
-import static utils.ValueUtil.valueOrNull;
+import static utils.UtilBase.notNull;
+import static utils.UtilBase.notNullOrEmpty;
+import static utils.UtilBase.toNullSafe;
+import static utils.UtilBase.toStringOrNull;
+import static utils.UtilBase.valueOrNull;
 
 /**
  * Created by Mark on 27.11.2017.

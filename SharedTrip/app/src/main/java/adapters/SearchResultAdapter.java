@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
+import interfaces.UserModelHolder;
 import models.UserEventModel;
 import remm.sharedtrip.EventDetailsActivity;
 import remm.sharedtrip.MainActivity;
@@ -31,19 +32,17 @@ import remm.sharedtrip.SearchActivity;
 
 public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapter.ViewHolder> {
 
-    public interface SearchListener {
-        FbGoogleUserModel getUserModel();
-        String getApiPrefix();
-    }
-
     private Context context;
     private List<UserEventModel> events;
-    public SearchListener activity;
 
-    public SearchResultAdapter(Context context, List<UserEventModel> events, SearchListener activity) {
+    public void replaceResults(List<UserEventModel> events) {
+        this.events = events;
+        notifyDataSetChanged();
+    }
+
+    public SearchResultAdapter(Context context, List<UserEventModel> events) {
         this.context = context;
         this.events = events;
-        this.activity = activity;
     }
 
     @Override
@@ -79,7 +78,6 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
         }
     }
 
-
     @Override
     public int getItemCount() {
         return events.size();
@@ -103,15 +101,14 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
         @Override
         public void onClick(View v) {
 
-            int position = getAdapterPosition();
             Gson gson = new Gson();
-
             Intent detailViewIntent = new Intent(context, EventDetailsActivity.class);
 
-            String gsonString = gson.toJson(eventModel.copyWithoutBitmap());
-            detailViewIntent.putExtra("event", gsonString);
-            detailViewIntent.putExtra("prefix", activity.getApiPrefix());
-            detailViewIntent.putExtra("user", gson.toJson(activity.getUserModel()));
+            String serializedEvent = gson.toJson(eventModel.copyWithoutBitmap());
+            detailViewIntent.putExtra("event", serializedEvent);
+            detailViewIntent.putExtra(
+                    "user",
+                    ((UserModelHolder)context).getSerializedLoggedInUserModel());
 
             context.startActivity(detailViewIntent);
         }

@@ -30,7 +30,7 @@ import static utils.DebugUtil.doNothing;
  * Created by Mark on 14.11.2017.
  */
 
-public class CreateEventUtil {
+public class CreateEventUtil extends UtilBase {
 
     public interface EventCreator {
         void onEventCreated();
@@ -39,13 +39,11 @@ public class CreateEventUtil {
     public static class EventCreationTask<Void> extends AsyncTask<Void, Void, Void> {
 
         private CreatorEventModel model;
-        private String apiPrefix;
-        private EventCreator creatorActivity;
+        private EventCreator creator;
 
-        public EventCreationTask(CreatorEventModel model, String apiPrefix, EventCreator creatorActivity) {
+        public EventCreationTask(CreatorEventModel model, EventCreator creator) {
             this.model = model;
-            this.apiPrefix = apiPrefix;
-            this.creatorActivity = creatorActivity;
+            this.creator = creator;
         }
 
         @SafeVarargs
@@ -76,7 +74,7 @@ public class CreateEventUtil {
             }
 
             final Request request = new Request.Builder()
-                    .url(apiPrefix+"/event")
+                    .url(API_PREFIX+"/event")
                     .post(builder.build())
                     .build();
             Call call = client.newCall(request);
@@ -92,7 +90,7 @@ public class CreateEventUtil {
                 public void onResponse(Call call, Response response) throws IOException {
                     String bodyString = response.body().string();
                     doNothing();
-                    creatorActivity.onEventCreated();
+                    creator.onEventCreated();
                 }
             });
 

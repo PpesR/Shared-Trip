@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import adapters.RateUserAdapter.RateablePerson;
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -20,22 +22,20 @@ import okhttp3.Response;
  * Created by Mark on 11.12.2017.
  */
 
-public class RatingUtil {
+public class RatingUtil extends UtilBase {
 
     public static class RateablesTask<Void> extends AsyncTask<Void, Void, List<RateablePerson>> {
 
-        private String apiPrefix;
         private int userId;
 
-        public RateablesTask(String apiPrefix, int userId) {
-            this.apiPrefix = apiPrefix;
+        public RateablesTask(int userId) {
             this.userId = userId;
         }
 
         @Override
         protected List<RateablePerson> doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
-            Request request = new Request.Builder().url(apiPrefix+"/user/"+userId+"/rateables").build();
+            Request request = new Request.Builder().url(API_PREFIX + "/user/" + userId + "/rateables").build();
 
             List<RateablePerson> people = new ArrayList<>();
             try {
@@ -56,27 +56,23 @@ public class RatingUtil {
                         people.add(person);
                     }
                 }
-
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
             return people;
         }
     }
 
-    public static class RatingTask<Void> extends AsyncTask<Void,Void,Boolean> {
+    public static class RateTask<Void> extends AsyncTask<Void,Void,Void> {
 
-        private String apiPrefix;
         private int userId;
         private int eventId;
         private int raterId;
         private int rating;
 
-        public RatingTask(String apiPrefix, int userId, int eventId, int raterId, int rating) {
-            this.apiPrefix = apiPrefix;
+        public RateTask(int userId, int eventId, int raterId, int rating) {
             this.userId = userId;
             this.eventId = eventId;
             this.raterId = raterId;
@@ -84,46 +80,60 @@ public class RatingUtil {
         }
 
         @Override
-        protected Boolean doInBackground(Void... voids) {
+        protected Void doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
-            FormBody.Builder formBuilder = formBuilder = new FormBody.Builder()
+            FormBody.Builder formBuilder = new FormBody.Builder()
                     .add("event", eventId+"")
                     .add("rater", raterId+"")
                     .add("value", rating+"");
 
             Request request = new Request.Builder()
-                    .url(apiPrefix+"/user/"+userId+"/rate")
+                    .url(API_PREFIX + "/user/" + userId + "/rate")
                     .post(formBuilder.build())
                     .build();
             try {
-                Response response = client.newCall(request).execute();
-                String body = response.body().string();
-                if (response.isSuccessful() && body.length()==0){
-                    return true;
-                }
+                client.newCall(request).execute();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return false;
+            return null;
         }
     }
 
     public static class MyRatingsTask<Void> extends AsyncTask<Void,Void,Ratings> {
-        private String apiPrefix;
         private int userId;
+        private MyRatingsCallback callback;
 
-        public MyRatingsTask(String apiPrefix, int userId) {
-            this.apiPrefix = apiPrefix;
+        public MyRatingsTask(int userId, MyRatingsCallback callback) {
             this.userId = userId;
+            this.callback = callback;
         }
 
         @Override
         protected Ratings doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
-            Request request = new Request.Builder().url(apiPrefix+"/user/"+userId+"/ratings").build();
+            Request request = new Request.Builder().url(API_PREFIX+"/user/"+userId+"/ratings").build();
+            client.newCall(request).enqueue(callback);
+            return null;
+        }
+    }
 
+    public static class MyRatingsCallback implements Callback {
+
+        private UserRatingHolder holder;
+
+        public MyRatingsCallback(UserRatingHolder holder) {
+            this.holder = holder;
+        }
+
+        @Override
+        public void onFailure(Call call, IOException e) {
+
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
             try {
-                Response response = client.newCall(request).execute();
                 String body = response.body().string();
                 if (body.length()>0) {
                     JSONObject o = new JSONObject(body);
@@ -133,7 +143,7 @@ public class RatingUtil {
                         r.smileys = o.getInt("smile");
                         r.thumbsDown = o.getInt("thumbs_down");
                         r.thumbsUp = o.getInt("thumbs_up");
-                        return r;
+                        holder.ShowOwnRatings(r);
                     }
                 }
             } catch (IOException e) {
@@ -141,12 +151,14 @@ public class RatingUtil {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            return null;
         }
     }
 
+    public interface UserRatingHolder {
+        void ShowOwnRatings(Ratings ratings);
+    }
+
     public static class Ratings {
-        public Ratings() {}
         public int thumbsUp;
         public int thumbsDown;
         public int hearts;

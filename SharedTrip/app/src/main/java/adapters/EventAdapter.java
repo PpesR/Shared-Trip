@@ -7,7 +7,6 @@ package adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,17 +19,18 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
+import interfaces.UserModelHolder;
 import models.UserEventModel;
-import remm.sharedtrip.ExplorationActivity;
 import remm.sharedtrip.EventDetailsActivity;
 import remm.sharedtrip.R;
+
+import static utils.UtilBase.API_PREFIX;
 
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> {
 
     private Context context;
     private List<UserEventModel> events;
-    public AppCompatActivity browseActivity;
 
     public EventAdapter(Context context, List<UserEventModel> events) {
         this.context = context;
@@ -91,14 +91,14 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
             int position = getAdapterPosition();
             Gson gson = new Gson();
 
-            Intent detailViewIntent = new Intent(browseActivity, EventDetailsActivity.class);
+            Intent detailViewIntent = new Intent(context, EventDetailsActivity.class);
 
             String gsonString = gson.toJson(eventModel.copyWithoutBitmap());
             detailViewIntent.putExtra("event", gsonString);
-            detailViewIntent.putExtra("prefix", ((ExplorationActivity) browseActivity).getApiPrefix());
-            detailViewIntent.putExtra("user", gson.toJson(((ExplorationActivity) browseActivity).getUserModel()));
+            detailViewIntent.putExtra("prefix", API_PREFIX);
+            detailViewIntent.putExtra("user", ((UserModelHolder)context).getSerializedLoggedInUserModel());
 
-            browseActivity.startActivity(detailViewIntent);
+            context.startActivity(detailViewIntent);
         }
 
 

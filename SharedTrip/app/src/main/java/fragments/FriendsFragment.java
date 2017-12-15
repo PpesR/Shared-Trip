@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 
 import adapters.FriendsEventsAdapter;
 import models.UserEventModel;
+import remm.sharedtrip.EventDetailsActivity;
 import remm.sharedtrip.ExplorationActivity;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import remm.sharedtrip.ProfileActivity;
@@ -32,13 +33,13 @@ import utils.FriendsUtil.FriendsEventsTask;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static utils.ValueUtil.isNull;
-import static utils.ValueUtil.valueOrNull;
+import static utils.UtilBase.API_PREFIX;
+import static utils.UtilBase.isNull;
+import static utils.UtilBase.valueOrNull;
 
 public class FriendsFragment extends Fragment implements FriendsUtil.FriendsEventsReceiver, FriendsUtil.FriendEventListener {
 
     private static final int FRIENDS_EVENT = 564;
-    private String apiPrefix;
     private FriendsFragment self;
 
     private View myView;
@@ -49,7 +50,6 @@ public class FriendsFragment extends Fragment implements FriendsUtil.FriendsEven
     private GridLayoutManager layoutManager;
 
     private RecyclerView recyclerView;
-    private ProgressBar spinner;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,7 +58,6 @@ public class FriendsFragment extends Fragment implements FriendsUtil.FriendsEven
 
         myActivity = (ExplorationActivity) getActivity();
         loggedInUserModel = myActivity.getUserModel();
-        apiPrefix = myActivity.getApiPrefix();
         myView = inflater.inflate(R.layout.fragment_friends, container, false);
 
         return myView;
@@ -67,10 +66,14 @@ public class FriendsFragment extends Fragment implements FriendsUtil.FriendsEven
     @Override
     public void onStart() {
         recyclerView = myView.findViewById(R.id.friends_events_recycler);
-        spinner = myView.findViewById(R.id.friends_events_spinner);
         super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         if (loggedInUserModel.hasFacebook()) {
-            spinner.setVisibility(VISIBLE);
+            myActivity.spinner.setVisibility(VISIBLE);
             requestFacebookFriendEvents();
         }
     }
@@ -85,7 +88,7 @@ public class FriendsFragment extends Fragment implements FriendsUtil.FriendsEven
         FriendsEventsTask<Void> task;
         task = new FriendsEventsTask<>(
                 callback,
-                apiPrefix,
+                API_PREFIX,
                 new ArrayList<>(loggedInUserModel.facebookFriends));
         task.execute();
     }
@@ -99,7 +102,7 @@ public class FriendsFragment extends Fragment implements FriendsUtil.FriendsEven
         myActivity.runOnUiThread(new Runnable() {
             @Override
             public void run () {
-                spinner.setVisibility(GONE);
+                myActivity.spinner.setVisibility(GONE);
                 if (!friendEvents.isEmpty()) {
                     if (isNull(adapter)) {
                         adapter = new FriendsEventsAdapter(myActivity, self, friendEvents);
@@ -119,17 +122,13 @@ public class FriendsFragment extends Fragment implements FriendsUtil.FriendsEven
 
     @Override
     public void onEventClicked(FriendEvent clickedEvent) {
-        // TODO: redirect to the event's detail view
-        // Don't forget to include clicked event's complete data (cost, description, etc)!
-        // Might need to query separately using eventId value and methods in EventUtils.
-        // See BrowseEvents activity for "open details" workflow. Use gson to serialize data.
-        FriendsUtil.ExtraDetailsTask<Void> task = new FriendsUtil.ExtraDetailsTask<>(apiPrefix, loggedInUserModel.id, clickedEvent.eventId);
+        FriendsUtil.ExtraDetailsTask<Void> task = new FriendsUtil.ExtraDetailsTask<>(API_PREFIX, loggedInUserModel.id, clickedEvent.eventId);
         try {
             JSONObject result = task.execute().get();
             if (!result.has("error")) {
                 UserEventModel model = new UserEventModel();
                 model.setSpots(result.getInt("spots"));
-                model.setCost(result.getInt("cost"));
+                model.setCost(result.getInt("total_cost"));
                 model.setDescription(valueOrNull(result.getString("description")));
                 model.setStartDate(valueOrNull(result.getString("date_begin")));
                 model.setEndDate(valueOrNull(result.getString("date_end")));
@@ -142,13 +141,12 @@ public class FriendsFragment extends Fragment implements FriendsUtil.FriendsEven
                 model.setId(clickedEvent.eventId);
                 model.setImageLink(clickedEvent.eventPictureUriString);
 
-                Intent profileIntent = new Intent(myActivity, ProfileActivity.class);
-                profileIntent.putExtra("prefix", apiPrefix);
-                profileIntent.putExtra("notmine", true);
-                profileIntent.putExtra("user", myActivity.getIntent().getStringExtra("user"));
-                profileIntent.putExtra("event", new Gson().toJson(model));
-                profileIntent.putExtra("friend", true);
-                myActivity.startActivityForResult(profileIntent, FRIENDS_EVENT);
+                Intent detailsIntent = new Intent(myActivity, EventDetailsActivity.class);
+                detailsIntent.putExtra("prefix", API_PREFIX);
+                detailsIntent.putExtra("user", myActivity.getSerializedLoggedInUserModel());
+                detailsIntent.putExtra("event", new Gson().toJson(model));
+                detailsIntent.putExtra("friend", true);
+                myActivity.startActivityForResult(detailsIntent, FRIENDS_EVENT);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -164,7 +162,7 @@ public class FriendsFragment extends Fragment implements FriendsUtil.FriendsEven
         myActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                spinner.setVisibility(GONE);
+                myActivity.spinner.setVisibility(GONE);
             }
         });
     }

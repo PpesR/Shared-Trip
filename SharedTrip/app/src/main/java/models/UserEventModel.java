@@ -3,7 +3,7 @@ package models;
 import android.graphics.Bitmap;
 
 import static utils.EventDetailsUtil.bitmapFromBase64String;
-import static utils.ValueUtil.isNull;
+import static utils.UtilBase.isNull;
 
 /**
  * Created by Mark on 12.11.2017.

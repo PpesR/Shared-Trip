@@ -1,10 +1,16 @@
 package utils;
 
+import android.content.res.Resources;
+
+import remm.sharedtrip.R;
+
 /**
  * Created by Mark on 29.11.2017.
  */
 
-public class ValueUtil {
+public class UtilBase {
+
+    public static final String API_PREFIX = "http://146.185.135.219/api/v1";
 
     private static final String whitespace_chars =  ""       /* dummy empty string for homogeneity */
             + "\\u0009" // CHARACTER TABULATION
@@ -44,7 +50,7 @@ public class ValueUtil {
 
     public static boolean notNullOrEmpty(String str) { return str != null && str.length() > 0; }
 
-    public static boolean notNullOrWhitespace(String str) { return str != null && str.length() > 0 && !str.matches("^"+whitespace_charclass+"+$"); }
+    public static boolean notNullOrWhitespace(String str) { return str != null && str.length() > 0 && !str.matches("^"+whitespace_charclass+"*+$"); }
 
     public static boolean isNull(Object obj) { return obj == null; }
 

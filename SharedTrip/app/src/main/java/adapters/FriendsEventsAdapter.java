@@ -18,10 +18,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import remm.sharedtrip.R;
 import utils.FriendsUtil.FriendEvent;
 import utils.FriendsUtil.FriendEventListener;
-import utils.ValueUtil;
 
-import static utils.ValueUtil.isNull;
-import static utils.ValueUtil.valueOrNull;
+import static utils.UtilBase.isNull;
+import static utils.UtilBase.valueOrNull;
 
 /**
  * Created by Mark on 8.12.2017.

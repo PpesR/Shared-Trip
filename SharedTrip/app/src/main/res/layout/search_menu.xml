@@ -6,12 +6,6 @@
     android:layout_height="match_parent"
     android:background="@color/background_grey">
 
-    <include
-        android:id="@+id/user_header_part"
-        layout="@layout/temp_user_header"
-        android:layout_width="match_parent"
-        android:layout_height="53dp" />
-
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">

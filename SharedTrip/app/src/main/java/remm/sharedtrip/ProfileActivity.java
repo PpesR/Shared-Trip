@@ -5,21 +5,20 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.StrictMode;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.textclassifier.TextClassifier;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -38,10 +37,11 @@ import okhttp3.Request;
 import okhttp3.Response;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import utils.RatingUtil;
+import utils.RatingUtil.MyRatingsCallback;
 import utils.RatingUtil.MyRatingsTask;
 import utils.RatingUtil.Ratings;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity implements RatingUtil.UserRatingHolder {
 
     private Intent ownIntent;
     private TextView hiText;
@@ -64,13 +64,6 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        // For displaying images
-        StrictMode.setThreadPolicy(
-                new StrictMode
-                        .ThreadPolicy.Builder()
-                        .permitAll()
-                        .build());
-
         self = this;
         super.onCreate(savedInstanceState);
         ownIntent = getIntent();
@@ -85,7 +78,7 @@ public class ProfileActivity extends AppCompatActivity {
         smile = findViewById(R.id.profile_smile);
 
         hiText = findViewById(R.id.profile_hi);
-        isOwnProfile = !getIntent().getBooleanExtra("notMine", false);
+       isOwnProfile = !getIntent().getBooleanExtra("notMine", false);
 
         ImageView profilePicture = findViewById(R.id.profile_image);
 
@@ -104,11 +97,11 @@ public class ProfileActivity extends AppCompatActivity {
             }
         }
 
-        TextView fullname = (TextView) findViewById(R.id.prof_name);
+        TextView fullname = findViewById(R.id.prof_name);
         fullname.setText(fullname.getText()+" "+userModel.name);
-        TextView gender = (TextView) findViewById(R.id.prof_gender);
+        TextView gender = findViewById(R.id.prof_gender);
         gender.setText(gender.getText()+" "+userModel.gender);
-        TextView bd = (TextView) findViewById(R.id.prof_bd);
+        TextView bd = findViewById(R.id.prof_bd);
 
         SimpleDateFormat initial;
         if (userModel.birthDate!=null && !userModel.birthDate.equals("null")) {
@@ -134,8 +127,19 @@ public class ProfileActivity extends AppCompatActivity {
 
             bd.setText(bd.getText() + "   " + correctFormat.format(date) + "  (" + years + ")");
         }
+        else if (userModel.ageMin + userModel.ageMax > 0) {
+            if (userModel.ageMin > 0 && userModel.ageMax < 0) {
+                if (userModel.ageMax < 0)
+                    bd.setText("Age:   " + userModel.ageMin + "+");
+                else
+                    bd.setText("Age:   " + userModel.ageMin + "-" + userModel.ageMax);
+            }
+            else
+                bd.setText("Age:   " + userModel.ageMax + "+");
+        }
         else
-            bd.setText(bd.getText() + "   " + "hidden");
+            bd.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC));
+            bd.setText("Age and birthday are hidden");
         decription = findViewById(R.id.description_info);
 
         if (userModel.description!=null && !userModel.description.equals("null"))
@@ -176,47 +180,52 @@ public class ProfileActivity extends AppCompatActivity {
                 updateDescription(desc_text);
             }
         });
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         displayRatings();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void displayRatings() {
-        MyRatingsTask<Void> task = new MyRatingsTask<>(
-                getResources().getString(R.string.api_address_with_prefix), userModel.id);
-        try {
-            ratings = task.execute().get();
-            if (ratings.thumbsUp>0) {
-                thumbsUp.setText(" "+ratings.thumbsUp);
-                thumbsUp.setTextColor(baseColor);
-                thumbsUp.getCompoundDrawables()[0].setColorFilter(baseColor, PorterDuff.Mode.SRC_ATOP);
-            }
-            if (ratings.thumbsDown>0) {
-                thumbsDown.setText(" "+ratings.thumbsDown);
-                thumbsDown.setTextColor(baseColor);
-                thumbsDown.getCompoundDrawables()[0].setColorFilter(baseColor, PorterDuff.Mode.SRC_ATOP);
-            }
-            if (ratings.hearts>0) {
-                heart.setText(" "+ratings.hearts);
-                heart.setTextColor(baseColor);
-                heart.getCompoundDrawables()[0].setColorFilter(baseColor, PorterDuff.Mode.SRC_ATOP);
-            }
-            if (ratings.smileys>0) {
-                smile.setText(" "+ratings.smileys);
-                smile.setTextColor(baseColor);
-                smile.getCompoundDrawables()[0].setColorFilter(baseColor, PorterDuff.Mode.SRC_ATOP);
-            }
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        MyRatingsTask<Void> task = new MyRatingsTask<>(userModel.id, new MyRatingsCallback(this));
+        task.execute();
     }
 
     private void updateDescription(String text) {
         DescChangeTask<Void> task = new DescChangeTask<>(userModel, text);
         task.execute();
+    }
+
+    @Override
+    public void ShowOwnRatings(final Ratings ratings) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (ratings.thumbsUp>0) {
+                    thumbsUp.setText(" "+ratings.thumbsUp);
+                    thumbsUp.setTextColor(baseColor);
+                    thumbsUp.getCompoundDrawables()[0].setColorFilter(baseColor, PorterDuff.Mode.SRC_ATOP);
+                }
+                if (ratings.thumbsDown>0) {
+                    thumbsDown.setText(" "+ratings.thumbsDown);
+                    thumbsDown.setTextColor(baseColor);
+                    thumbsDown.getCompoundDrawables()[0].setColorFilter(baseColor, PorterDuff.Mode.SRC_ATOP);
+                }
+                if (ratings.hearts>0) {
+                    heart.setText(" "+ratings.hearts);
+                    heart.setTextColor(baseColor);
+                    heart.getCompoundDrawables()[0].setColorFilter(baseColor, PorterDuff.Mode.SRC_ATOP);
+                }
+                if (ratings.smileys>0) {
+                    smile.setText(" "+ratings.smileys);
+                    smile.setTextColor(baseColor);
+                    smile.getCompoundDrawables()[0].setColorFilter(baseColor, PorterDuff.Mode.SRC_ATOP);
+                }
+            }
+        });
     }
 
     private static class DescChangeTask<Void> extends AsyncTask<Void, Void, Void> {
@@ -256,8 +265,8 @@ public class ProfileActivity extends AppCompatActivity {
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
                         String bodyString = response.body().string();
-                        int len = bodyString.length();
-                        model.description = descriptionText;
+                        if (!bodyString.contains("error"))
+                            model.description = descriptionText;
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -266,5 +275,13 @@ public class ProfileActivity extends AppCompatActivity {
             });
             return null;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i = new Intent();
+        i.putExtra("description", userModel.description);
+        setResult(RESULT_OK, i);
     }
 }

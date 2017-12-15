@@ -13,14 +13,16 @@ import java.util.List;
 import adapters.JoinRequestsAdapter;
 import adapters.MyEventsAdapter.MyEventsManager;
 import models.MyEventModel;
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 
-import static utils.ValueUtil.isNull;
-import static utils.ValueUtil.valueOrNull;
+import static utils.UtilBase.API_PREFIX;
+import static utils.UtilBase.isNull;
+import static utils.UtilBase.valueOrNull;
 
 /**
  * Created by Mark on 12.11.2017.
@@ -28,25 +30,44 @@ import static utils.ValueUtil.valueOrNull;
 
 public class MyEventsUtil {
 
-    public static class MyEventsRetrievalTask<Void> extends AsyncTask<Void, Void, List<MyEventModel>>{
+    public static class MyEventsRetrievalTask<Void> extends AsyncTask<Void, Void, Void>{
 
         private int userId;
-        private String apiPrefix;
-        public MyEventsRetrievalTask(int userId, String apiPrefix) {
+        private MyEventsCallback callback;
+
+        public MyEventsRetrievalTask(int userId, MyEventsCallback callback) {
             this.userId = userId;
-            this.apiPrefix = apiPrefix;
+            this.callback = callback;
         }
 
         @Override
-        protected List<MyEventModel> doInBackground(Void... voids) {
+        protected Void doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
             final Request request = new Request.Builder()
-                    .url(apiPrefix + "/user/" + userId + "/my-events")
+                    .url(API_PREFIX + "/user/" + userId + "/my-events")
                     .build();
+            client.newCall(request).enqueue(callback);
+            return null;
+        }
+    }
 
+    public static class MyEventsCallback implements Callback {
+
+        private MyEventsManager manager;
+
+        public MyEventsCallback(MyEventsManager manager) {
+            this.manager = manager;
+        }
+
+        @Override
+        public void onFailure(Call call, IOException e) {
+
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
             List<MyEventModel> models = new ArrayList<>();
             try {
-                Response response = client.newCall(request).execute();
                 String bodyString = response.body().string();
                 if (!bodyString.substring(0,1).equals("{")) { // otherwise it's an { "error": "blah blah" } type of JSON object
                     JSONArray jsonResults = new JSONArray(bodyString);
@@ -81,7 +102,8 @@ public class MyEventsUtil {
 
             } catch (JSONException e) { e.printStackTrace();
             } catch (IOException e) { e.printStackTrace(); }
-            return models;
+
+            manager.provideEvents(models);
         }
     }
 

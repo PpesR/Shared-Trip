@@ -26,25 +26,23 @@ import okhttp3.Request;
 import okhttp3.Response;
 import remm.sharedtrip.EventDetailsActivity;
 
-import static utils.ValueUtil.valueOrNull;
+import static utils.UtilBase.valueOrNull;
 
 /**
  * Created by Mark on 12.11.2017.
  */
 
-public class EventDetailsUtil {
+public class EventDetailsUtil extends UtilBase {
 
     public static class LeaveRequestTask<Void> extends AsyncTask<Void, Void, Void> {
         private int eventId;
         private int participatorId;
         private LeaveCallback leaveCallBack;
-        private String apiPrefix;
 
-        public LeaveRequestTask(int eventId, int participatorId, LeaveCallback callback, String apiPrefix) {
+        public LeaveRequestTask(int eventId, int participatorId, LeaveCallback callback) {
             this.eventId = eventId;
             this.participatorId = participatorId;
             this.leaveCallBack = callback;
-            this.apiPrefix = apiPrefix;
         }
 
         @SafeVarargs
@@ -52,7 +50,7 @@ public class EventDetailsUtil {
         protected final Void doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
             final Request request = new Request.Builder()
-                    .url(apiPrefix + "/event/" + eventId + "/participator/" + participatorId)
+                    .url(API_PREFIX + "/event/" + eventId + "/participator/" + participatorId)
                     .delete()
                     .build();
             Call call = client.newCall(request);
@@ -97,15 +95,11 @@ public class EventDetailsUtil {
         protected final Void doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
 
-            FormBody.Builder formBuilder = null;
-            formBuilder = new FormBody.Builder()
-                    .add("hdl", "event")
-                    .add("act","join")
-                    .add("event", eventId+"")
-                    .add("participator", participatorId +"");
+            FormBody.Builder formBuilder = new FormBody.Builder()
+                    .add("user", participatorId +"");
 
             final Request request = new Request.Builder()
-                    .url("http://146.185.135.219/requestrouter.php")
+                    .url(API_PREFIX+"/event/"+eventId+"/join")
                     .post(formBuilder.build())
                     .build();
             Call call = client.newCall(request);
@@ -123,23 +117,19 @@ public class EventDetailsUtil {
         @Override
         public void onResponse(Call call, Response response) {
             try {
-                JSONArray array = new JSONArray(response.body().string());
-                if(array.getString(0).equals("SUCCESS")) {
+                String body = response.body().string();
+                if (body.isEmpty()) {
                     eda.onJoinSuccess();
                 }
-
-            } catch (JSONException e) { e.printStackTrace();
             } catch (IOException e) { e.printStackTrace(); }
         }
     }
 
     public static class ParticipatorsTask<Void> extends AsyncTask<Void, Void, List<MiniUserModel>> {
         private int eventId;
-        private String apiPrefix;
 
-        public ParticipatorsTask(int eventId, String apiPrefix) {
+        public ParticipatorsTask(int eventId) {
             this.eventId = eventId;
-            this.apiPrefix = apiPrefix;
         }
 
         @SafeVarargs
@@ -148,7 +138,7 @@ public class EventDetailsUtil {
             OkHttpClient client = new OkHttpClient();
 
             final Request request = new Request.Builder()
-                    .url(apiPrefix+"/event/"+eventId+"/participators")
+                    .url(API_PREFIX+"/event/"+eventId+"/participators")
                     .build();
             List<MiniUserModel> models = new ArrayList<>();
             try {
@@ -180,13 +170,11 @@ public class EventDetailsUtil {
         private int adminId;
         private int eventId;
         private int participatorId;
-        private String apiPrefix;
 
-        public AdminRightsTask(int eventId, int participatorId, int adminId, String apiPrefix) {
+        public AdminRightsTask(int eventId, int participatorId, int adminId) {
             this.eventId = eventId;
             this.participatorId = participatorId;
             this.adminId = adminId;
-            this.apiPrefix = apiPrefix;
         }
 
         @SafeVarargs
@@ -199,7 +187,7 @@ public class EventDetailsUtil {
                     .add("user", participatorId +"");
 
             final Request request = new Request.Builder()
-                    .url(apiPrefix+"/admin/"+adminId+"/pass-rights")
+                    .url(API_PREFIX+"/admin/"+adminId+"/pass-rights")
                     .put(formBuilder.build())
                     .build();
             try {
@@ -219,13 +207,11 @@ public class EventDetailsUtil {
         private int eventId;
         private int participatorId;
         private ApprovalCallback callback;
-        private String apiPrefix;
 
-        public ApprovalStatusTask(int eventId, int participatorId, ApprovalCallback callback, String apiPrefix) {
+        public ApprovalStatusTask(int eventId, int participatorId, ApprovalCallback callback) {
             this.eventId = eventId;
             this.participatorId = participatorId;
             this.callback = callback;
-            this.apiPrefix = apiPrefix;
         }
 
         @SafeVarargs
@@ -234,7 +220,7 @@ public class EventDetailsUtil {
             OkHttpClient client = new OkHttpClient();
 
             final Request request = new Request.Builder()
-                    .url(apiPrefix+"/user/"+participatorId+"/event/"+eventId+"/status")
+                    .url(API_PREFIX+"/user/"+participatorId+"/event/"+eventId+"/status")
                     .build();
             Call call = client.newCall(request);
             call.enqueue(callback);
@@ -297,11 +283,9 @@ public class EventDetailsUtil {
 
     public static class GetImageTask<Void> extends AsyncTask<Void, Void, String> {
         private int eventId;
-        private String apiPrefix;
 
-        public GetImageTask(int eventId, String apiPrefix) {
+        public GetImageTask(int eventId) {
             this.eventId = eventId;
-            this.apiPrefix = apiPrefix;
         }
 
         @SafeVarargs
@@ -309,7 +293,7 @@ public class EventDetailsUtil {
         protected final String doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
             final Request request = new Request.Builder()
-                    .url(apiPrefix+"/event/"+eventId+"/image")
+                    .url(API_PREFIX+"/event/"+eventId+"/image")
                     .build();
             try {
                 Response response = client.newCall(request).execute();

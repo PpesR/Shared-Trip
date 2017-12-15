@@ -8,7 +8,7 @@ import java.net.URISyntaxException;
 import remm.sharedtrip.CreateEventActivity;
 import utils.CreateEventUtil;
 
-import static utils.ValueUtil.notNull;
+import static utils.UtilBase.notNull;
 
 /**
  * Created by Mark on 14.11.2017.

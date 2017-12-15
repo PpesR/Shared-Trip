@@ -25,16 +25,17 @@ import adapters.JoinRequestsAdapter.RequestUserModel;
 import adapters.MyEventsAdapter;
 import adapters.MyEventsAdapter.MyEventsManager;
 import models.MyEventModel;
-import remm.sharedtrip.EventDetailsActivity;
 import remm.sharedtrip.ExplorationActivity;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import remm.sharedtrip.R;
 import remm.sharedtrip.RequestManagementActivity;
 import utils.MyEventsUtil;
+import utils.MyEventsUtil.MyEventsCallback;
 
 import static android.app.Activity.RESULT_OK;
 import static remm.sharedtrip.EventDetailsActivity.OPEN_PROFILE;
-import static utils.ValueUtil.notNull;
+import static utils.UtilBase.API_PREFIX;
+import static utils.UtilBase.notNull;
 
 /**
  * Created by Mark on 9.12.2017.
@@ -43,9 +44,7 @@ import static utils.ValueUtil.notNull;
 public class MyEventsFragment extends Fragment implements MyEventsManager {
     private ExplorationActivity myActivity;
     private FbGoogleUserModel userModel;
-    private String apiPrefix;
     private View myView;
-    private MyEventsFragment self;
     private RecyclerView recyclerView;
     private List<MyEventModel> myEvents;
     private MyEventsAdapter adapter;
@@ -60,51 +59,56 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        self = this;
         myActivity = (ExplorationActivity) getActivity();
         userModel = myActivity.getUserModel();
-        apiPrefix = myActivity.getApiPrefix();
 
         myView =  inflater.inflate(R.layout.fragment_my_events, container, false);
         recyclerView = myView.findViewById(R.id.my_event_results);
         displayMetrics = myActivity.getResources().getDisplayMetrics();
         dpHeight = (int) Math.floor(displayMetrics.heightPixels / displayMetrics.density * 1.4);
-        getMyEvents();
 
         return myView;
     }
 
-    private void getMyEvents() {
-        MyEventsUtil.MyEventsRetrievalTask<Void> task =
-                new MyEventsUtil.MyEventsRetrievalTask<>(userModel.id, apiPrefix);
-        try {
-            List<MyEventModel> events = task.execute().get();
-            provideEvents(events);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+    @Override
+    public void onResume() {
+        super.onResume();
+        myActivity.spinner.setVisibility(View.VISIBLE);
+        getMyEvents();
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    private void getMyEvents() {
+        MyEventsUtil.MyEventsRetrievalTask<Void> task =
+                new MyEventsUtil.MyEventsRetrievalTask<>(userModel.id, new MyEventsCallback(this));
+        task.execute();
+    }
+
+    @Override
     public void provideEvents(final List<MyEventModel> events) {
         myEvents = events;
 
         manager = new LinearLayoutManager(myActivity);
         adapter = new MyEventsAdapter(myActivity, myEvents, this);
-        recyclerView.setLayoutManager(manager);
-        recyclerView.setAdapter(adapter);
-        OnScrollListener mScrollListener = new OnScrollListener() {
+
+        myActivity.runOnUiThread(new Runnable() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                if (events.size()*120 >= dpHeight-100 && !recyclerView.canScrollVertically(1)){
-                    myActivity.hideNavbar();
-                }
-                else myActivity.showNavBar();
+            public void run() {
+                myActivity.spinner.setVisibility(View.GONE);
+                recyclerView.setLayoutManager(manager);
+                recyclerView.setAdapter(adapter);
+                OnScrollListener mScrollListener = new OnScrollListener() {
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        if (events.size()*120 >= dpHeight-100 && !recyclerView.canScrollVertically(1)){
+                            myActivity.hideNavbar();
+                        }
+                        else myActivity.showNavBar();
+                    }
+                };
+                recyclerView.addOnScrollListener(mScrollListener);
             }
-        };
-        recyclerView.addOnScrollListener(mScrollListener);
+        });
+
     }
 
     @Override
@@ -116,7 +120,7 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
     }
 
     @Override
-    public String getApiPrefix() { return apiPrefix; }
+    public String getApiPrefix() { return API_PREFIX; }
 
     @Override
     public FbGoogleUserModel getUserModel() { return userModel; }
@@ -130,7 +134,7 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
     public void startRequestManagementActivity(int eventId, List<RequestUserModel> pending, MyEventsAdapter.MyEventViewHolder holder) {
         lastClicked = holder;
         Intent requestManagement = new Intent(myActivity, RequestManagementActivity.class);
-        requestManagement.putExtra("prefix", apiPrefix);
+        requestManagement.putExtra("prefix", API_PREFIX);
         requestManagement.putExtra("event", eventId);
         requestManagement.putExtra("user", myActivity.getIntent().getStringExtra("user"));
         ArrayList<String> serialized = new ArrayList<>();
@@ -152,7 +156,7 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
                 for (int i = 0; i < myEvents.size(); i++) {
                     MyEventModel model = myEvents.get(i);
                     if (model.getId() == id) {
-                        model.setUsersPending(model.getUsersPending() - count);
+                        model.decreaseUsersPending(count);
 
                         if (model.getUsersPending() < 0)
                             model.setUsersPending(0);
@@ -183,8 +187,6 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
                 case "VIEWING":
                     break;
             }
-
-
         }
     }
 }

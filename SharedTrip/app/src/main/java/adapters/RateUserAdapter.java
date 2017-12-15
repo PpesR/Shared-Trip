@@ -91,7 +91,8 @@ public class RateUserAdapter extends RecyclerView.Adapter<RateUserAdapter.Rateab
     public void onBindViewHolder(final RateablePersonViewHolder holder, int position) {
         final RateablePerson person = people.get(position);
         Glide.with(context).load(Uri.parse(person.profilePictureUri)).into(holder.pic);
-        holder.tripName.setText(person.eventName);
+        String userDescription = (person.isAdmin ? "Participator of your " : "Travel companion from ") + person.eventName;
+        holder.tripName.setText(userDescription);
         holder.name.setText(person.name);
         holder.thumbsDown.setOnClickListener(new View.OnClickListener() {
             @Override

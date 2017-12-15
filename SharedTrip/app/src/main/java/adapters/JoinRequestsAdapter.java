@@ -20,7 +20,7 @@ import remm.sharedtrip.R;
 import utils.MyEventsUtil.ApprovalTask;
 import utils.MyEventsUtil.DenialTask;
 
-import static utils.ValueUtil.notNull;
+import static utils.UtilBase.notNull;
 
 /**
  * Created by Mark on 11.12.2017.

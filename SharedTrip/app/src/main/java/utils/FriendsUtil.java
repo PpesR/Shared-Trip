@@ -20,7 +20,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static utils.EventDetailsUtil.bitmapFromString;
-import static utils.ValueUtil.valueOrNull;
+import static utils.UtilBase.valueOrNull;
 
 /**
  * Deals with getting user's friends' events from the server.
