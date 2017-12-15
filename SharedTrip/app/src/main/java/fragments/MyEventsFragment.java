@@ -120,9 +120,6 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
     }
 
     @Override
-    public String getApiPrefix() { return API_PREFIX; }
-
-    @Override
     public FbGoogleUserModel getUserModel() { return userModel; }
 
     @Override

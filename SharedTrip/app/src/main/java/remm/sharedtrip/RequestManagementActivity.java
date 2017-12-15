@@ -22,7 +22,6 @@ public class RequestManagementActivity extends AppCompatActivity implements Join
     private RecyclerView recyclerView;
     private JoinRequestsAdapter adapter;
     private LinearLayoutManager layoutManager;
-    private String apiPrefix;
     private FbGoogleUserModel userModel;
     private Gson gson = new Gson();
     private int eventId;
@@ -33,7 +32,6 @@ public class RequestManagementActivity extends AppCompatActivity implements Join
         super.onCreate(savedInstanceState);
 
         Intent myIntent = getIntent();
-        apiPrefix = myIntent.getStringExtra("prefix");
         userModel = gson.fromJson(myIntent.getStringExtra("user"), FbGoogleUserModel.class);
         eventId = myIntent.getIntExtra("event", 0);
         ArrayList<String> temp = myIntent.getStringArrayListExtra("requesters");
@@ -60,9 +58,6 @@ public class RequestManagementActivity extends AppCompatActivity implements Join
 
     @Override
     public void onBackPressed() { returnResult(); }
-
-    @Override
-    public String getApiPrefix() { return apiPrefix; }
 
     @Override
     public int getAdminId() { return userModel.id; }

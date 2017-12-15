@@ -33,7 +33,6 @@ public class JoinRequestsAdapter extends RecyclerView.Adapter<JoinRequestsAdapte
     private List<RequestUserModel> requesters;
 
     public interface JoinRequestManager {
-        String getApiPrefix();
         int getAdminId();
         int getEventId();
         void increaseCount();
@@ -74,8 +73,7 @@ public class JoinRequestsAdapter extends RecyclerView.Adapter<JoinRequestsAdapte
                 ApprovalTask<Void> task = new ApprovalTask<>(
                         manager.getEventId(),
                         requester.id,
-                        manager.getAdminId(),
-                        manager.getApiPrefix());
+                        manager.getAdminId());
                 try {
                     boolean success = task.execute().get();
                     if (success) {
@@ -100,8 +98,7 @@ public class JoinRequestsAdapter extends RecyclerView.Adapter<JoinRequestsAdapte
                 DenialTask<Void> task = new DenialTask<>(
                         manager.getEventId(),
                         requester.id,
-                        manager.getAdminId(),
-                        manager.getApiPrefix());
+                        manager.getAdminId());
                 try {
                     boolean success = task.execute().get();
                     if (success) {

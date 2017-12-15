@@ -30,7 +30,7 @@ import static utils.UtilBase.valueOrNull;
  * Created by Mark on 27.11.2017.
  */
 
-public class UserAccountUtil {
+public class UserAccountUtil extends UtilBase {
 
     public interface UserActivityHandle {
         void onUserCheckReady(FbGoogleUserModel model);
@@ -39,11 +39,9 @@ public class UserAccountUtil {
 
     public static class UserDataTask<Void> extends AsyncTask<Void, Void, FbGoogleUserModel> {
 
-        private String apiPrefix;
         private int userId;
 
-        public UserDataTask(String apiPrefix, int userId) {
-            this.apiPrefix = apiPrefix;
+        public UserDataTask(int userId) {
             this.userId = userId;
         }
 
@@ -53,7 +51,7 @@ public class UserAccountUtil {
             OkHttpClient client = new OkHttpClient();
 
             final Request request = new Request.Builder()
-                    .url(apiPrefix+"/user/"+userId)
+                    .url(API_PREFIX+"/user/"+userId)
                     .get()
                     .build();
 
@@ -84,13 +82,11 @@ public class UserAccountUtil {
 
     public static class UserCheckingTask<Void> extends AsyncTask<Void, Void, Void> {
 
-        private String apiPrefix;
         private UserCheckCallback callback;
         private String gId;
         private String fbId;
 
-        public UserCheckingTask(String apiPrefix, UserCheckCallback callback, String gId, String fbId) {
-            this.apiPrefix = apiPrefix;
+        public UserCheckingTask(UserCheckCallback callback, String gId, String fbId) {
             this.callback = callback;
             this.gId = gId;
             this.fbId = fbId;
@@ -109,7 +105,7 @@ public class UserAccountUtil {
                         : "" );
 
             final Request request = new Request.Builder()
-                    .url(apiPrefix+"/user/exists"+param)
+                    .url(API_PREFIX+"/user/exists"+param)
                     .get()
                     .build();
 
@@ -157,12 +153,10 @@ public class UserAccountUtil {
 
     public static class UserRegistrationTask<Void> extends AsyncTask<Void, Void, Void> {
 
-        private String apiPrefix;
         private UserRegistrationCallback callback;
         private FbGoogleUserModel model;
-        public UserRegistrationTask(String apiPrefix, FbGoogleUserModel model, UserRegistrationCallback callback) {
+        public UserRegistrationTask(FbGoogleUserModel model, UserRegistrationCallback callback) {
 
-            this.apiPrefix = apiPrefix;
             this.callback = callback;
             this.model = model;
         }
@@ -189,7 +183,7 @@ public class UserAccountUtil {
             formBuilder.add("picture", toNullSafe(model.imageUriString));
 
             final Request request = new Request.Builder()
-                    .url(apiPrefix+"/user")
+                    .url(API_PREFIX+"/user")
                     .post(formBuilder.build())
                     .build();
 

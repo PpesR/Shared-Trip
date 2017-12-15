@@ -41,6 +41,8 @@ import utils.RatingUtil.MyRatingsCallback;
 import utils.RatingUtil.MyRatingsTask;
 import utils.RatingUtil.Ratings;
 
+import static utils.UtilBase.API_PREFIX;
+
 public class ProfileActivity extends AppCompatActivity implements RatingUtil.UserRatingHolder {
 
     private Intent ownIntent;
@@ -230,7 +232,6 @@ public class ProfileActivity extends AppCompatActivity implements RatingUtil.Use
 
     private static class DescChangeTask<Void> extends AsyncTask<Void, Void, Void> {
 
-        private String apiPrefix = self.getString(R.string.api_address_with_prefix);
         private FbGoogleUserModel model;
         private String descriptionText;
 
@@ -249,7 +250,7 @@ public class ProfileActivity extends AppCompatActivity implements RatingUtil.Use
                     .add("description", descriptionText);
 
             final Request request = new Request.Builder()
-                    .url(apiPrefix+"/user/"+model.id)
+                    .url(API_PREFIX+"/user/"+model.id)
                     .put(formBuilder.build())
                     .build();
 

@@ -15,6 +15,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static utils.UtilBase.API_PREFIX;
 import static utils.UtilBase.isNull;
 
 /**
@@ -26,11 +27,9 @@ public class SearchUtil {
 
         private final int userId;
         private final String filter;
-        private String apiPrefix;
 
-        public EventRetrievalTask(int userId, String apiPrefix, String filter) {
+        public EventRetrievalTask(int userId, String filter) {
             this.userId = userId;
-            this.apiPrefix = apiPrefix;
             this.filter = filter;
         }
 
@@ -38,7 +37,7 @@ public class SearchUtil {
         protected List<MyEventModel> doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
             final Request request = new Request.Builder()
-                    .url(apiPrefix + "/user/" + userId + "/search?name=" + filter)
+                    .url(API_PREFIX + "/user/" + userId + "/search?name=" + filter)
                     .build();
 
             List<MyEventModel> models = new ArrayList<>();

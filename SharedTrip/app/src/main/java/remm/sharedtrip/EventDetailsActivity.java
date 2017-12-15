@@ -78,7 +78,6 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
     private UserEventModel model;
     private LocalBroadcastManager broadcaster;
     private FbGoogleUserModel userModel;
-    private String apiPrefix;
     private Resources resources;
     private Drawable icon;
     private int statusColor;
@@ -107,7 +106,6 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         self = this;
         model = new Gson().fromJson(getIntent().getStringExtra("event"), UserEventModel.class);
         userModel = new Gson().fromJson(getIntent().getStringExtra("user"), FbGoogleUserModel.class);
-        apiPrefix = getIntent().getStringExtra("prefix");
         broadcaster = LocalBroadcastManager.getInstance(this);
         resources = getResources();
         dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -525,7 +523,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
 
     @Override
     public void openUserProfile(int id) {
-        UserDataTask<Void> task = new UserDataTask<>(apiPrefix, id);
+        UserDataTask<Void> task = new UserDataTask<>(id);
         try {
             final FbGoogleUserModel selectedUser = task.execute().get();
             if (selectedUser != null) {

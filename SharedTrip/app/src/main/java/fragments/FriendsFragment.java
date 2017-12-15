@@ -88,7 +88,6 @@ public class FriendsFragment extends Fragment implements FriendsUtil.FriendsEven
         FriendsEventsTask<Void> task;
         task = new FriendsEventsTask<>(
                 callback,
-                API_PREFIX,
                 new ArrayList<>(loggedInUserModel.facebookFriends));
         task.execute();
     }
@@ -122,7 +121,7 @@ public class FriendsFragment extends Fragment implements FriendsUtil.FriendsEven
 
     @Override
     public void onEventClicked(FriendEvent clickedEvent) {
-        FriendsUtil.ExtraDetailsTask<Void> task = new FriendsUtil.ExtraDetailsTask<>(API_PREFIX, loggedInUserModel.id, clickedEvent.eventId);
+        FriendsUtil.ExtraDetailsTask<Void> task = new FriendsUtil.ExtraDetailsTask<>(loggedInUserModel.id, clickedEvent.eventId);
         try {
             JSONObject result = task.execute().get();
             if (!result.has("error")) {

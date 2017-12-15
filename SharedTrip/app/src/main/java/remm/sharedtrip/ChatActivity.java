@@ -212,6 +212,7 @@ public class ChatActivity extends AppCompatActivity implements MessageUtil.ChatM
                 @Override
                 public void run() {
                     if (isNull(adapter)) {
+                        lastId = self.messages.get(0).id;
                         adapter = new ChatMessageAdapter(self.messages, self);
                         recyclerView.setAdapter(adapter);
                         layoutManager.scrollToPosition(messages.size()-1);

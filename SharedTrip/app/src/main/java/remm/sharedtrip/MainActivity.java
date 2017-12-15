@@ -119,7 +119,6 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
     private void tryLogInExistingUser(String googleId, String facebookId) {
         UserCheckingTask<Void> task = new UserCheckingTask<>(
-                API_PREFIX,
                 new UserCheckCallback(this),
                 googleId,
                 facebookId);
@@ -128,7 +127,6 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
     private void postUserToDb() {
         UserRegistrationTask<Void> asyncTask = new UserRegistrationTask<>(
-                API_PREFIX,
                 model,
                 new UserRegistrationCallback(this));
         asyncTask.execute();

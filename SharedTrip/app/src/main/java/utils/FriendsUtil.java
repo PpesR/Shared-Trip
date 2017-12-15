@@ -27,16 +27,14 @@ import static utils.UtilBase.valueOrNull;
  * Created by Mark on 7.12.2017.
  */
 
-public class FriendsUtil {
+public class FriendsUtil extends UtilBase {
 
     public static class FriendsEventsTask<Void> extends AsyncTask<Void, Void, Void> {
         private FriendsEventsCallback callback;
-        private String apiPrefix;
         private List<String> friendsIds;
 
-        public FriendsEventsTask(FriendsEventsCallback callback, String apiPrefix, List<String> friendsIds) {
+        public FriendsEventsTask(FriendsEventsCallback callback, List<String> friendsIds) {
             this.callback = callback;
-            this.apiPrefix = apiPrefix;
             this.friendsIds = friendsIds;
         }
 
@@ -49,7 +47,7 @@ public class FriendsUtil {
             String encodedArray = Base64.encodeToString(idsJSON.getBytes(), Base64.DEFAULT);
 
             Request request = new Request.Builder()
-                    .url(apiPrefix+"/user/friend-events?data="+encodedArray+"&max=20&after=2")
+                    .url(API_PREFIX+"/user/friend-events?data="+encodedArray+"&max=20&after=2")
                     .build();
 
             Call call = client.newCall(request);
@@ -160,12 +158,10 @@ public class FriendsUtil {
     }
 
     public static class ExtraDetailsTask<Void> extends AsyncTask<Void, Void, JSONObject> {
-        private String apiPrefix;
         private int userId;
         private int eventId;
 
-        public ExtraDetailsTask(String apiPrefix, int userId, int eventId) {
-            this.apiPrefix = apiPrefix;
+        public ExtraDetailsTask(int userId, int eventId) {
             this.userId = userId;
             this.eventId = eventId;
         }
@@ -173,7 +169,7 @@ public class FriendsUtil {
         @Override
         protected JSONObject doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
-            Request request = new Request.Builder().url(apiPrefix+"/user/"+userId+"/event/"+eventId+"/extra-details").build();
+            Request request = new Request.Builder().url(API_PREFIX+"/user/"+userId+"/event/"+eventId+"/extra-details").build();
             try {
                 Response response = client.newCall(request).execute();
                 String bodyString = response.body().string();

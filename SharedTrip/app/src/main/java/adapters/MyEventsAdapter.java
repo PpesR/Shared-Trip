@@ -51,7 +51,6 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
 
         Drawable getDrawableById(int id);
         Resources getResources();
-        String getApiPrefix();
         FbGoogleUserModel getUserModel();
 
         void startDetailsActivity(Intent detailViewIntent);
@@ -98,7 +97,6 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
 
             String gsonString = gson.toJson(eventModel.toDetailsWithoutBitmap());
             detailViewIntent.putExtra("event", gsonString);
-            detailViewIntent.putExtra("prefix", manager.getApiPrefix());
             detailViewIntent.putExtra("user", gson.toJson(manager.getUserModel()));
             manager.startDetailsActivity(detailViewIntent);
         }
@@ -158,7 +156,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
         holder.badge.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PendingRequestsTask<Void> task = new PendingRequestsTask<>(event.getId(), manager.getApiPrefix(), manager);
+                PendingRequestsTask<Void> task = new PendingRequestsTask<>(event.getId(), manager);
                 try {
                     List<RequestUserModel> pending = task.execute().get();
                     if (pending.size() == 1) {
@@ -191,8 +189,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
                                         ApprovalTask<Void> approvalTask = new ApprovalTask<>(
                                                 event.getId(),
                                                 model.id,
-                                                manager.getUserModelId(),
-                                                manager.getApiPrefix());
+                                                manager.getUserModelId());
                                         try {
                                             boolean result = approvalTask.execute().get();
                                             if (result) {
@@ -212,8 +209,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
                                         DenialTask<Void> denialTask = new DenialTask<>(
                                                 event.getId(),
                                                 model.id,
-                                                manager.getUserModelId(),
-                                                manager.getApiPrefix());
+                                                manager.getUserModelId());
                                         try {
                                             boolean result = denialTask.execute().get();
                                             if (result) {

@@ -110,12 +110,10 @@ public class MyEventsUtil {
     public static class PendingRequestsTask<Void> extends AsyncTask<Void, Void, List<JoinRequestsAdapter.RequestUserModel>> {
 
         private int eventId;
-        private String apiPrefix;
         private MyEventsManager manager;
 
-        public PendingRequestsTask(int eventId, String apiPrefix, MyEventsManager manager) {
+        public PendingRequestsTask(int eventId, MyEventsManager manager) {
             this.eventId = eventId;
-            this.apiPrefix = apiPrefix;
             this.manager = manager;
         }
 
@@ -123,7 +121,7 @@ public class MyEventsUtil {
         protected List<JoinRequestsAdapter.RequestUserModel> doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
             final Request request = new Request.Builder()
-                    .url(apiPrefix + "/admin/" + manager.getUserModel().id + "/pending?event=" + eventId)
+                    .url(API_PREFIX + "/admin/" + manager.getUserModel().id + "/pending?event=" + eventId)
                     .build();
 
             List<JoinRequestsAdapter.RequestUserModel> models = new ArrayList<>();
@@ -163,13 +161,11 @@ public class MyEventsUtil {
         private int eventId;
         private int userId;
         private int adminId;
-        String apiPerfix;
 
-        public ApprovalTask(int eventId, int userId, int adminId, String apiPrefix) {
+        public ApprovalTask(int eventId, int userId, int adminId) {
             this.eventId = eventId;
             this.userId = userId;
             this.adminId = adminId;
-            this.apiPerfix = apiPrefix;
         }
 
         @Override
@@ -182,7 +178,7 @@ public class MyEventsUtil {
                     .add("user", userId+"");
 
             final Request request = new Request.Builder()
-                    .url(apiPerfix+"/admin/"+adminId+"/approve")
+                    .url(API_PREFIX+"/admin/"+adminId+"/approve")
                     .put(formBuilder.build())
                     .build();
             try {
@@ -204,13 +200,11 @@ public class MyEventsUtil {
         private int eventId;
         private int userId;
         private int adminId;
-        String apiPerfix;
 
-        public DenialTask(int eventId, int userId, int adminId, String apiPrefix) {
+        public DenialTask(int eventId, int userId, int adminId) {
             this.eventId = eventId;
             this.userId = userId;
             this.adminId = adminId;
-            this.apiPerfix = apiPrefix;
         }
 
         @Override
@@ -223,7 +217,7 @@ public class MyEventsUtil {
                     .add("user", userId+"");
 
             final Request request = new Request.Builder()
-                    .url(apiPerfix+"/admin/"+adminId+"/reject")
+                    .url(API_PREFIX+"/admin/"+adminId+"/reject")
                     .put(formBuilder.build())
                     .build();
             try {
