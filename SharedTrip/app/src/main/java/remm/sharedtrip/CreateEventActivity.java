@@ -130,6 +130,7 @@ public class CreateEventActivity extends AppCompatActivity implements EventCreat
         create.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                create.setEnabled(false);
                 String
                     titleString = title.getText().toString().trim(),
                     costString = cost.getText().toString().trim(),
@@ -171,10 +172,12 @@ public class CreateEventActivity extends AppCompatActivity implements EventCreat
                             model.setSpots(Integer.parseInt(spotsString));
                             model.setPrivate(privateEvent.isChecked());
                             postEventsToDb();
+                            return;
                         }
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
+                create.setEnabled(true);
             }
         });
     }
