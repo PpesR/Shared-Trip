@@ -82,26 +82,7 @@ public class MessageUtil extends UtilBase {
         }
     }
 
-    public static class MessageSaveResponse {
-        public int senderId;
-        public int eventId;
-
-        public MessageSaveResponse(int messageId, Date deliverTime) {
-            this.messageId = messageId;
-            this.deliverTime = deliverTime;
-        }
-
-        public int messageId;
-        public Date actualSendTime;
-        public Date deliverTime;
-        public String topic;
-        public String message;
-        public String FirebaseCloudMessagingId;
-        public Uri senderPicture;
-        public String senderName;
-    }
-
-    public static class MessageSavingTask<Void> extends AsyncTask<Void, Void, MessageSaveResponse> {
+    public static class MessageSavingTask<Void> extends AsyncTask<Void, Void, Void> {
 
         private String message;
         private String topic;
@@ -123,7 +104,7 @@ public class MessageUtil extends UtilBase {
         @SafeVarargs
         @Override
         @SuppressLint("SimpleDateFormat")
-        protected final MessageSaveResponse doInBackground(Void... voids) {
+        protected final Void doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
 
             Builder formBodyBuilder = new Builder()
@@ -137,40 +118,12 @@ public class MessageUtil extends UtilBase {
                     .url(API_PREFIX+"/message")
                     .post(formBodyBuilder.build())
                     .build();
-            MessageSaveResponse saveResponse = null;
+
             try {
                 client.newCall(request).execute();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-                /*String bodystring = response.body().string();
-                if (bodystring.equals("")) return null;
-
-                JSONObject obj = new JSONObject(bodystring);
-
-                if (!obj.has("error")){
-                    int messageId = obj.getInt("id");
-                    String timeString = obj.getString("time_sent_utc");
-                    Date timeSent =  dateFormat.parse(timeString);
-                    saveResponse = new MessageSaveResponse(messageId, timeSent);
-                    saveResponse.senderId = obj.getInt("sender_id");
-                    saveResponse.eventId = obj.getInt("event_id");
-                    saveResponse.topic = obj.getString("topic");
-                    saveResponse.message = obj.getString("message");
-                    saveResponse.actualSendTime = dateFormat.parse(obj.getString("time_fcm_received_utc"));
-                    saveResponse.FirebaseCloudMessagingId = obj.getString("fcm_id");
-                    saveResponse.senderName = obj.getString("sender_name");
-                    saveResponse.senderPicture = Uri.parse(obj.getString("sender_picture"));
-
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }*/
-
             return null;
         }
     }
