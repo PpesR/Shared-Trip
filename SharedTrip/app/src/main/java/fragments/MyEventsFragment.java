@@ -70,11 +70,11 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
     @Override
     public void onStart() {
         super.onStart();
-        myActivity.spinner.setVisibility(View.VISIBLE);
         getMyEvents();
     }
 
     private void getMyEvents() {
+        myActivity.startLoadingContent();
         MyEventsUtil.MyEventsRetrievalTask<Void> task =
                 new MyEventsUtil.MyEventsRetrievalTask<>(userModel.id, new MyEventsCallback(this));
         task.execute();
@@ -82,30 +82,32 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
 
     @Override
     public void provideEvents(final List<MyEventModel> events) {
-        myEvents = events;
 
-        manager = new LinearLayoutManager(myActivity);
-        adapter = new MyEventsAdapter(myActivity, myEvents, this);
+        if (isVisible()) {
+            myEvents = events;
 
-        myActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                myActivity.spinner.setVisibility(View.GONE);
-                recyclerView.setLayoutManager(manager);
-                recyclerView.setAdapter(adapter);
-                OnScrollListener mScrollListener = new OnScrollListener() {
-                    @Override
-                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                        if (events.size()*120 >= dpHeight-100 && !recyclerView.canScrollVertically(1)){
-                            myActivity.hideNavbar();
+            manager = new LinearLayoutManager(myActivity);
+            adapter = new MyEventsAdapter(myActivity, myEvents, this);
+
+            myActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    myActivity.stopLoadingContent();
+                    recyclerView.setLayoutManager(manager);
+                    recyclerView.setAdapter(adapter);
+                    OnScrollListener mScrollListener = new OnScrollListener() {
+                        @Override
+                        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                            if (events.size()*120 >= dpHeight-100 && !recyclerView.canScrollVertically(1)){
+                                myActivity.hideNavbar();
+                            }
+                            else myActivity.showNavBar();
                         }
-                        else myActivity.showNavBar();
-                    }
-                };
-                recyclerView.addOnScrollListener(mScrollListener);
-            }
-        });
-
+                    };
+                    recyclerView.addOnScrollListener(mScrollListener);
+                }
+            });
+        }
     }
 
     @Override

@@ -240,8 +240,8 @@ public class CreateEventActivity extends AppCompatActivity implements EventCreat
             cropIntent.putExtra("aspectX", 3);
             cropIntent.putExtra("aspectY", 2);
             // indicate output X and Y
-            cropIntent.putExtra("outputX", 900);
-            cropIntent.putExtra("outputY", 900);
+            cropIntent.putExtra("outputX", 256);
+            cropIntent.putExtra("outputY", 256);
             // retrieve data on return
 //            cropIntent.putExtra("return-data", true);
             // start the activity - we handle returning in onActivityResult

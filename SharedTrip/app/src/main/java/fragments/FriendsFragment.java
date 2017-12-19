@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
 
@@ -24,15 +23,12 @@ import models.UserEventModel;
 import remm.sharedtrip.EventDetailsActivity;
 import remm.sharedtrip.ExplorationActivity;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
-import remm.sharedtrip.ProfileActivity;
 import remm.sharedtrip.R;
 import utils.FriendsUtil;
 import utils.FriendsUtil.FriendEvent;
 import utils.FriendsUtil.FriendsEventsCallback;
 import utils.FriendsUtil.FriendsEventsTask;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
 import static utils.UtilBase.API_PREFIX;
 import static utils.UtilBase.isNull;
 import static utils.UtilBase.valueOrNull;
@@ -68,7 +64,6 @@ public class FriendsFragment extends Fragment implements FriendsUtil.FriendsEven
         super.onStart();
         recyclerView = myView.findViewById(R.id.friends_events_recycler);
         if (loggedInUserModel.hasFacebook()) {
-            myActivity.spinner.setVisibility(VISIBLE);
             requestFacebookFriendEvents();
         }
     }
@@ -78,11 +73,10 @@ public class FriendsFragment extends Fragment implements FriendsUtil.FriendsEven
      * The provide...() method is where we actually get things back.
      */
     private void requestFacebookFriendEvents() {
-        FriendsEventsCallback callback =
-                new FriendsEventsCallback(this);
+        myActivity.startLoadingContent();
         FriendsEventsTask<Void> task;
         task = new FriendsEventsTask<>(
-                callback,
+                new FriendsEventsCallback(this),
                 new ArrayList<>(loggedInUserModel.facebookFriends));
         task.execute();
     }
@@ -93,25 +87,27 @@ public class FriendsFragment extends Fragment implements FriendsUtil.FriendsEven
      */
     @Override
     public void provideFriendsEvents(final List<FriendEvent> friendEvents) {
-        myActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run () {
-                myActivity.spinner.setVisibility(GONE);
-                if (!friendEvents.isEmpty()) {
-                    if (isNull(adapter)) {
-                        adapter = new FriendsEventsAdapter(myActivity, self, friendEvents);
-                        layoutManager = new GridLayoutManager(myActivity, 2);
-                        recyclerView.setLayoutManager(layoutManager);
-                        recyclerView.setAdapter(adapter);
+        if (isVisible()) {
+            myActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    myActivity.stopLoadingContent();
+                    if (!friendEvents.isEmpty()) {
+                        if (isNull(adapter)) {
+                            adapter = new FriendsEventsAdapter(myActivity, self, friendEvents);
+                            layoutManager = new GridLayoutManager(myActivity, 2);
+                            recyclerView.setLayoutManager(layoutManager);
+                            recyclerView.setAdapter(adapter);
 
-                    } else {
-                        // Update the adapter if it already exists
-                        adapter.friendEvents = friendEvents;
-                        adapter.notifyDataSetChanged();
+                        } else {
+                            // Update the adapter if it already exists
+                            adapter.friendEvents = friendEvents;
+                            adapter.notifyDataSetChanged();
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     @Override
@@ -156,7 +152,7 @@ public class FriendsFragment extends Fragment implements FriendsUtil.FriendsEven
         myActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                myActivity.spinner.setVisibility(GONE);
+                myActivity.stopLoadingContent();
             }
         });
     }

@@ -47,7 +47,7 @@ public class FriendsUtil extends UtilBase {
             String encodedArray = Base64.encodeToString(idsJSON.getBytes(), Base64.DEFAULT);
 
             Request request = new Request.Builder()
-                    .url(API_PREFIX+"/user/friend-events?data="+encodedArray+"&max=20&after=2")
+                    .url(API_PREFIX+"/user/friend-events?data="+encodedArray+"&max=10")
                     .build();
 
             Call call = client.newCall(request);

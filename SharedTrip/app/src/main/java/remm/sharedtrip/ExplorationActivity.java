@@ -3,15 +3,19 @@ package remm.sharedtrip;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -24,6 +28,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.SearchView.OnQueryTextListener;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
@@ -55,6 +60,10 @@ import static utils.UtilBase.isNull;
 
 public class ExplorationActivity extends AppCompatActivity implements OnQueryTextListener, UserModelHolder {
 
+    static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
+
     private static final int OPEN_OWN_PROFILE = 596;
 
     private Intent ownIntent;
@@ -63,6 +72,11 @@ public class ExplorationActivity extends AppCompatActivity implements OnQueryTex
     private BottomNavigationView bottomNavigationView;
     private Intent messagingService;
     private String serializedUser;
+
+    private BrowseEventsFragment browseFragment;
+    private FriendsFragment firendsFragment;
+    private StatsFragment statsFragment;
+    private MyEventsFragment myEventsFragment;
 
     List<RateUserAdapter.RateablePerson> people;
     RecyclerView rateablesRecycler;
@@ -74,7 +88,8 @@ public class ExplorationActivity extends AppCompatActivity implements OnQueryTex
     private AlertDialog.Builder dialogBuilder;
     private View ratingDialogView;
     public Toolbar toolbar;
-    public ProgressBar spinner;
+    private ProgressBar spinner;
+    private boolean loading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,34 +137,41 @@ public class ExplorationActivity extends AppCompatActivity implements OnQueryTex
         MenuItem myEventsItem = bottomNavigationView.getMenu().findItem(R.id.bottombaritem_my_events);
         myEventsItem.setTitle(userModel.firstName);
 
+        browseFragment = new BrowseEventsFragment();
+        firendsFragment = new FriendsFragment();
+        statsFragment = new StatsFragment();
+        myEventsFragment = new MyEventsFragment();
+
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.bottombaritem_browse:
-                                toolbar.setSubtitle("Browse");
-                                switchToFragmentBrowseEvents();
-                                return true;
-                            case R.id.bottombaritem_friends:
-                                toolbar.setSubtitle("Friends' events");
-                                switchToFragmentFriendsView();
-                                break;
-                            case R.id.bottombaritem_stats:
-                                toolbar.setSubtitle("My stats");
-                                switchToFragmentStats();
-                                return true;
-                            case R.id.bottombaritem_my_events:
-                                toolbar.setSubtitle("My events");
-                                switchToFragmentMyEvents();
-                                return true;
+                        if (!loading) {
+                            switch (item.getItemId()) {
+                                case R.id.bottombaritem_browse:
+                                    toolbar.setSubtitle("Browse");
+                                    switchToFragmentBrowseEvents();
+                                    return true;
+                                case R.id.bottombaritem_friends:
+                                    toolbar.setSubtitle("Friends' events");
+                                    switchToFragmentFriendsView();
+                                    return true;
+                                case R.id.bottombaritem_stats:
+                                    toolbar.setSubtitle("My stats");
+                                    switchToFragmentStats();
+                                    return true;
+                                case R.id.bottombaritem_my_events:
+                                    toolbar.setSubtitle("My events");
+                                    switchToFragmentMyEvents();
+                                    return true;
+                            }
                         }
-                        return true;
+                        return false;
                     }
                 });
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new BrowseEventsFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, browseFragment).commit();
         }
     }
 
@@ -197,6 +219,9 @@ public class ExplorationActivity extends AppCompatActivity implements OnQueryTex
                 rateablesRecycler.setAdapter(rateUserAdapter);
                 ratingDialog.show();
             }
+            else {
+                Toast.makeText(this, "No users to rate! Try again after an event ends!", Toast.LENGTH_SHORT).show();
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -214,6 +239,7 @@ public class ExplorationActivity extends AppCompatActivity implements OnQueryTex
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setSubtitle("Browse");
 
         inflater = getLayoutInflater();
         ratingDialogView = inflater.inflate(R.layout.dialog_rate_users, null);
@@ -240,7 +266,7 @@ public class ExplorationActivity extends AppCompatActivity implements OnQueryTex
                 .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        ratingDialog.hide();
+                        ratingDialog.cancel();
                     }
                 });
 
@@ -267,25 +293,25 @@ public class ExplorationActivity extends AppCompatActivity implements OnQueryTex
 
     private void switchToFragmentMyEvents() {
         FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.container, new MyEventsFragment()).commit();
+        manager.beginTransaction().replace(R.id.container, myEventsFragment).commit();
 
     }
 
     private void switchToFragmentStats() {
         FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.container, new StatsFragment()).commit();
+        manager.beginTransaction().replace(R.id.container, statsFragment).commit();
 
     }
 
     private void switchToFragmentBrowseEvents() {
         FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.container, new BrowseEventsFragment()).commit();
+        manager.beginTransaction().replace(R.id.container, browseFragment).commit();
 
     }
 
     public void switchToFragmentFriendsView(){
         FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.container, new FriendsFragment()).commit();
+        manager.beginTransaction().replace(R.id.container, firendsFragment).commit();
     }
 
     public void showNavBar() {
@@ -338,12 +364,22 @@ public class ExplorationActivity extends AppCompatActivity implements OnQueryTex
                 getResources(),
                 bitmapFromUriString(userModel.imageUriString));
         rounded.setCornerRadius(50);
-
-        Drawable star = getResources().getDrawable(R.drawable.ic_star_black_24dp, null);
-        star.setColorFilter(getResources().getColor(R.color.white_text), PorterDuff.Mode.SRC_ATOP);
-
         menu.findItem(R.id.action_profile).setIcon(rounded);
-        menu.findItem(R.id.action_rate).setIcon(star);
+
+        Drawable star = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            star = getResources().getDrawable(R.drawable.ic_star_black_24dp, null);
+        }
+        else {
+            star = VectorDrawableCompat.create(getResources(), R.drawable.ic_star_black_24dp, null);
+        }
+
+        if (star != null) {
+            star.setColorFilter(getResources().getColor(R.color.white_text), PorterDuff.Mode.SRC_ATOP);
+            menu.findItem(R.id.action_rate).setIcon(star);
+        }
+
+
         return true;
     }
 
@@ -356,6 +392,24 @@ public class ExplorationActivity extends AppCompatActivity implements OnQueryTex
                 serializedUser = gson.toJson(userModel);
             }
         }
+    }
+
+    public void startLoadingContent() {
+        if (!loading) {
+            loading = true;
+            spinner.setVisibility(VISIBLE);
+        }
+    }
+
+    public void stopLoadingContent() {
+        if (loading) {
+            loading = false;
+            spinner.setVisibility(GONE);
+        }
+    }
+
+    public boolean isLoading() {
+        return loading;
     }
 
     @Override

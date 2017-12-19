@@ -1,5 +1,8 @@
 package models;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 
 import java.io.File;
@@ -40,6 +43,20 @@ public class CreatorEventModel extends EventModel {
     public void setImageFile(Uri imageUri, CreateEventActivity activity) {
         try {
             String filePath = CreateEventUtil.getFilePath(activity, imageUri);
+            Bitmap bm = BitmapFactory.decodeFile(filePath);
+            int width = bm.getWidth();
+            int height = bm.getHeight();
+            float scaleWidth = ((float) 300) / width;
+            float scaleHeight = ((float) 200) / height;
+
+            // Create a matrix for the manipulation
+            Matrix matrix = new Matrix();
+
+            // Resize the bit map
+            matrix.postScale(scaleWidth, scaleHeight);
+
+            // Recreate the new Bitmap
+            Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
             if (notNull(filePath)) this.imageFile = new File(filePath);
         } catch (URISyntaxException e) {
             e.printStackTrace();

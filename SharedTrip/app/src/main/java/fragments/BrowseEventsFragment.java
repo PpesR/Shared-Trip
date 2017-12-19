@@ -110,7 +110,7 @@ public class BrowseEventsFragment extends Fragment implements EventExplorer, Use
     @Override
     public void onStart() {
         super.onStart();
-        myActivity.spinner.setVisibility(View.VISIBLE);
+        myActivity.startLoadingContent();
         nearLabel.setVisibility(View.GONE);
         newLabel.setVisibility(View.GONE);
         recyclerViewNew.setVisibility(View.GONE);
@@ -143,7 +143,7 @@ public class BrowseEventsFragment extends Fragment implements EventExplorer, Use
             myActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    myActivity.spinner.setVisibility(View.GONE);
+                    myActivity.stopLoadingContent();
                     nearLabel.setVisibility(View.VISIBLE);
                     recyclerViewNear.setLayoutManager(layoutManagerNear);
                     recyclerViewNear.setAdapter(adapterNear);
@@ -155,12 +155,12 @@ public class BrowseEventsFragment extends Fragment implements EventExplorer, Use
 
     @Override
     public void DisplayNewEvents(List<UserEventModel> events) {
-        if (!events.isEmpty()) {
+        if (!events.isEmpty() && isVisible()) {
             adapterNew = new EventAdapter(myActivity, events);
             myActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    myActivity.spinner.setVisibility(View.GONE);
+                    myActivity.stopLoadingContent();
                     newLabel.setVisibility(View.VISIBLE);
                     recyclerViewNew.setLayoutManager(layoutManagerNew);
                     recyclerViewNew.setAdapter(adapterNew);

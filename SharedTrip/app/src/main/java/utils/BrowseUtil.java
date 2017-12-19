@@ -94,7 +94,7 @@ public class BrowseUtil extends UtilBase {
             try {
                 String bodyString = response.body().string();
 
-                if (bodyString.length() > 0) {
+                if (bodyString.length() > 0 && bodyString.charAt(0) == '[') {
 
                     JSONArray resultArray = new JSONArray(bodyString);
                     for (int i = 0; i < resultArray.length(); i++) {
