@@ -119,7 +119,6 @@ public class CreateEventActivity extends AppCompatActivity implements EventCreat
 
         addPicture = findViewById(R.id.add_picture_button);
         addPicture.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onClick(View view) {
                 tryShowImagePreview();
@@ -182,7 +181,6 @@ public class CreateEventActivity extends AppCompatActivity implements EventCreat
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -292,15 +290,16 @@ public class CreateEventActivity extends AppCompatActivity implements EventCreat
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void tryShowImagePreview() {
 
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(this,
-                        new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
-                    READ_EXTERNAL_STORAGE_PERMISSION_REQUEST);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                ActivityCompat.requestPermissions(this,
+                            new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
+                        READ_EXTERNAL_STORAGE_PERMISSION_REQUEST);
+            }
         }
         else {
             Intent intent = new Intent();

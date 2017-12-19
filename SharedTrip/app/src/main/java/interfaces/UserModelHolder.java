@@ -1,6 +1,5 @@
 package interfaces;
 
-import remm.sharedtrip.MainActivity;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 
 /**

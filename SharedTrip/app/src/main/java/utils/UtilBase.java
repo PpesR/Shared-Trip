@@ -1,9 +1,5 @@
 package utils;
 
-import android.content.res.Resources;
-
-import remm.sharedtrip.R;
-
 /**
  * Created by Mark on 29.11.2017.
  */

@@ -67,7 +67,6 @@ public class MainActivity extends FragmentActivity implements UserActivityHandle
 
     public static Task<Void> signOutOfGoogle() { return mGoogleSignInClient.signOut(); }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

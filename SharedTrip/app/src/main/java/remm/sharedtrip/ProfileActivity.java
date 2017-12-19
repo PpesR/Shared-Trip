@@ -1,18 +1,14 @@
 package remm.sharedtrip;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.textclassifier.TextClassifier;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -27,7 +23,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.concurrent.ExecutionException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -62,7 +57,6 @@ public class ProfileActivity extends AppCompatActivity implements RatingUtil.Use
     TextView heart;
     TextView smile;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -85,7 +79,7 @@ public class ProfileActivity extends AppCompatActivity implements RatingUtil.Use
         ImageView profilePicture = findViewById(R.id.profile_image);
 
         if (userModel.imageUriString == null) {
-            profilePicture.setImageDrawable(getDrawable(R.mipmap.ic_default_user));
+            profilePicture.setImageDrawable(getResources().getDrawable(R.mipmap.ic_default_user));
         }
         else {
             try {
@@ -190,7 +184,6 @@ public class ProfileActivity extends AppCompatActivity implements RatingUtil.Use
         displayRatings();
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void displayRatings() {
         MyRatingsTask<Void> task = new MyRatingsTask<>(userModel.id, new MyRatingsCallback(this));
         task.execute();
@@ -240,7 +233,6 @@ public class ProfileActivity extends AppCompatActivity implements RatingUtil.Use
             this.descriptionText = descriptionText;
         }
 
-        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         protected final Void doInBackground(final Void... nothings) {
 

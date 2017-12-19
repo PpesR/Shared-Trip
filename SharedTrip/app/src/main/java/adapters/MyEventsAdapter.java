@@ -1,16 +1,14 @@
 package adapters;
 
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -110,8 +108,6 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
         return new MyEventViewHolder(itemView);
     }
 
-    @SuppressLint("ResourceAsColor")
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onBindViewHolder(final MyEventViewHolder holder, int position) {
         final MyEventModel event = myAdminEvents.get(position);
@@ -126,17 +122,16 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
             }
 
             int color = manager.getResources().getColor(R.color.golden);
-            statusIcon = manager.getDrawableById(R.drawable.ic_star_black_24dp);
             statusIcon = manager.getDrawableById(R.drawable.ic_star_black_20dp);
             holder.status.setCompoundDrawablesWithIntrinsicBounds(statusIcon, null, null, null);
-            statusIcon.setTint(color);
+            statusIcon.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
             holder.status.setText("admin");
             holder.status.setTextColor(color);
         }
         else if (event.isApproved()){
             int color = manager.getResources().getColor(R.color.light_gray);
             statusIcon = manager.getDrawableById(R.drawable.ic_check_black_24dp);
-            statusIcon.setTint(color);
+            statusIcon.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
             holder.status.setCompoundDrawablesWithIntrinsicBounds(statusIcon, null, null, null);
             holder.status.setText("participating");
         }

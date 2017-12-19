@@ -31,7 +31,6 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -43,6 +42,7 @@ import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import utils.MessageUtil;
 import utils.MessageUtil.ChatMessage;
 import utils.MessageUtil.HistoryTask;
+
 import static utils.UtilBase.isNull;
 
 /**

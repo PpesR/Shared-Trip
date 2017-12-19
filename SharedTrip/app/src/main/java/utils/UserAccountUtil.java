@@ -162,7 +162,6 @@ public class UserAccountUtil extends UtilBase {
         }
 
         @SafeVarargs
-        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         protected final Void doInBackground(final Void... nothings) {
             OkHttpClient client = new OkHttpClient();

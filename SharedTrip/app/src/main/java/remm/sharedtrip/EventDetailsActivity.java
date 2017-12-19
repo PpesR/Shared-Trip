@@ -1,14 +1,12 @@
 package remm.sharedtrip;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
@@ -49,7 +47,12 @@ import static remm.sharedtrip.EventDetailsActivity.ParticipatorStatus.BANNED;
 import static remm.sharedtrip.EventDetailsActivity.ParticipatorStatus.JOINED;
 import static remm.sharedtrip.EventDetailsActivity.ParticipatorStatus.PENDING;
 import static remm.sharedtrip.EventDetailsActivity.ParticipatorStatus.VIEWING;
-import static utils.EventDetailsUtil.*;
+import static utils.EventDetailsUtil.AdminRightsTask;
+import static utils.EventDetailsUtil.ApprovalCallback;
+import static utils.EventDetailsUtil.JoinCallback;
+import static utils.EventDetailsUtil.LeaveCallback;
+import static utils.EventDetailsUtil.LeaveRequestTask;
+import static utils.EventDetailsUtil.ParticipatorsTask;
 import static utils.UtilBase.notNull;
 
 /**
@@ -149,7 +152,6 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         fab = findViewById(R.id.enter_chat_fbutton);
         fab.setVisibility(GONE);
         fab.setOnClickListener(new OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View view) {
                 Intent chatIntent = new Intent(EventDetailsActivity.this, ChatActivity.class);
@@ -361,12 +363,11 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         status.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void onAdmin() {
         myStatus = ADMIN;
         statusColor = resources.getColor(R.color.golden);
         icon = resources.getDrawable(R.drawable.ic_star_black_24dp);
-        icon.setTint(statusColor);
+        icon.setColorFilter(statusColor, PorterDuff.Mode.SRC_ATOP);
 
         status.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
         status.setTextColor(statusColor);
@@ -417,12 +418,11 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         fab.setVisibility(VISIBLE);
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     void onPendingApproval() {
         myStatus = PENDING;
         statusColor = resources.getColor(R.color.light_gray);
         icon = resources.getDrawable(R.drawable.ic_mail_outline_black_24dp);
-        icon.setTint(statusColor);
+        icon.setColorFilter(statusColor, PorterDuff.Mode.SRC_ATOP);
 
         if (participators.size()<model.getSpots()) {
             status.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
@@ -439,7 +439,6 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         joinButton.setBackgroundColor(resources.getColor(android.R.color.transparent));
         joinButton.setTextColor(resources.getColor(R.color.orangered));
         joinButton.setOnClickListener(new OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View view) {
                 joinButton.setBackgroundColor(resources.getColor(R.color.orangered));
@@ -454,12 +453,11 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     void onApproved() {
         myStatus = JOINED;
         statusColor = resources.getColor(R.color.light_gray);
         icon = resources.getDrawable(R.drawable.ic_check_black_24dp);
-        icon.setTint(statusColor);
+        icon.setColorFilter(statusColor, PorterDuff.Mode.SRC_ATOP);
 
         status.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
         status.setText(R.string.status_participating);
@@ -469,7 +467,6 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         joinButton.setTextColor(resources.getColor(R.color.white_text));
         joinButton.setVisibility(VISIBLE);
         joinButton.setOnClickListener(new OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View view) {
                 leaveEvent();
@@ -480,12 +477,11 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
     }
 
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     void onBanned() {
         myStatus = BANNED;
         statusColor = resources.getColor(R.color.calm_red);
         icon = resources.getDrawable(R.drawable.ic_close_black_24px);
-        icon.setTint(statusColor);
+        icon.setColorFilter(statusColor, PorterDuff.Mode.SRC_ATOP);
 
         status.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
         status.setTextColor(statusColor);

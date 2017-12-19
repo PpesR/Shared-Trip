@@ -1,13 +1,10 @@
 package remm.sharedtrip;
 
-import android.annotation.SuppressLint;
-
-import android.annotation.TargetApi;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
@@ -15,7 +12,6 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -42,8 +38,10 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import adapters.RateUserAdapter;
-import fragments.*;
 import fragments.BrowseEventsFragment;
+import fragments.FriendsFragment;
+import fragments.MyEventsFragment;
+import fragments.StatsFragment;
 import interfaces.UserModelHolder;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import services.SharedTripFirebaseMessagingService;
@@ -78,7 +76,6 @@ public class ExplorationActivity extends AppCompatActivity implements OnQueryTex
     public Toolbar toolbar;
     public ProgressBar spinner;
 
-    @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -332,7 +329,6 @@ public class ExplorationActivity extends AppCompatActivity implements OnQueryTex
         return super.onOptionsItemSelected(item);
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
