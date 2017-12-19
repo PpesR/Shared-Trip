@@ -52,7 +52,6 @@ import static utils.UtilBase.isNull;
 public class ChatActivity extends AppCompatActivity implements MessageUtil.ChatMessagesHolder, UserModelHolder {
 
     private ChatActivity self;
-    private FirebaseMessaging fm;
     private EditText messageInput;
     private ImageButton sendButton;
 //    private final String SENDER_ID = "631771254653";
@@ -79,14 +78,13 @@ public class ChatActivity extends AppCompatActivity implements MessageUtil.ChatM
         userModel = new Gson().fromJson(serializedUser, FbGoogleUserModel.class);
         dateFormatUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        fm = FirebaseMessaging.getInstance();
-        LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver),
+        LocalBroadcastManager broadcaster = LocalBroadcastManager.getInstance(this);
+        broadcaster.registerReceiver((mMessageReceiver),
                 new IntentFilter("Message received")
         );
 
+
         event = new Gson().fromJson(getIntent().getStringExtra("event"), UserEventModel.class);
-        messageTopic = event.getId()+"-"+event.getLoc().toLowerCase().replaceAll("[^a-z]", "");
-        fm.subscribeToTopic(messageTopic);
 
         setContentView(R.layout.activity_chat);
         recyclerView = findViewById(R.id.chat_message_list);

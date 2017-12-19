@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -34,6 +35,8 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
 
     private Context context;
     private List<UserEventModel> events;
+    private int dpHeight;
+    private int dpWidth;
 
     public void replaceResults(List<UserEventModel> events) {
         this.events = events;
@@ -49,8 +52,8 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        int dpHeight = (int) Math.floor(displayMetrics.heightPixels / displayMetrics.density * 1.4);
-        int dpWidth = (int) Math.floor(displayMetrics.widthPixels / 2.1);
+        dpHeight = (int) Math.floor(displayMetrics.heightPixels / displayMetrics.density * 1);
+        dpWidth = (int) Math.floor(displayMetrics.widthPixels / 2.1);
 
         View itemView =
                 LayoutInflater
@@ -94,6 +97,7 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
             super(itemView);
             name = itemView.findViewById(R.id.name);
             imageView = itemView.findViewById(R.id.image);
+            imageView.setLayoutParams(new LinearLayout.LayoutParams(dpWidth-20, 300));
             loc = itemView.findViewById(R.id.location);
             imageView.setOnClickListener(this);
         }

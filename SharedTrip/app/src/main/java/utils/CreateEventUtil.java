@@ -62,8 +62,7 @@ public class CreateEventUtil extends UtilBase {
                     .addFormDataPart("spots", model.getSpots()+"")
                     .addFormDataPart("start_date", model.getStartDate()+"")
                     .addFormDataPart("end_date", model.getEndDate()+"")
-                    .addFormDataPart("private", model.isPrivate() ? "1" : "0")
-                    .addFormDataPart("admin", model.getAdminId()+"");
+                    .addFormDataPart("private", model.isPrivate() ? "1" : "0");
 
             if (model.getImageFile()!=null) {
                 builder.addFormDataPart(

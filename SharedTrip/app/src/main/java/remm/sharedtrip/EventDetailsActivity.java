@@ -21,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.gson.Gson;
 
 import java.text.ParseException;
@@ -92,7 +94,10 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
     private ScrollView mainScrollView;
     private ParticipatorStatus myStatus = VIEWING;
 
+    private FirebaseMessaging fm;
+
     public static final int OPEN_PROFILE = 777;
+    private String messageTopic;
 
     public enum ParticipatorStatus {
         VIEWING,
@@ -114,6 +119,9 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         dateFormatUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         dateFormatUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        fm = FirebaseMessaging.getInstance();
+
 
         participators = getParticipators();
 
@@ -364,6 +372,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
     }
 
     private void onAdmin() {
+        subscribeToEventChat();
         myStatus = ADMIN;
         statusColor = resources.getColor(R.color.golden);
         icon = resources.getDrawable(R.drawable.ic_star_black_24dp);
@@ -454,6 +463,7 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
     }
 
     void onApproved() {
+        subscribeToEventChat();
         myStatus = JOINED;
         statusColor = resources.getColor(R.color.light_gray);
         icon = resources.getDrawable(R.drawable.ic_check_black_24dp);
@@ -547,5 +557,10 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         intent.putExtra("status", myStatus.name());
         intent.putExtra("event", model.getId());
         setResult(RESULT_OK, intent);
+    }
+
+    private void subscribeToEventChat() {
+        messageTopic = model.getId()+"-"+model.getLoc().toLowerCase().replaceAll("[^a-z]", "");
+        fm.subscribeToTopic(messageTopic);
     }
 }

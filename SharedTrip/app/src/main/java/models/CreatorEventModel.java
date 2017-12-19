@@ -6,6 +6,8 @@ import android.graphics.Matrix;
 import android.net.Uri;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import remm.sharedtrip.CreateEventActivity;
@@ -57,8 +59,20 @@ public class CreatorEventModel extends EventModel {
 
             // Recreate the new Bitmap
             Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+            File f = new File(activity.getCacheDir(), "SharedtripImageCache.bmp");
+            boolean success = f.createNewFile();
+            if (success) {
+                FileOutputStream fos = new FileOutputStream(f);
+                resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 0, fos);
+                fos.flush();
+                fos.close();
+                this.imageFile = f;
+                return;
+            }
             if (notNull(filePath)) this.imageFile = new File(filePath);
         } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
