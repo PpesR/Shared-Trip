@@ -37,6 +37,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -51,6 +52,7 @@ import services.SharedTripFirebaseMessagingService;
 import utils.BottomNavigationViewHelper;
 import utils.BrowseUtil.SubscriptionTask;
 import utils.RatingUtil;
+import utils.UserAccountUtil;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -89,6 +91,7 @@ public class ExplorationActivity extends AppCompatActivity implements OnQueryTex
     public Toolbar toolbar;
     private ProgressBar spinner;
     private boolean loading;
+    private long lastBackPressed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,6 +209,22 @@ public class ExplorationActivity extends AppCompatActivity implements OnQueryTex
         if (Profile.getCurrentProfile() == null && GoogleSignIn.getLastSignedInAccount(this) == null) {
             finish();
         }
+        else {
+            startLoadingContent();
+            UserAccountUtil.UserDataTask<Void> updateUserData = new UserAccountUtil.UserDataTask<>(userModel.id);
+            try {
+                FbGoogleUserModel response = updateUserData.execute().get();
+                userModel.description = response.description;
+                userModel.imageUriString = response.imageUriString;
+                userModel.name = response.name;
+                serializedUser = gson.toJson(userModel);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            stopLoadingContent();
+        }
     }
 
     public void getRateables() {
@@ -232,7 +251,14 @@ public class ExplorationActivity extends AppCompatActivity implements OnQueryTex
     @Override
     public void onBackPressed() {
         //do not redirect
-        this.moveTaskToBack(true);
+
+        if (new Date().getTime() - lastBackPressed <= 3000) {
+            this.moveTaskToBack(true);
+        }
+            else {
+            Toast.makeText(this, "Press 'Back' again to exit", Toast.LENGTH_SHORT).show();
+            lastBackPressed = new Date().getTime();
+        }
     }
 
     private void setUpUserHeader() {
@@ -324,33 +350,34 @@ public class ExplorationActivity extends AppCompatActivity implements OnQueryTex
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_profile:
-                Intent profileIntent = new Intent(this, ProfileActivity.class);
-                profileIntent.putExtra("user", serializedUser);
-                startActivityForResult(profileIntent, OPEN_OWN_PROFILE);
-                break;
+        if (!loading) {
+            switch (item.getItemId()) {
+                case R.id.action_profile:
+                    Intent profileIntent = new Intent(this, ProfileActivity.class);
+                    profileIntent.putExtra("user", serializedUser);
+                    startActivityForResult(profileIntent, OPEN_OWN_PROFILE);
+                    break;
 
-            case R.id.action_rate:
-                getRateables();
-                break;
+                case R.id.action_rate:
+                    getRateables();
+                    break;
 
-            case R.id.action_log_out:
-                if (userModel.hasFacebook()) {
-                    LoginManager.getInstance().logOut();
-                }
+                case R.id.action_log_out:
+                    if (userModel.hasFacebook()) {
+                        LoginManager.getInstance().logOut();
+                    }
 
-                if (userModel.hasGoogle()){
-                    MainActivity.signOutOfGoogle()
-                        .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                finish();
-                            }
-                        });
-                }
-                else finish();
-                break;
+                    if (userModel.hasGoogle()) {
+                        MainActivity.signOutOfGoogle()
+                                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        finish();
+                                    }
+                                });
+                    } else finish();
+                    break;
+            }
         }
         return super.onOptionsItemSelected(item);
     }

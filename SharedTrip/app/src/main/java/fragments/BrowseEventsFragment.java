@@ -98,9 +98,11 @@ public class BrowseEventsFragment extends Fragment implements EventExplorer, Use
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent createEvent = new Intent(myActivity, CreateEventActivity.class);
-                createEvent.putExtra("user", myActivity.getSerializedLoggedInUserModel());
-                myActivity.startActivityForResult(createEvent, CREATE_EVENT);
+                if (!myActivity.isLoading()) {
+                    Intent createEvent = new Intent(myActivity, CreateEventActivity.class);
+                    createEvent.putExtra("user", myActivity.getSerializedLoggedInUserModel());
+                    myActivity.startActivityForResult(createEvent, CREATE_EVENT);
+                }
             }
         });
 
