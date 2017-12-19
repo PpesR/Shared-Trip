@@ -372,7 +372,6 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
     }
 
     private void onAdmin() {
-        subscribeToEventChat();
         myStatus = ADMIN;
         statusColor = resources.getColor(R.color.golden);
         icon = resources.getDrawable(R.drawable.ic_star_black_24dp);
@@ -463,7 +462,6 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
     }
 
     void onApproved() {
-        subscribeToEventChat();
         myStatus = JOINED;
         statusColor = resources.getColor(R.color.light_gray);
         icon = resources.getDrawable(R.drawable.ic_check_black_24dp);
@@ -557,10 +555,5 @@ public class EventDetailsActivity extends FragmentActivity implements NewAdminCh
         intent.putExtra("status", myStatus.name());
         intent.putExtra("event", model.getId());
         setResult(RESULT_OK, intent);
-    }
-
-    private void subscribeToEventChat() {
-        messageTopic = model.getId()+"-"+model.getLoc().toLowerCase().replaceAll("[^a-z]", "");
-        fm.subscribeToTopic(messageTopic);
     }
 }

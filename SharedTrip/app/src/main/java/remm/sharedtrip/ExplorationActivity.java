@@ -3,9 +3,7 @@ package remm.sharedtrip;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.VectorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -51,6 +49,7 @@ import interfaces.UserModelHolder;
 import remm.sharedtrip.MainActivity.FbGoogleUserModel;
 import services.SharedTripFirebaseMessagingService;
 import utils.BottomNavigationViewHelper;
+import utils.BrowseUtil.SubscriptionTask;
 import utils.RatingUtil;
 
 import static android.view.View.GONE;
@@ -111,6 +110,7 @@ public class ExplorationActivity extends AppCompatActivity implements OnQueryTex
         if (isNull(messagingService)) {
             messagingService = new Intent(this, SharedTripFirebaseMessagingService.class);
             startService(messagingService);
+            new SubscriptionTask<Void>(userModel.id).execute();
         }
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);

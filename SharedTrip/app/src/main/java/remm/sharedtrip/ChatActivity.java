@@ -22,7 +22,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -56,7 +55,6 @@ public class ChatActivity extends AppCompatActivity implements MessageUtil.ChatM
     private ImageButton sendButton;
 //    private final String SENDER_ID = "631771254653";
     private UserEventModel event;
-    private String messageTopic;
     private ChatMessageAdapter adapter;
     private String messageText;
     private FbGoogleUserModel userModel;
@@ -115,7 +113,7 @@ public class ChatActivity extends AppCompatActivity implements MessageUtil.ChatM
         MessageUtil.MessageSavingTask<Void> task =
                 new MessageUtil.MessageSavingTask<>(
                         messageText,
-                        messageTopic,
+                        event.getTopic(),
                         userModel.id+"",
                         now,
                         event.getId());

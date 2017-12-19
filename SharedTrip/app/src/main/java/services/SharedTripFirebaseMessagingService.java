@@ -20,6 +20,7 @@ import java.util.Map;
 
 import remm.sharedtrip.R;
 
+import static android.support.v4.app.NotificationCompat.VISIBILITY_PRIVATE;
 import static utils.UtilBase.notNull;
 
 /**
@@ -64,9 +65,9 @@ public class SharedTripFirebaseMessagingService extends FirebaseMessagingService
 
                 else {
                     int mNotificationId = Integer.parseInt(messageData.get("message_id"));
-                    NotificationCompat.Builder mBuilder = null;
                     try {
-                        mBuilder = new NotificationCompat.Builder(this, channelId)
+                        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, channelId)
+                                .setVisibility(VISIBILITY_PRIVATE)
                                 .setSmallIcon(R.drawable.ic_chat_black_24dp)
                                 .setLargeIcon(BitmapFactory.decodeStream(new URL(messageData.get("sender_picture")).openStream()))
                                 .setContentTitle("New message in " + messageData.get("event_name"))

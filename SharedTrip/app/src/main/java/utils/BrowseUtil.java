@@ -1,6 +1,10 @@
 package utils;
 
+import android.content.IntentFilter;
 import android.os.AsyncTask;
+import android.support.v4.content.LocalBroadcastManager;
+
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -103,6 +107,7 @@ public class BrowseUtil extends UtilBase {
 
                         UserEventModel event = new UserEventModel();
 
+                        event.setTopic(object.getString("chat_topic"));
                         event.setName(object.getString("trip_name"));
                         event.setLoc(object.getString("location"));
                         event.setDescription(object.getString("description"));
@@ -144,6 +149,46 @@ public class BrowseUtil extends UtilBase {
                     explorer.DisplaySearchResults(events);
                     break;
             }
+        }
+    }
+
+    public static class SubscriptionTask<Void> extends AsyncTask<Void, Void, Void> {
+
+        private int userId;
+
+        public SubscriptionTask(int userId) {
+            this.userId = userId;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url(API_PREFIX + "/user/" + userId + "/topics")
+                    .build();
+            Call call = client.newCall(request);
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) { }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String body = response.body().string();
+                    if (!body.isEmpty() && body.charAt(0) == '[') {
+                        try {
+                            JSONArray arr = new JSONArray(body);
+                            FirebaseMessaging fm = FirebaseMessaging.getInstance();
+                            for(int i = 0; i < arr.length(); i++) {
+                                fm.subscribeToTopic(arr.getString(i));
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+            return null;
         }
     }
 

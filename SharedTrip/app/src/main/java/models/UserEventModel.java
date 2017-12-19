@@ -16,6 +16,7 @@ public class UserEventModel extends EventModel {
     protected boolean userBanned;
     protected boolean isAdmin;
     private Bitmap bitmap;
+    private String topic;
 
     public UserEventModel() {
         super();
@@ -57,6 +58,11 @@ public class UserEventModel extends EventModel {
         copy.setStartDate(startDate);
         copy.setSpots(spots);
         copy.setId(id);
+        copy.setTopic(topic);
         return copy;
     }
+
+    public void setTopic(String topic) { this.topic = topic; }
+
+    public String getTopic() { return topic; }
 }
