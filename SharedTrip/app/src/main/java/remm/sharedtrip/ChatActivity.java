@@ -154,8 +154,8 @@ public class ChatActivity extends AppCompatActivity implements MessageUtil.ChatM
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
         requestMessageHistory();
     }
 

@@ -185,8 +185,8 @@ public class ProfileActivity extends AppCompatActivity implements RatingUtil.Use
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
         displayRatings();
     }
 

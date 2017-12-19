@@ -71,8 +71,8 @@ public class MyEventsFragment extends Fragment implements MyEventsManager {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         myActivity.spinner.setVisibility(View.VISIBLE);
         getMyEvents();
     }

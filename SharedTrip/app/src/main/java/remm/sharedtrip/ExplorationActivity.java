@@ -75,7 +75,7 @@ public class ExplorationActivity extends AppCompatActivity implements OnQueryTex
 
     private AlertDialog.Builder dialogBuilder;
     private View ratingDialogView;
-    private Toolbar toolbar;
+    public Toolbar toolbar;
     public ProgressBar spinner;
 
     @SuppressLint("RestrictedApi")
@@ -179,8 +179,6 @@ public class ExplorationActivity extends AppCompatActivity implements OnQueryTex
     protected void onResume() {
         super.onResume();
 
-        toolbar.setSubtitle(null);
-
         if (isNull(messagingService)) {
             messagingService = new Intent(this, SharedTripFirebaseMessagingService.class);
             startService(messagingService);
@@ -218,7 +216,6 @@ public class ExplorationActivity extends AppCompatActivity implements OnQueryTex
     private void setUpUserHeader() {
 
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setSubtitle("Browse events");
         setSupportActionBar(toolbar);
 
         inflater = getLayoutInflater();

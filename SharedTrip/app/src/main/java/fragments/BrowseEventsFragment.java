@@ -111,8 +111,8 @@ public class BrowseEventsFragment extends Fragment implements EventExplorer, Use
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         myActivity.spinner.setVisibility(View.VISIBLE);
         nearLabel.setVisibility(View.GONE);
         newLabel.setVisibility(View.GONE);

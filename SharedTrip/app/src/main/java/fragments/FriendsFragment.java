@@ -65,13 +65,8 @@ public class FriendsFragment extends Fragment implements FriendsUtil.FriendsEven
 
     @Override
     public void onStart() {
-        recyclerView = myView.findViewById(R.id.friends_events_recycler);
         super.onStart();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
+        recyclerView = myView.findViewById(R.id.friends_events_recycler);
         if (loggedInUserModel.hasFacebook()) {
             myActivity.spinner.setVisibility(VISIBLE);
             requestFacebookFriendEvents();

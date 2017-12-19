@@ -127,6 +127,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
 
             int color = manager.getResources().getColor(R.color.golden);
             statusIcon = manager.getDrawableById(R.drawable.ic_star_black_24dp);
+            statusIcon = manager.getDrawableById(R.drawable.ic_star_black_20dp);
             holder.status.setCompoundDrawablesWithIntrinsicBounds(statusIcon, null, null, null);
             statusIcon.setTint(color);
             holder.status.setText("admin");
