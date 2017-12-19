@@ -46,6 +46,7 @@ public class FriendsFragment extends Fragment implements FriendsUtil.FriendsEven
     private GridLayoutManager layoutManager;
 
     private RecyclerView recyclerView;
+    private List<FriendEvent> friendEvents;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -87,6 +88,7 @@ public class FriendsFragment extends Fragment implements FriendsUtil.FriendsEven
      */
     @Override
     public void provideFriendsEvents(final List<FriendEvent> friendEvents) {
+        this.friendEvents = friendEvents;
         if (isVisible()) {
             myActivity.runOnUiThread(new Runnable() {
                 @Override
@@ -94,16 +96,15 @@ public class FriendsFragment extends Fragment implements FriendsUtil.FriendsEven
                     myActivity.stopLoadingContent();
                     if (!friendEvents.isEmpty()) {
                         if (isNull(adapter)) {
-                            adapter = new FriendsEventsAdapter(myActivity, self, friendEvents);
-                            layoutManager = new GridLayoutManager(myActivity, 2);
-                            recyclerView.setLayoutManager(layoutManager);
-                            recyclerView.setAdapter(adapter);
+                            adapter = new FriendsEventsAdapter(myActivity, self, FriendsFragment.this.friendEvents);
 
                         } else {
                             // Update the adapter if it already exists
-                            adapter.friendEvents = friendEvents;
                             adapter.notifyDataSetChanged();
                         }
+                        layoutManager = new GridLayoutManager(myActivity, 2);
+                        recyclerView.setLayoutManager(layoutManager);
+                        recyclerView.setAdapter(adapter);
                     }
                 }
             });
